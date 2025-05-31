@@ -1,15 +1,20 @@
 import os
 import time
 import uuid
+import gettext
 import asyncio
 from telethon import TelegramClient, Button, events
 from dotenv import load_dotenv
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncEngine
+from sqlalchemy.ext.asyncio import (async_sessionmaker,
+                                    AsyncEngine, AsyncSession)
 
 from database.connect import get_async_engine, get_session_maker
 from database.init import init_db
 from database.models import User
+
+LOCALES_DIR = "locales"
+DEFAULT_LANG = "en"
 
 load_dotenv()
 
@@ -25,6 +30,26 @@ engine: AsyncEngine = get_async_engine(database_url)
 session_maker: async_sessionmaker = get_session_maker(engine)
 
 client = TelegramClient("connection", api_id, api_hash)
+
+
+async def setup_translations(user_id: int, session: AsyncSession):
+    """Load translations for given Telegram user."""
+    result = await session.execute(
+        select(User).where(User.telegram_id == user_id)
+    )
+    user = result.scalar_one_or_none()
+
+    lang = user.language if user and user.language else DEFAULT_LANG
+
+    translator = gettext.translation(
+        domain="strings",
+        localedir=LOCALES_DIR,
+        languages=[lang],
+        # fallback=True
+    )
+
+    print(lang)
+    return translator.gettext
 
 
 async def send_language_selection(event: events.NewMessage.Event) -> None:
@@ -47,6 +72,8 @@ async def new_msg_handler(event) -> None:
     telegram_id = event.sender_id
 
     async with session_maker() as session:
+        _ = await setup_translations(event.sender_id, session)
+
         result = await session.execute(
             select(User).where(User.telegram_id == telegram_id)
         )
@@ -56,7 +83,7 @@ async def new_msg_handler(event) -> None:
             if user.language is None:
                 await send_language_selection(event)
             else:
-                await event.reply("hi))")
+                await event.reply(_("hi"))
 
         else:
             new_user = User(
