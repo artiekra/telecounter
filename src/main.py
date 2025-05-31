@@ -2,6 +2,8 @@ import os
 from telethon import TelegramClient, events
 from dotenv import load_dotenv
 
+from database import connect_to_db
+
 load_dotenv()
 
 api_id = int(os.getenv("API_ID", "0"))
@@ -9,6 +11,11 @@ api_hash = os.getenv("API_HASH", "")
 bot_token = os.getenv("BOT_TOKEN", "")
 
 client = TelegramClient("connection", api_id, api_hash).start(bot_token=bot_token)
+
+database_url = os.getenv("DATABASE_URL")
+if not database_url:
+    raise ValueError("DATABASE_URL environment variable not set.")
+db_engine = connect_to_db(database_url)
 
 
 @client.on(events.NewMessage)
