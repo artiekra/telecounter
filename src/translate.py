@@ -1,3 +1,4 @@
+import os
 import gettext
 
 from sqlalchemy import select
@@ -17,11 +18,11 @@ async def setup_translations(user_id: int, session: AsyncSession):
 
     lang = user.language if user and user.language else DEFAULT_LANG
 
-    translator = gettext.translation(
-        domain="strings",
-        localedir=LOCALES_DIR,
-        languages=[lang],
-        fallback=True
-    )
+    mo_path = os.path.join(LOCALES_DIR, f"{lang}.mo")
+    try:
+        with open(mo_path, "rb") as mo_file:
+            translator = gettext.GNUTranslations(mo_file).gettext
+    except FileNotFoundError:
+        translator = lambda s: s  # fallback: return original string
 
-    return translator.gettext
+    return translator

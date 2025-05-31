@@ -1,0 +1,17 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: telecounter 0.1.0\n"
+"Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "hey"
+msgstr "привііт!"
+
+msgid "language_set_popup"
+msgstr "Встановлена мова *{0}*"
+
+msgid "language_set_message"
+msgstr "🇺🇦 Мова успішно встановлена!"

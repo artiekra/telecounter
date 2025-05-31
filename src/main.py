@@ -70,7 +70,20 @@ async def new_msg_handler(event) -> None:
             await send_language_selection(event)
 
         else:
-            await event.reply(_("hi"))
+            await event.reply(_("hey"))
+
+
+async def update_user_language(event, new_language: str,
+                               user: User, session):
+    """Update user lang in db, notify the user."""
+    user.language = new_language
+    session.add(user)
+    await session.commit()
+    _ = await setup_translations(event.sender_id, session)
+
+    await event.answer(_("language_set_popup").format(user.language))
+    await event.edit(_("language_set_message").format(
+        user.language), buttons=None)
 
 
 @client.on(events.CallbackQuery)
@@ -90,19 +103,13 @@ async def callback_handler(event):
             await event.answer("User not found.")
             return
 
+        data = data.split("_")
+        command = data[0]
+
         # update language based on callback data
-        if data == "lang_en":
-            user.language = "en"
-        elif data == "lang_uk":
-            user.language = "uk"
-        elif data == "lang_ru":
-            user.language = "ru"
-
-        session.add(user)
-        await session.commit()
-
-        await event.answer(f"Language set to {user.language}!")
-        await event.edit(f"Language updated to {user.language}. Thank you! :3", buttons=None)
+        if command == "lang":
+            new_language = data[1]
+            await update_user_language(event, new_language, user, session)
 
 
 async def main():
