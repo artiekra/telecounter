@@ -2,7 +2,7 @@ import os
 import time
 import uuid
 import asyncio
-from telethon import TelegramClient, events
+from telethon import TelegramClient, Button, events
 from dotenv import load_dotenv
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncEngine
@@ -27,6 +27,20 @@ session_maker: async_sessionmaker = get_session_maker(engine)
 client = TelegramClient("connection", api_id, api_hash)
 
 
+async def send_language_selection(event: events.NewMessage.Event) -> None:
+    """Send language selection msg with inline buttons."""
+    buttons = [
+        [Button.inline("🇬🇧 English", b"lang_en")],
+        [Button.inline("🇺🇦 Українська", b"lang_uk"),
+        Button.inline("🇷🇺 Русский", b"lang_ru")]
+    ]
+
+    await event.reply(
+        "Welcome! Please choose your language:",
+        buttons=buttons
+    )
+
+
 @client.on(events.NewMessage)
 async def new_msg_handler(event) -> None:
     """Check if user is known, handle new message."""
@@ -39,7 +53,11 @@ async def new_msg_handler(event) -> None:
         user = result.scalar_one_or_none()
 
         if user:
-            await event.reply("hi))")
+            if user.language is None:
+                await send_language_selection(event)
+            else:
+                await event.reply("hi))")
+
         else:
             new_user = User(
                 id=uuid.uuid4().bytes,
@@ -50,7 +68,40 @@ async def new_msg_handler(event) -> None:
             )
             session.add(new_user)
             await session.commit()
-            await event.reply("hello new fren! you’re registered now :3")
+
+            await send_language_selection(event)
+
+
+@client.on(events.CallbackQuery)
+async def callback_handler(event):
+    data = event.data.decode('utf-8')
+
+    # get the user from DB
+    telegram_id = event.sender_id
+    async with session_maker() as session:
+        result = await session.execute(
+            select(User).where(User.telegram_id == telegram_id)
+        )
+        user = result.scalar_one_or_none()
+
+        # TODO: is this even possible? handle this better
+        if not user:
+            await event.answer("User not found.")
+            return
+
+        # update language based on callback data
+        if data == "lang_en":
+            user.language = "en"
+        elif data == "lang_uk":
+            user.language = "uk"
+        elif data == "lang_ru":
+            user.language = "ru"
+
+        session.add(user)
+        await session.commit()
+
+        await event.answer(f"Language set to {user.language}!")
+        await event.edit(f"Language updated to {user.language}. Thank you! :3", buttons=None)
 
 
 async def main():
