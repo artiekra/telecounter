@@ -55,24 +55,22 @@ async def new_msg_handler(event) -> None:
         )
         user = result.scalar_one_or_none()
 
-        if user:
-            if user.language is None:
-                await send_language_selection(event)
-            else:
-                await event.reply(_("hi"))
-
-        else:
-            new_user = User(
+        if not user:
+            user = User(
                 id=uuid.uuid4().bytes,
                 telegram_id=telegram_id,
                 registered_at=int(time.time()),
                 language=None,
                 is_banned=False,
             )
-            session.add(new_user)
+            session.add(user)
             await session.commit()
 
+        if user.language is None:
             await send_language_selection(event)
+
+        else:
+            await event.reply(_("hi"))
 
 
 @client.on(events.CallbackQuery)

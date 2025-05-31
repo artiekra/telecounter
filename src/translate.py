@@ -21,7 +21,7 @@ async def setup_translations(user_id: int, session: AsyncSession):
         domain="strings",
         localedir=LOCALES_DIR,
         languages=[lang],
-        # fallback=True
+        fallback=True
     )
 
     return translator.gettext
