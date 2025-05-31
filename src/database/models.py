@@ -1,0 +1,88 @@
+import uuid
+from enum import Enum as PyEnum
+
+from sqlalchemy import (
+    Column,
+    String,
+    Integer,
+    BigInteger,
+    Boolean,
+    ForeignKey,
+    Enum,
+    Text,
+)
+from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.dialects.sqlite import BLOB
+
+Base = declarative_base()
+
+
+def gen_uuid() -> bytes:
+    """Generate a UUID4 in bytes format for use as primary key."""
+    return uuid.uuid4().bytes
+
+
+# Transaction type enum, stored as int
+class TransactionType(PyEnum):
+    INCOME = 1  # both income and spend
+    # TRANSFER = 2  # transfer from one wallet to another
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(BLOB, primary_key=True, default=gen_uuid)
+    telegram_id = Column(Integer, unique=True, nullable=False)
+    registered_at = Column(BigInteger, nullable=False)  # unix timestamp
+    language = Column(String, nullable=True)
+    is_banned = Column(Boolean, default=False)
+
+    wallets = relationship("Wallet", back_populates="holder_user")
+    categories = relationship("Category", back_populates="holder_user")
+    transactions = relationship("Transaction", back_populates="holder_user")
+
+
+class Wallet(Base):
+    __tablename__ = "wallets"
+
+    id = Column(BLOB, primary_key=True, default=gen_uuid)
+    holder = Column(BLOB, ForeignKey("users.id"), nullable=False)
+    icon = Column(String(1), nullable=False)
+    name = Column(String, nullable=False)
+    currency = Column(String(8), nullable=False)  # like "USD" or "UAH"
+    init_sum = Column(BigInteger, nullable=False, default=0)
+    current_sum = Column(BigInteger, nullable=False, default=0)
+    comment = Column(Text, nullable=True)
+
+    holder_user = relationship("User", back_populates="wallets")
+    transactions = relationship("Transaction", back_populates="wallet")
+
+
+class Category(Base):
+    __tablename__ = "categories"
+
+    id = Column(BLOB, primary_key=True, default=gen_uuid)
+    holder = Column(BLOB, ForeignKey("users.id"), nullable=False)
+    icon = Column(String(1), nullable=False)
+    name = Column(String, nullable=False)
+    comment = Column(Text, nullable=True)
+
+    holder_user = relationship("User", back_populates="categories")
+    transactions = relationship("Transaction", back_populates="category")
+
+
+class Transaction(Base):
+    __tablename__ = "transactions"
+
+    id = Column(BLOB, primary_key=True, default=gen_uuid)
+    holder = Column(BLOB, ForeignKey("users.id"), nullable=False)
+    datetime = Column(BigInteger, nullable=False)  # unix timestamp in seconds
+    type = Column(Enum(TransactionType), nullable=False)
+    wallet_id = Column(BLOB, ForeignKey("wallets.id"), nullable=False)
+    category_id = Column(BLOB, ForeignKey("categories.id"), nullable=False)
+    sum = Column(BigInteger, nullable=False)
+    comment = Column(Text, nullable=True)
+
+    holder_user = relationship("User", back_populates="transactions")
+    wallet = relationship("Wallet", back_populates="transactions")
+    category = relationship("Category", back_populates="transactions")
