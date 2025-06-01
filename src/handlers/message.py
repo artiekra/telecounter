@@ -24,22 +24,28 @@ async def send_language_selection(event: events.NewMessage.Event) -> None:
     )
 
 
+# TODO: on /start, send some info about balances, some overview..
 async def handle_command_start(session: AsyncSession, user: User,
                                _, event) -> None:
     """Handle /start command"""
-    await event.reply("start")
+    await event.reply(_("responce_to_command_start"))
 
 
 async def handle_command_help(session: AsyncSession, user: User,
                                _, event) -> None:
     """Handle /help command"""
-    await event.reply("help")
+    await event.reply(_("responce_to_command_help"))
 
 
+# TODO: put support username into config, make it optional
 async def handle_unknown_command(session: AsyncSession, user: User,
                                  _, event) -> None:
     """Handle unknown commands"""
-    await event.reply("unknown")
+    command = event.raw_text.split()[0]
+
+    await event.reply(_("responce_to_unknown_command").format(
+        command, "@support"
+    ))
 
 
 COMMANDS = {"start": handle_command_start, "help": handle_command_help}
@@ -58,7 +64,7 @@ async def handle_command(session: AsyncSession, user: User, _, event):
 
 async def handle_transaction(session: AsyncSession, user: User, _, event):
     """Handle transaction from User (msg not starting with "/")."""
-    await event.reply(_("hey"))
+    await event.reply("handling transaction.. ```{}```".format(event.raw_text))
 
 
 def register_message_handler(client, session_maker):
