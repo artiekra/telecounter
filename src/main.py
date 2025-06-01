@@ -14,24 +14,24 @@ from handlers.message import register_message_handler
 
 load_dotenv()
 
-api_id = int(os.getenv("API_ID", "0"))
-api_hash = os.getenv("API_HASH", "")
-bot_token = os.getenv("BOT_TOKEN", "")
-database_url = os.getenv("DATABASE_URL")
+API_ID = int(os.getenv("API_ID", "0"))
+API_HASH = os.getenv("API_HASH", "")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-if not database_url:
+if not DATABASE_URL:
     raise ValueError("DATABASE_URL environment variable not set.")
 
-engine: AsyncEngine = get_async_engine(database_url)
+engine: AsyncEngine = get_async_engine(DATABASE_URL)
 session_maker: async_sessionmaker = get_session_maker(engine)
 
-client = TelegramClient("connection", api_id, api_hash)
+client = TelegramClient("connection", API_ID, API_HASH)
 
 
 async def main():
     """Initialize the database, start listening for events."""
     await init_db(engine)
-    await client.start(bot_token=bot_token)
+    await client.start(bot_token=BOT_TOKEN)
 
     register_callback_handler(client, session_maker)
     register_message_handler(client, session_maker)

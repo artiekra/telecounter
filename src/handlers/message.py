@@ -24,9 +24,36 @@ async def send_language_selection(event: events.NewMessage.Event) -> None:
     )
 
 
+async def handle_command_start(session: AsyncSession, user: User,
+                               _, event) -> None:
+    """Handle /start command"""
+    await event.reply("start")
+
+
+async def handle_command_help(session: AsyncSession, user: User,
+                               _, event) -> None:
+    """Handle /help command"""
+    await event.reply("help")
+
+
+async def handle_unknown_command(session: AsyncSession, user: User,
+                                 _, event) -> None:
+    """Handle unknown commands"""
+    await event.reply("unknown")
+
+
+COMMANDS = {"start": handle_command_start, "help": handle_command_help}
+
 async def handle_command(session: AsyncSession, user: User, _, event):
     """Handle command from User (any msg starting with "/")."""
-    await event.reply(_("hey command!"))
+    command = event.raw_text.split()
+
+    handler = COMMANDS.get(command[0][1:])
+
+    if handler is None:
+        handler = handle_unknown_command
+
+    await handler(session, user, _, event)
 
 
 async def handle_transaction(session: AsyncSession, user: User, _, event):
