@@ -1,6 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: telecounter 0.1.0\n"
+
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -15,3 +16,14 @@ msgstr "Language set to *{0}*"
 
 msgid "language_set_message"
 msgstr "🇬🇧 Language set successfully!"
+
+msgid "tutorial"
+msgstr ""
+"👋 **Hey there!** And welcome to the bot :>\n\n"
+"💵 To record a transaction, just write me a message specifying the sum, where you spent it (or where you got it from!) and how you paid for it (cash? card?)\n\n"
+"**Just like this:**\n"
+"```-5 food card\n"
+"+25 gift cash\n"
+"-15 fuel another_card\n"
+"```\n\n"
+"💬 If its the first time you mention a wallet, like `another_card`, the bot will prompt you for currency and create it for further use; same for the income/spend categories!"
