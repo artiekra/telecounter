@@ -45,3 +45,12 @@ msgid "unknown_command"
 msgstr ""
 "❌ Sorry, **i don't seem to know** what {0} means..\n\n"
 "See info about bot usage with /help; if necessary you can get support at {1}"
+
+msgid "create_new_category_prompt"
+msgstr "creating new category {0}"
+
+msgid "create_new_category_prompt_approve"
+msgstr "create"
+
+msgid "create_new_category_prompt_cancel"
+msgstr "cancel"

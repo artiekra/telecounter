@@ -3,6 +3,7 @@ from typing import Optional
 from thefuzz import process
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from telethon.tl.custom import Button
 
 from database.models import User, Category, Wallet
 
@@ -61,10 +62,17 @@ async def create_category(
     name: str
 ) -> None:
     """Prompt user for creation of a new category."""
-    user.expectation["expect"] = "new_category_name"
+    user.expectation["expect"] = {"type": "new_category", "data": name}
     await session.commit()
 
-    await event.reply("creating new category")
+    buttons = [
+        Button.inline(_("create_new_category_prompt_approve"),
+                      b"category_approve"),
+        Button.inline(_("create_new_category_prompt_cancel"),
+                      b"category_cancel")
+    ]
+    await event.respond(_("create_new_category_prompt").format(name),
+                        buttons=buttons)
 
 
 async def create_wallet(
@@ -75,10 +83,8 @@ async def create_wallet(
     name: str
 ) -> None:
     """Prompt user for creation of a new wallet."""
-    user.expectation["expect"] = "new_wallet_name"
-    await session.commit()
 
-    await event.reply("creating new wallet")
+    await event.reply("creating new wallet..")
 
 
 async def register_transaction(

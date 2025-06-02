@@ -1,8 +1,11 @@
+import uuid
+import time
+
 from telethon import events
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.models import User
+from database.models import User, Category
 from translate import setup_translations
 
 
@@ -20,6 +23,30 @@ async def update_user_language(event, new_language: str,
     await event.respond(_("tutorial"))
 
 
+async def handle_command_category(session: AsyncSession, event,
+                                  user: User, data: list, _) -> None:
+    """Handle user pressing a button under category creation prompt msg."""
+    if data[1] == "cancel":
+        await event.respond(_("category_creation_cancelled"))
+        return
+
+    new_category = Category(
+        id=uuid.uuid4().bytes,
+        holder=user.id,
+        icon="✨",
+        name=user.expectation["expect"]["data"]
+    )
+
+    session.add(new_category)
+    await session.commit()
+    await session.refresh(new_category)
+
+    await event.edit(_("category_created_successfully"))
+
+    user.expectation["expect"] = {"type": None, "data": None}
+    await session.commit()
+
+
 def register_callback_handler(client, session_maker):
 
     @client.on(events.CallbackQuery)
@@ -29,6 +56,7 @@ def register_callback_handler(client, session_maker):
         # get the user from DB
         telegram_id = event.sender_id
         async with session_maker() as session:
+            _ = await setup_translations(telegram_id, session)
             result = await session.execute(
                 select(User).where(User.telegram_id == telegram_id)
             )
@@ -46,3 +74,9 @@ def register_callback_handler(client, session_maker):
             if command == "lang":
                 new_language = data[1]
                 await update_user_language(event, new_language, user, session)
+
+            elif command == "category":
+                await handle_command_category(session, event, user, data, _)
+
+            else:
+                raise Error("Got unexpected callback query command")

@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import User
 from translate import setup_translations
-from handlers.transaction import register_transaction
+from handlers.transaction import register_transaction, create_category
 
 
 async def send_language_selection(event: events.NewMessage.Event) -> None:
@@ -19,7 +19,7 @@ async def send_language_selection(event: events.NewMessage.Event) -> None:
          Button.inline("🇷🇺 Русский", b"lang_ru")]
     ]
 
-    await event.reply(
+    await event.respond(
         "Welcome! Please choose your language:",
         buttons=buttons
     )
@@ -98,6 +98,21 @@ async def handle_transaction(session: AsyncSession, user: User, _, event):
                                [sum, category, wallet])
 
 
+async def handle_expectation(session: AsyncSession, user: User, _, event):
+    """Handle bot flow if data is expected from user."""
+    expect = user.expectation["expect"]
+    raw_text = event.raw_text
+
+    if expect["type"] == "new_category":
+        if " " in raw_text:
+            await event.respond(_("mutiple_word_category_name_error"))
+            return
+        await create_category(session, user, _, event, raw_text)
+
+    else:
+        raise Error("Got unexpected expectation type")
+
+
 def register_message_handler(client, session_maker):
     @client.on(events.NewMessage)
     async def new_msg_handler(event) -> None:
@@ -120,15 +135,23 @@ def register_message_handler(client, session_maker):
                     language=None,
                     is_banned=False,
                     expectation={"transaction": [],
-                        "expect": None}
+                        "expect": {"type": None, "data": None}}
                 )
                 session.add(user)
                 await session.commit()
 
             if user.language is None:
                 await send_language_selection(event)
-            else:
-                if event.raw_text.startswith("/"):
-                    await handle_command(session, user, _, event)
-                else:
-                    await handle_transaction(session, user, _, event)
+                return
+
+            if event.raw_text.startswith("/"):
+                user.expectation["expect"] = {"type": None, "data": None}
+                await session.commit()
+                await handle_command(session, user, _, event)
+                return
+
+            if user.expectation["expect"]["type"] is None:
+                await handle_transaction(session, user, _, event)
+                return
+
+            await handle_expectation(session, user, _, event)
