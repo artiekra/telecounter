@@ -28,13 +28,13 @@ async def send_language_selection(event: events.NewMessage.Event) -> None:
 async def handle_command_start(session: AsyncSession, user: User,
                                _, event) -> None:
     """Handle /start command"""
-    await event.reply(_("responce_to_command_start"))
+    await event.respond(_("command_start"))
 
 
 async def handle_command_help(session: AsyncSession, user: User,
                                _, event) -> None:
     """Handle /help command"""
-    await event.reply(_("responce_to_command_help"))
+    await event.respond(_("command_help"))
 
 
 # TODO: put support username into config, make it optional
@@ -43,7 +43,7 @@ async def handle_unknown_command(session: AsyncSession, user: User,
     """Handle unknown commands"""
     command = event.raw_text.split()[0]
 
-    await event.reply(_("responce_to_unknown_command").format(
+    await event.respond(_("unknown_command").format(
         command, "@support"
     ))
 
@@ -64,7 +64,35 @@ async def handle_command(session: AsyncSession, user: User, _, event):
 
 async def handle_transaction(session: AsyncSession, user: User, _, event):
     """Handle transaction from User (msg not starting with "/")."""
-    await event.reply("handling transaction.. ```{}```".format(event.raw_text))
+    raw_text = event.raw_text
+    if raw_text == "":
+        await event.respond(_("got_empty_message"))
+        return
+
+    parts = event.raw_text.split()
+    if len(parts) < 3:
+        await event.respond(_("info_omitted_for_transaction_error"))
+        return
+
+    raw_sum, category, wallet = parts[:3]
+    
+    # sum = parts[0] if len(parts) > 0 else None
+    # category = parts[1] if len(parts) > 1 else None
+    # wallet = parts[2] if len(parts) > 2 else None
+
+    try:
+        sum = float(raw_sum.replace(",", "."))
+    except ValueError:
+        await event.respond(_("non_numerical_sum_error"))
+        return
+    
+    # checking this after checking for numerical value (and
+    #  not before!) allows for more clear errors
+    if raw_sum[0] not in "+-":
+        await event.respond(_("no_sign_specified_for_sum"))
+        return
+
+    await event.respond(" ".join(map(str, [sum, category, wallet])))
 
 
 def register_message_handler(client, session_maker):
