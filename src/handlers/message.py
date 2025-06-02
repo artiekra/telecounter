@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import User
 from translate import setup_translations
+from handlers.transaction import register_transaction
 
 
 async def send_language_selection(event: events.NewMessage.Event) -> None:
@@ -87,12 +88,14 @@ async def handle_transaction(session: AsyncSession, user: User, _, event):
         return
     
     # checking this after checking for numerical value (and
-    #  not before!) allows for more clear errors
+    #  not before!) allows
+    #  for more clear errors
     if raw_sum[0] not in "+-":
         await event.respond(_("no_sign_specified_for_sum"))
         return
 
-    await event.respond(" ".join(map(str, [sum, category, wallet])))
+    await register_transaction(session, user, _, event,
+                               [sum, category, wallet])
 
 
 def register_message_handler(client, session_maker):

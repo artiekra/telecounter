@@ -4,7 +4,9 @@ greenlet==3.2.2
 pyaes==1.6.1
 pyasn1==0.6.1
 python-dotenv==1.1.0
+RapidFuzz==3.13.0
 rsa==4.9.1
 SQLAlchemy==2.0.41
 Telethon==1.40.0
+thefuzz==0.22.1
 typing_extensions==4.13.2

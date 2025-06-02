@@ -36,7 +36,7 @@ class User(Base):
     registered_at = Column(BigInteger, nullable=False)  # unix timestamp
     language = Column(String, nullable=True)
     is_banned = Column(Boolean, default=False)
-    expectation = Column(String, nullable=True)
+    expectation = Column(JSON, nullable=True)
 
     wallets = relationship("Wallet", back_populates="holder_user")
     categories = relationship("Category", back_populates="holder_user")
