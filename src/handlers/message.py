@@ -119,6 +119,8 @@ def register_message_handler(client, session_maker):
                     registered_at=int(time.time()),
                     language=None,
                     is_banned=False,
+                    expectation={"transaction": [],
+                        "expect": None}
                 )
                 session.add(user)
                 await session.commit()

@@ -9,11 +9,11 @@ from sqlalchemy import (
     Boolean,
     ForeignKey,
     Enum,
-    Text,
-    JSON
+    Text
 )
 from sqlalchemy.orm import declarative_base, relationship
-from sqlalchemy.dialects.sqlite import BLOB
+from sqlalchemy.dialects.sqlite import BLOB, JSON
+from sqlalchemy.ext.mutable import MutableDict
 
 Base = declarative_base()
 
@@ -37,7 +37,7 @@ class User(Base):
     registered_at = Column(BigInteger, nullable=False)  # unix timestamp
     language = Column(String, nullable=True)
     is_banned = Column(Boolean, default=False)
-    expectation = Column(JSON, nullable=True)
+    expectation = Column(MutableDict.as_mutable(JSON), nullable=True)
 
     wallets = relationship("Wallet", back_populates="holder_user")
     categories = relationship("Category", back_populates="holder_user")

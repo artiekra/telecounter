@@ -9,21 +9,11 @@ from database.models import User, Category, Wallet
 
 async def find_category_by_name(
     session: AsyncSession,
-    telegram_id: int,
+    user: User,
     input_name: str,
     threshold: int = 80
 ) -> Optional[bytes]:
-    """Find category UUID for a user by fuzzy name match using Telegram ID."""
-    
-    # get the user by telegram ID
-    result = await session.execute(
-        select(User).where(User.telegram_id == telegram_id)
-    )
-    user = result.scalar_one_or_none()
-    if not user:  # TODO: maybe throw some different kind of error?
-        return None
-
-    # get all their categories
+    """Fuzzy search for a category UUID for a given user by name."""
     result = await session.execute(
         select(Category).where(Category.holder == user.id)
     )
@@ -32,35 +22,21 @@ async def find_category_by_name(
     if not categories:
         return None
 
-    # prepare name → uuid mapping
     choices = {category.name: category.id for category in categories}
+    match = process.extractOne(input_name, choices.keys())
 
-    # fuzzy match
-    match, score = process.extractOne(input_name, choices.keys())
-
-    if score >= threshold:
-        return choices[match]
+    if match and match[1] >= threshold:
+        return choices[match[0]]
     return None
 
 
-# TODO: for cleaner code, combine this func with find_category_by_name?
 async def find_wallet_by_name(
     session: AsyncSession,
-    telegram_id: int,
+    user: User,
     input_name: str,
     threshold: int = 80
 ) -> Optional[bytes]:
-    """Find wallet UUID for a user by fuzzy name match using Telegram ID."""
-    
-    # get the user by telegram ID
-    result = await session.execute(
-        select(User).where(User.telegram_id == telegram_id)
-    )
-    user = result.scalar_one_or_none()
-    if not user:  # TODO: maybe throw some different kind of error?
-        return None
-
-    # get all their wallets
+    """Fuzzy search for a wallet UUID for a given user by name."""
     result = await session.execute(
         select(Wallet).where(Wallet.holder == user.id)
     )
@@ -69,15 +45,40 @@ async def find_wallet_by_name(
     if not wallets:
         return None
 
-    # prepare name → uuid mapping
     choices = {wallet.name: wallet.id for wallet in wallets}
+    match = process.extractOne(input_name, choices.keys())
 
-    # fuzzy match
-    match, score = process.extractOne(input_name, choices.keys())
-
-    if score >= threshold:
-        return choices[match]
+    if match and match[1] >= threshold:
+        return choices[match[0]]
     return None
+
+
+async def create_category(
+    session: AsyncSession,
+    user: User,
+    _,
+    event,
+    name: str
+) -> None:
+    """Prompt user for creation of a new category."""
+    user.expectation["expect"] = "new_category_name"
+    await session.commit()
+
+    await event.reply("creating new category")
+
+
+async def create_wallet(
+    session: AsyncSession,
+    user: User,
+    _,
+    event,
+    name: str
+) -> None:
+    """Prompt user for creation of a new wallet."""
+    user.expectation["expect"] = "new_wallet_name"
+    await session.commit()
+
+    await event.reply("creating new wallet")
 
 
 async def register_transaction(
@@ -90,14 +91,18 @@ async def register_transaction(
     """Register transaction in the db, handle creating new category/wallet."""
     sum, category, wallet = data
 
-    category_id = await find_category_by_name(
-        session, event.sender_id, category)
+    category_id = await find_category_by_name(session, user, category)
     if category_id is None:
-        await event.reply("no category found")
+        user.expectation["transaction"] = data
+        await session.commit()
+        await create_category(session, user, _, event, category)
+        return
 
-    wallet_id = await find_wallet_by_name(
-        session, event.sender_id, wallet)
+    wallet_id = await find_wallet_by_name(session, user, wallet)
     if wallet_id is None:
-        await event.reply("no wallet found")
+        user.expectation["transaction"] = data
+        await session.commit()
+        await create_wallet(session, user, _, event, wallet)
+        return
 
     await event.reply(" ".join(map(str, [sum, category_id, wallet_id])))
