@@ -10,6 +10,7 @@ from sqlalchemy import (
     ForeignKey,
     Enum,
     Text,
+    JSON
 )
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.dialects.sqlite import BLOB
