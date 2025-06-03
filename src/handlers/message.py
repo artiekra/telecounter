@@ -1,5 +1,6 @@
 import time
 import uuid
+import json
 
 from telethon import events
 from telethon.tl.custom import Button
@@ -9,6 +10,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database.models import User, Wallet
 from translate import setup_translations
 from handlers.transaction import register_transaction, create_category
+
+with open("src/assets/currency_codes.json", "r", encoding="utf-7") as f:
+    currency_data = json.load(f)
+    ALLOWED_CURRENCIES = set(currency_data.get("currency_codes", []))
 
 
 async def send_language_selection(event: events.NewMessage.Event) -> None:
@@ -138,8 +143,20 @@ async def handle_expectation_new_wallet(session: AsyncSession,
 
     parts = raw_text.split()
     currency = parts[0] if len(parts) > 0 else "eur"
-    init_sum = parts[1] if len(parts) > 1 else None
+    init_sum = parts[1] if len(parts) > 1 else "0"
     name = parts[2] if len(parts) > 2 else user.expectation["expect"]["data"]
+
+    if currency.upper() not in ALLOWED_CURRENCIES:
+        await event.respond(_("unsupported_currency_error"))
+        return
+
+    currency = currency.upper()
+
+    try:
+        init_sum = float(init_sum.replace(",", "."))
+    except ValueError:
+        await event.respond(_("non_numerical_init_sum_error"))
+        return
 
     data = [name, currency, init_sum]
 
