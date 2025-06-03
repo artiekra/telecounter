@@ -54,3 +54,11 @@ msgstr "create"
 
 msgid "create_new_category_prompt_cancel"
 msgstr "cancel"
+
+msgid "transaction_handling_in_process"
+msgstr "transaction_handling_in_process: ```{0}```"
+
+msgid "create_new_wallet_prompt"
+msgstr ""
+"creating new wallet {0}"
+"format: <currency> <init> <name>"

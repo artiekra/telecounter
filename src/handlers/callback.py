@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import User, Category
 from translate import setup_translations
+from handlers.transaction import register_transaction
 
 
 async def update_user_language(event, new_language: str,
@@ -27,6 +28,8 @@ async def handle_command_category(session: AsyncSession, event,
                                   user: User, data: list, _) -> None:
     """Handle user pressing a button under category creation prompt msg."""
     if data[1] == "cancel":
+        user.expectation["expect"] = {"type": None, "data": None}
+        await session.commit()
         await event.respond(_("category_creation_cancelled"))
         return
 
@@ -45,6 +48,13 @@ async def handle_command_category(session: AsyncSession, event,
 
     user.expectation["expect"] = {"type": None, "data": None}
     await session.commit()
+
+    current_transaction = user.expectation["transaction"]
+    if current_transaction is not None:
+        await event.respond(_("transaction_handling_in_process").format(
+            " ".join(map(str, current_transaction))
+        ))
+        await register_transaction(session, user, _, event, current_transaction)
 
 
 def register_callback_handler(client, session_maker):

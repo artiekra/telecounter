@@ -6,7 +6,7 @@ from telethon.tl.custom import Button
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.models import User
+from database.models import User, Wallet
 from translate import setup_translations
 from handlers.transaction import register_transaction, create_category
 
@@ -67,7 +67,7 @@ async def handle_transaction(session: AsyncSession, user: User, _, event):
     """Handle transaction from User (msg not starting with "/")."""
     raw_text = event.raw_text
     if raw_text == "":
-        await event.respond(_("got_empty_message"))
+        await event.respond(_("got_empty_message_for_transaction"))
         return
 
     parts = event.raw_text.split()
@@ -98,16 +98,70 @@ async def handle_transaction(session: AsyncSession, user: User, _, event):
                                [sum, category, wallet])
 
 
+async def register_new_wallet(session: AsyncSession, event,
+                              user: User, data: list, _) -> None:
+    """Register new wallet after all the data has been verified."""
+    new_wallet = Wallet(
+        id=uuid.uuid4().bytes,
+        holder=user.id,
+        icon="✨",
+        name=data[0],
+        currency=data[1],
+        init_sum=data[2]
+    )
+
+    session.add(new_wallet)
+    await session.commit()
+    await session.refresh(new_wallet)
+
+    await event.respond(_("wallet_created_successfully"))
+
+    user.expectation["expect"] = {"type": None, "data": None}
+    await session.commit()
+
+    current_transaction = user.expectation["transaction"]
+    if current_transaction is not None:
+        # await event.respond(_("transaction_handling_in_process").format(
+        #     " ".join(map(str, current_transaction))
+        # ))
+        await register_transaction(session, user, _, event, current_transaction)
+
+
+async def handle_expectation_new_wallet(session: AsyncSession,
+                                        user: User, _, event):
+    """Handle new_wallet expectation."""
+    raw_text = event.raw_text
+
+    if raw_text == "":
+        await event.respond(_("got_empty_message_for_wallet"))
+        return
+
+    parts = raw_text.split()
+    currency = parts[0] if len(parts) > 0 else "eur"
+    init_sum = parts[1] if len(parts) > 1 else None
+    name = parts[2] if len(parts) > 2 else user.expectation["expect"]["data"]
+
+    data = [name, currency, init_sum]
+
+    await register_new_wallet(session, event, user, data, _)
+
+
 async def handle_expectation(session: AsyncSession, user: User, _, event):
     """Handle bot flow if data is expected from user."""
     expect = user.expectation["expect"]
     raw_text = event.raw_text
 
     if expect["type"] == "new_category":
-        if " " in raw_text:
+        if raw_text == "":
+            await event.respond(_("got_empty_message_for_category"))
+            return
+        if " " in raw_text or "\n" in raw_text:
             await event.respond(_("mutiple_word_category_name_error"))
             return
         await create_category(session, user, _, event, raw_text)
+
+    elif expect["type"] == "new_wallet":
+        await handle_expectation_new_wallet(session, user, _, event)
 
     else:
         raise Error("Got unexpected expectation type")

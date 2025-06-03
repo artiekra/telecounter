@@ -83,8 +83,10 @@ async def create_wallet(
     name: str
 ) -> None:
     """Prompt user for creation of a new wallet."""
+    user.expectation["expect"] = {"type": "new_wallet", "data": name}
+    await session.commit()
 
-    await event.reply("creating new wallet..")
+    await event.respond(_("create_new_wallet_prompt").format(name))
 
 
 async def register_transaction(
