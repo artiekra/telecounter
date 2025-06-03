@@ -115,8 +115,6 @@ async def register_transaction(
         await create_wallet(session, user, _, event, wallet)
         return
 
-    await event.reply(" ".join(map(str, [amount, category_id, wallet_id])))
-
     new_transaction = Transaction(
         holder=user.id,
         datetime=int(time.time()),
@@ -134,5 +132,14 @@ async def register_transaction(
     if wallet:
         wallet.current_sum += amount
 
-    session.add(new_transaction, wallet_id)
+    session.add(new_transaction, wallet)
     await session.commit()
+
+    category = await session.execute(
+        select(Category).where(Category.id == category_id)
+    )
+    category = category.scalar_one_or_none()
+    await event.reply(_("transaction_registered").format(
+        *map(str, [amount, category.name, wallet.name,
+                   wallet.current_sum, wallet.currency])
+    ))
