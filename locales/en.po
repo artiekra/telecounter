@@ -1,64 +1,151 @@
+# Translations template for telecounter.
+# Copyright (C) 2025 Artemii Kravchuk
+# This file is distributed under the same license as the telecounter project.
+# Artemii Kravchuk <mail@artiekra.org>, 2025.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: telecounter 0.1.0\n"
-
+"Project-Id-Version: 0.1.0\n"
+"Report-Msgid-Bugs-To: mail@artiekra.org\n"
+"POT-Creation-Date: 2025-06-03 20:01+0300\n"
+"PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
+"Language-Team: \n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+"X-Generator: Poedit 3.6\n"
 
+#: src/handlers/callback.py:21
 msgid "language_set_popup"
-msgstr "Language set to *{0}*"
+msgstr "Language set to English"
 
+#: src/handlers/callback.py:22
 msgid "language_set_message"
-msgstr "🇬🇧 Language set successfully!"
+msgstr "🇬🇧  Language set succesfully!"
 
+#: src/handlers/callback.py:24
 msgid "tutorial"
 msgstr ""
-"👋 **Hey there!** And welcome to the bot :>\n\n"
-"💵 To record a transaction, just write me a message specifying the sum, where you spent it (or where you got it from!) and how you paid for it (cash? card?)\n\n"
+"👋 **Hey there!** And welcome to the bot :>\n"
+"\n"
+"💵 To record a transaction, just write me a message specifying the sum, where you spent it (or where you got it from!) and how you paid for it (cash? card?)\n"
+"\n"
 "**Just like this:**\n"
 "```-5 food card\n"
 "+25 gift cash\n"
-"-15 fuel another_card\n"
-"```\n\n"
+"-15 fuel another_card```\n"
+"\n"
 "💬 If its the first time you mention a wallet, like `another_card`, the bot will prompt you for currency and create it for further use; same for the income/spend categories!"
 
+#: src/handlers/callback.py:33
+msgid "category_creation_cancelled"
+msgstr "❌ Category **won't be created**, this also means I can't register your transaction; send the transaction again and change the category if neccesarry"
+
+#: src/handlers/callback.py:47
+msgid "category_created_successfully"
+msgstr "🏷 New category \"`{0}`\" **created succesfully**"
+
+#: src/handlers/callback.py:54
+msgid "transaction_handling_in_process"
+msgstr "⚙️ Continuing to process your transaction, `{0}`"
+
+#: src/handlers/message.py:37
 msgid "command_start"
 msgstr ""
-"👋 **Welcome back!**\n\n"
+"👋 **Welcome back!**\n"
+"\n"
 "✨ You can start sending transactions right away. Just type things like:\n"
 "```-5 food card\n"
-"+25 gift cash```\n\n"
-"Need help? Type /help for tips and commands 🧠"
+"+25 gift cash```\n"
+"\n"
+"**Need help?** Type /help for tips and commands 🧠"
 
+#: src/handlers/message.py:43
 msgid "command_help"
 msgstr ""
 "💵 **Record transactions** in the following way:\n"
 "```<sum> <category> <wallet>```\n"
-"For example, `-5 food card` means you spent 50 of your local currency on food, paying with your card, and `+25 gift cash` means you got some cash as a gift!\n\n"
+"For example, `-5 food card` means you spent 50 of your local currency on food, paying with your card, and `+25 gift cash` means you got some cash as a gift!\n"
+"\n"
 "💬 Bot **doesn't know** what `food`, `gift`, `card` or `cash` means. But whenever you use a category or a wallet that wasn't mentioned before, bot will prompt you to create it! :>"
 
-
+#: src/handlers/message.py:52
 msgid "unknown_command"
 msgstr ""
-"❌ Sorry, **i don't seem to know** what {0} means..\n\n"
+"❌ Sorry, **i don't seem to know** what {0} means..\n"
+"\n"
 "See info about bot usage with /help; if necessary you can get support at {1}"
 
-msgid "create_new_category_prompt"
-msgstr "creating new category {0}"
+#: src/handlers/message.py:75
+msgid "got_empty_message_for_transaction"
+msgstr "🤔 I expected to get info about a new transaction, but this doesn't seem like a text message"
 
+#: src/handlers/message.py:80
+msgid "info_omitted_for_transaction_error"
+msgstr ""
+"🤔 To **record a transaction**, i need to get at least the amount, category and a wallet; some info wasn't included\n"
+"\n"
+"Please re-send the transaction with all the neccesarry info"
+
+#: src/handlers/message.py:92
+msgid "non_numerical_sum_error"
+msgstr "🔢 Transaction amount must be a number"
+
+#: src/handlers/message.py:99
+msgid "no_sign_specified_for_sum"
+msgstr ""
+"📊 Please specify if its income or a spend! Do that by putting a sign in front of the sum, like this:\n"
+"```-5 food card\n"
+"+25 gift cash```"
+
+#: src/handlers/message.py:122
+msgid "wallet_created_successfully"
+msgstr "👛 New wallet \"`{0}`\" **created succesfully**"
+
+#: src/handlers/message.py:141
+msgid "got_empty_message_for_wallet"
+msgstr "🤔 I expected to get info about a new wallet, but this doesn't seem like a text message"
+
+#: src/handlers/message.py:150
+msgid "unsupported_currency_error"
+msgstr "❓ Sorry, I don't seem to know `{0}` currency. Please write **the code of your currency**, like `USD`, `EUR`, `UAH`, `RUB`, etc.."
+
+#: src/handlers/message.py:158
+msgid "non_numerical_init_sum_error"
+msgstr "🔢 Initial amount for a wallet must be a number"
+
+#: src/handlers/message.py:173
+msgid "got_empty_message_for_category"
+msgstr "🤔 I expected to get the name for a new category, but this doesn't seem like a text message"
+
+#: src/handlers/message.py:176
+msgid "mutiple_word_category_name_error"
+msgstr "🤔 Sorry, category name can't have several words.. You can use underscores if you wish, `just_like_this`"
+
+#: src/handlers/transaction.py:71
 msgid "create_new_category_prompt_approve"
-msgstr "create"
+msgstr "✅ Create"
 
+#: src/handlers/transaction.py:73
 msgid "create_new_category_prompt_cancel"
-msgstr "cancel"
+msgstr "❌ Cancel"
 
-msgid "transaction_handling_in_process"
-msgstr "transaction_handling_in_process: ```{0}```"
+#: src/handlers/transaction.py:76
+msgid "create_new_category_prompt"
+msgstr ""
+"🏷 Create **new category**, \"`{0}`\"?\n"
+"\n"
+"If you want to create a category under a **different name**, just send me the updated name right now!"
 
+#: src/handlers/transaction.py:91
 msgid "create_new_wallet_prompt"
 msgstr ""
-"creating new wallet {0}"
-"format: <currency> <init> <name>"
+"👛 Creating **new wallet**, \"`{0}`\"...\n"
+"\n"
+"Please send me a message specifying wallet's currency, initial amount of money, and (optionally) a new name (if you don't want `{0}`). Here are a few examples:\n"
+"```EUR 0\n"
+"USD 50 another_name```"

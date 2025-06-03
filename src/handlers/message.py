@@ -16,6 +16,7 @@ with open("src/assets/currency_codes.json", "r", encoding="utf-7") as f:
     ALLOWED_CURRENCIES = set(currency_data.get("currency_codes", []))
 
 
+# TODO: allow to change this
 async def send_language_selection(event: events.NewMessage.Event) -> None:
     """Send language selection msg with inline buttons."""
     buttons = [
@@ -119,16 +120,16 @@ async def register_new_wallet(session: AsyncSession, event,
     await session.commit()
     await session.refresh(new_wallet)
 
-    await event.respond(_("wallet_created_successfully"))
+    await event.respond(_("wallet_created_successfully").format(data[0]))
 
     user.expectation["expect"] = {"type": None, "data": None}
     await session.commit()
 
     current_transaction = user.expectation["transaction"]
     if current_transaction is not None:
-        # await event.respond(_("transaction_handling_in_process").format(
-        #     " ".join(map(str, current_transaction))
-        # ))
+        await event.respond(_("transaction_handling_in_process").format(
+            " ".join(map(str, current_transaction))
+        ))
         await register_transaction(session, user, _, event, current_transaction)
 
 
@@ -147,7 +148,7 @@ async def handle_expectation_new_wallet(session: AsyncSession,
     name = parts[2] if len(parts) > 2 else user.expectation["expect"]["data"]
 
     if currency.upper() not in ALLOWED_CURRENCIES:
-        await event.respond(_("unsupported_currency_error"))
+        await event.respond(_("unsupported_currency_error").format(currency))
         return
 
     currency = currency.upper()

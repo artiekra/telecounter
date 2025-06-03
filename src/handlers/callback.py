@@ -18,9 +18,8 @@ async def update_user_language(event, new_language: str,
     await session.commit()
     _ = await setup_translations(event.sender_id, session)
 
-    await event.answer(_("language_set_popup").format(user.language))
-    await event.edit(_("language_set_message").format(
-        user.language), buttons=None)
+    await event.answer(_("language_set_popup"))
+    await event.edit(_("language_set_message"), buttons=None)
     await event.respond(_("tutorial"))
 
 
@@ -33,18 +32,20 @@ async def handle_command_category(session: AsyncSession, event,
         await event.respond(_("category_creation_cancelled"))
         return
 
+    category_name = user.expectation["expect"]["data"]
+
     new_category = Category(
         id=uuid.uuid4().bytes,
         holder=user.id,
         icon="✨",
-        name=user.expectation["expect"]["data"]
+        name=category_name
     )
 
     session.add(new_category)
     await session.commit()
     await session.refresh(new_category)
 
-    await event.edit(_("category_created_successfully"))
+    await event.edit(_("category_created_successfully").format(category_name))
 
     user.expectation["expect"] = {"type": None, "data": None}
     await session.commit()
