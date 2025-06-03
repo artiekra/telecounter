@@ -1,3 +1,4 @@
+import time
 from typing import Optional
 
 from thefuzz import process
@@ -5,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from telethon.tl.custom import Button
 
-from database.models import User, Category, Wallet
+from database.models import (User, Category, Wallet,
+    Transaction, TransactionType)
 
 
 async def find_category_by_name(
@@ -97,7 +99,7 @@ async def register_transaction(
     data: list
 ) -> None:
     """Register transaction in the db, handle creating new category/wallet."""
-    sum, category, wallet = data
+    amount, category, wallet = data
 
     category_id = await find_category_by_name(session, user, category)
     if category_id is None:
@@ -113,4 +115,24 @@ async def register_transaction(
         await create_wallet(session, user, _, event, wallet)
         return
 
-    await event.reply(" ".join(map(str, [sum, category_id, wallet_id])))
+    await event.reply(" ".join(map(str, [amount, category_id, wallet_id])))
+
+    new_transaction = Transaction(
+        holder=user.id,
+        datetime=int(time.time()),
+        type=TransactionType.INCOME,
+        wallet_id=wallet_id,
+        category_id=category_id,
+        sum=amount
+    )
+
+    wallet = await session.execute(
+        select(Wallet).where(Wallet.id == wallet_id)
+    )
+    wallet = wallet.scalar_one_or_none()
+
+    if wallet:
+        wallet.current_sum += amount
+
+    session.add(new_transaction, wallet_id)
+    await session.commit()
