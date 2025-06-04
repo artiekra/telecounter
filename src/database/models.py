@@ -9,7 +9,8 @@ from sqlalchemy import (
     Boolean,
     ForeignKey,
     Enum,
-    Text
+    Text,
+    UniqueConstraint
 )
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.dialects.sqlite import BLOB, JSON
@@ -89,3 +90,35 @@ class Transaction(Base):
     holder_user = relationship("User", back_populates="transactions")
     wallet = relationship("Wallet", back_populates="transactions")
     category = relationship("Category", back_populates="transactions")
+
+
+class WalletAlias(Base):
+    __tablename__ = "wallet_aliases"
+
+    id = Column(BLOB, primary_key=True, default=gen_uuid)
+    holder = Column(BLOB, ForeignKey("users.id"), nullable=False)
+    wallet = Column(BLOB, ForeignKey("wallets.id"), nullable=False)
+    alias = Column(String, nullable=False)
+
+    holder_user = relationship("User", backref="wallet_aliases")
+    wallet_ref = relationship("Wallet", backref="aliases")
+
+    __table_args__ = (
+        UniqueConstraint("holder", "alias", name="uq_wallet_alias_per_user"),
+    )
+
+
+class CategoryAlias(Base):
+    __tablename__ = "category_aliases"
+
+    id = Column(BLOB, primary_key=True, default=gen_uuid)
+    holder = Column(BLOB, ForeignKey("users.id"), nullable=False)
+    category = Column(BLOB, ForeignKey("categories.id"), nullable=False)
+    alias = Column(String, nullable=False)
+
+    holder_user = relationship("User", backref="category_aliases")
+    category_ref = relationship("Category", backref="aliases")
+
+    __table_args__ = (
+        UniqueConstraint("holder", "alias", name="uq_category_alias_per_user"),
+    )

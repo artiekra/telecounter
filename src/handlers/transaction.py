@@ -7,16 +7,28 @@ from sqlalchemy import select
 from telethon.tl.custom import Button
 
 from database.models import (User, Category, Wallet,
-    Transaction, TransactionType)
+    Transaction, TransactionType, CategoryAlias, WalletAlias)
 
 
 async def find_category_by_name(
     session: AsyncSession,
     user: User,
     input_name: str,
-    threshold: int = 90
+    threshold: int = 75
 ) -> Optional[bytes]:
-    """Fuzzy search for a category UUID for a given user by name."""
+    """Find category UUID for a user by fuzzy match or alias name."""
+
+    # check aliases for exact match
+    result = await session.execute(
+        select(CategoryAlias)
+        .where(CategoryAlias.holder == user.id)
+        .where(CategoryAlias.alias.ilike(input_name))
+    )
+    alias = result.scalar_one_or_none()
+    if alias:
+        return alias.category
+
+    # get all categories
     result = await session.execute(
         select(Category).where(Category.holder == user.id)
     )
@@ -25,11 +37,13 @@ async def find_category_by_name(
     if not categories:
         return None
 
+    # fuzzy match category names
     choices = {category.name: category.id for category in categories}
     match = process.extractOne(input_name, choices.keys())
 
     if match and match[1] >= threshold:
         return choices[match[0]]
+
     return None
 
 
@@ -37,9 +51,21 @@ async def find_wallet_by_name(
     session: AsyncSession,
     user: User,
     input_name: str,
-    threshold: int = 90
+    threshold: int = 75
 ) -> Optional[bytes]:
-    """Fuzzy search for a wallet UUID for a given user by name."""
+    """Find wallet UUID for a user by alias or fuzzy name match."""
+
+    # check aliases for exact match
+    result = await session.execute(
+        select(WalletAlias)
+        .where(WalletAlias.holder == user.id)
+        .where(WalletAlias.alias.ilike(input_name))
+    )
+    alias = result.scalar_one_or_none()
+    if alias:
+        return alias.wallet
+
+    # get all wallets
     result = await session.execute(
         select(Wallet).where(Wallet.holder == user.id)
     )
@@ -48,11 +74,13 @@ async def find_wallet_by_name(
     if not wallets:
         return None
 
+    # fuzzy match wallet names
     choices = {wallet.name: wallet.id for wallet in wallets}
     match = process.extractOne(input_name, choices.keys())
 
     if match and match[1] >= threshold:
         return choices[match[0]]
+
     return None
 
 
