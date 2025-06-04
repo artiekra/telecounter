@@ -26,7 +26,7 @@ async def find_category_by_name(
     )
     alias = result.scalar_one_or_none()
     if alias:
-        return alias.category
+        return ("exact", alias.category)
 
     # get all categories
     result = await session.execute(
@@ -35,16 +35,18 @@ async def find_category_by_name(
     categories = result.scalars().all()
 
     if not categories:
-        return None
+        return ("none",)
 
     # fuzzy match category names
     choices = {category.name: category.id for category in categories}
     match = process.extractOne(input_name, choices.keys())
 
     if match and match[1] >= threshold:
-        return choices[match[0]]
+        if match[1] == 100:
+            return ("exact", choices[match[0]])
+        return ("fuzzy", choices[match[0]])
 
-    return None
+    return ("none",)
 
 
 async def find_wallet_by_name(
@@ -63,7 +65,7 @@ async def find_wallet_by_name(
     )
     alias = result.scalar_one_or_none()
     if alias:
-        return alias.wallet
+        return ("exact", alias.wallet)
 
     # get all wallets
     result = await session.execute(
@@ -72,16 +74,18 @@ async def find_wallet_by_name(
     wallets = result.scalars().all()
 
     if not wallets:
-        return None
+        return ("none",)
 
     # fuzzy match wallet names
     choices = {wallet.name: wallet.id for wallet in wallets}
     match = process.extractOne(input_name, choices.keys())
 
     if match and match[1] >= threshold:
-        return choices[match[0]]
+        if match[1] == 100:
+            return ("exact", choices[match[0]])
+        return ("fuzzy", choices[match[0]])
 
-    return None
+    return ("none",)
 
 
 async def create_category(
@@ -124,6 +128,74 @@ async def create_wallet(
                         buttons=buttons)
 
 
+async def create_category_alias(
+    session: AsyncSession,
+    user: User,
+    _,
+    event,
+    name: str,
+    prediction_id
+) -> None:
+    """Prompt user about the correctness of fuzzy match for category name."""
+    result = await session.execute(
+        select(Category.name)
+        .where(Category.id == prediction_id)
+    )
+    prediction_name = result.scalar_one_or_none()
+
+    user.expectation["expect"] = {"type": "new_category_alias",
+        "data": [name, prediction_id.hex(), prediction_name]}
+
+    buttons = [
+        Button.inline(_("create_alias_prompt_approve"),
+                        b"categoryalias_approve"),
+        Button.inline(_("create_alias_prompt_new"),
+                        b"categoryalias_new"),
+        Button.inline(_("create_alias_prompt_cancel"),
+                        b"categoryalias_cancel")
+    ]
+
+    prompt = await event.respond(_("create_new_category_alias_prompt").format(
+        name, prediction_name), buttons=buttons)
+
+    user.expectation["message"] = prompt.id
+    await session.commit()
+
+
+async def create_wallet_alias(
+    session: AsyncSession,
+    user: User,
+    _,
+    event,
+    name: str,
+    prediction_id
+) -> None:
+    """Prompt user about the correctness of fuzzy match for wallet name."""
+    result = await session.execute(
+        select(Wallet.name)
+        .where(Wallet.id == prediction_id)
+    )
+    prediction_name = result.scalar_one_or_none()
+
+    user.expectation["expect"] = {"type": "new_wallet_alias",
+        "data": [name, prediction_id.hex(), prediction_name]}
+
+    buttons = [
+        Button.inline(_("create_alias_prompt_approve"),
+                        b"walletalias_approve"),
+        Button.inline(_("create_alias_prompt_new"),
+                        b"walletalias_new"),
+        Button.inline(_("create_alias_prompt_cancel"),
+                        b"walletalias_cancel")
+    ]
+
+    prompt = await event.respond(_("create_new_wallet_alias_prompt").format(
+        name, prediction_name), buttons=buttons)
+
+    user.expectation["message"] = prompt.id
+    await session.commit()
+
+
 async def register_transaction(
     session: AsyncSession,
     user: User,
@@ -135,14 +207,29 @@ async def register_transaction(
     amount, category, wallet = data
 
     category_id = await find_category_by_name(session, user, category)
-    if category_id is None:
+    wallet_id = await find_wallet_by_name(session, user, wallet)
+
+    # ask about possible typos
+    if category_id[0] == "fuzzy":
+        user.expectation["transaction"] = data
+        await session.commit()
+        await create_category_alias(session, user, _, event,
+                                    category, category_id[1])
+        return
+    if wallet_id[0] == "fuzzy":
+        user.expectation["transaction"] = data
+        await session.commit()
+        await create_wallet_alias(session, user, _, event,
+                                  wallet, wallet_id[1])
+        return
+
+    # create category/wallet if neccesarry
+    if category_id[0] == "none":
         user.expectation["transaction"] = data
         await session.commit()
         await create_category(session, user, _, event, category)
         return
-
-    wallet_id = await find_wallet_by_name(session, user, wallet)
-    if wallet_id is None:
+    if wallet_id[0] == "none":
         user.expectation["transaction"] = data
         await session.commit()
         await create_wallet(session, user, _, event, wallet)
@@ -152,13 +239,13 @@ async def register_transaction(
         holder=user.id,
         datetime=int(time.time()),
         type=TransactionType.INCOME,
-        wallet_id=wallet_id,
-        category_id=category_id,
+        wallet_id=wallet_id[1],
+        category_id=category_id[1],
         sum=amount
     )
 
     wallet = await session.execute(
-        select(Wallet).where(Wallet.id == wallet_id)
+        select(Wallet).where(Wallet.id == wallet_id[1])
     )
     wallet = wallet.scalar_one_or_none()
 
@@ -170,7 +257,7 @@ async def register_transaction(
     await session.commit()
 
     category = await session.execute(
-        select(Category).where(Category.id == category_id)
+        select(Category).where(Category.id == category_id[1])
     )
     category = category.scalar_one_or_none()
 

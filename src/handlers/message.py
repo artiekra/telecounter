@@ -209,6 +209,16 @@ async def handle_expectation(session: AsyncSession, user: User, _, event):
     elif expect["type"] == "new_wallet":
         await handle_expectation_new_wallet(session, user, _, event)
 
+    elif expect["type"] == "new_category_alias":
+        prompt = user.expectation["message"]
+        await event.respond(_("unexpected_msg_on_alias_prompt"),
+                            reply_to=prompt)
+
+    elif expect["type"] == "new_wallet_alias":
+        prompt = user.expectation["message"]
+        await event.respond(_("unexpected_msg_on_alias_prompt"),
+                            reply_to=prompt)
+
     else:
         raise Error("Got unexpected expectation type")
 
@@ -235,7 +245,8 @@ def register_message_handler(client, session_maker):
                     language=None,
                     is_banned=False,
                     expectation={"transaction": [],
-                        "expect": {"type": None, "data": None}}
+                        "expect": {"type": None, "data": None},
+                        "message": None}
                 )
                 session.add(user)
                 await session.commit()

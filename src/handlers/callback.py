@@ -5,9 +5,9 @@ from telethon import events
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.models import User, Category
+from database.models import User, Category, CategoryAlias, WalletAlias
 from translate import setup_translations
-from handlers.transaction import register_transaction
+from handlers.transaction import register_transaction, create_wallet
 
 
 async def update_user_language(event, new_language: str,
@@ -58,6 +58,116 @@ async def handle_command_category(session: AsyncSession, event,
         await register_transaction(session, user, _, event, current_transaction)
 
 
+async def handle_command_categoryalias(session: AsyncSession, event,
+                                       user: User, data: list, _) -> None:
+    """Handle user pressing a button under category alias creation msg."""
+    if data[1] == "cancel":
+        user.expectation["expect"] = {"type": None, "data": None}
+        await session.commit()
+        await event.respond(_("category_alias_creation_cancelled"))
+        return
+
+    elif data[1] == "new":
+        category_name = user.expectation["expect"]["data"][0]
+
+        new_category = Category(
+            id=uuid.uuid4().bytes,
+            holder=user.id,
+            icon="✨",
+            name=category_name
+        )
+
+        session.add(new_category)
+        await session.commit()
+        await session.refresh(new_category)
+
+        await event.edit(
+            _("category_created_successfully").format(category_name))
+
+        user.expectation["expect"] = {"type": None, "data": None}
+        await session.commit()
+
+        current_transaction = user.expectation["transaction"]
+        if current_transaction is not None:
+            # await event.respond(_("transaction_handling_in_process").format(
+            #     " ".join(map(str, current_transaction))
+            # ))
+            await register_transaction(session, user, _, event,
+                                       current_transaction)
+
+    elif data[1] == "approve":
+        alias_name = user.expectation["expect"]["data"][0]
+        actual_category_id = bytes.fromhex(
+            user.expectation["expect"]["data"][1])
+
+        new_alias = CategoryAlias(
+            id=uuid.uuid4().bytes,
+            holder=user.id,
+            category=actual_category_id,
+            alias=alias_name,
+        )
+
+        session.add(new_alias)
+        await session.commit()
+
+        await event.edit(
+            _("category_alias_created_successfully").format(alias_name)
+        )
+
+        user.expectation["expect"] = {"type": None, "data": None}
+        await session.commit()
+
+        current_transaction = user.expectation.get("transaction")
+        if current_transaction:
+            # await event.respond(_("transaction_handling_in_process").format(
+            #     " ".join(map(str, current_transaction))
+            # ))
+            await register_transaction(session, user, _, event, current_transaction)
+
+
+async def handle_command_walletalias(session: AsyncSession, event,
+                                     user: User, data: list, _) -> None:
+    """Handle user pressing a button under category alias creation msg."""
+    if data[1] == "cancel":
+        user.expectation["expect"] = {"type": None, "data": None}
+        await session.commit()
+        await event.respond(_("wallet_alias_creation_cancelled"))
+        return
+
+    elif data[1] == "new":
+        name = user.expectation["expect"]["data"][0]
+        await create_wallet(session, user, _, event, name)
+
+    elif data[1] == "approve":
+        alias_name = user.expectation["expect"]["data"][0]
+        actual_wallet_id = bytes.fromhex(
+                user.expectation["expect"]["data"][1])
+
+        new_alias = WalletAlias(
+            id=uuid.uuid4().bytes,
+            holder=user.id,
+            wallet=actual_wallet_id,
+            alias=alias_name,
+        )
+
+        session.add(new_alias)
+        await session.commit()
+
+        await event.edit(
+            _("wallet_alias_created_successfully").format(alias_name)
+        )
+
+        user.expectation["expect"] = {"type": None, "data": None}
+        await session.commit()
+
+        current_transaction = user.expectation.get("transaction")
+        if current_transaction:
+            # await event.respond(_("transaction_handling_in_process").format(
+            #     " ".join(map(str, current_transaction))
+            # ))
+            await register_transaction(session, user, _, event, current_transaction)
+
+
 def register_callback_handler(client, session_maker):
 
     @client.on(events.CallbackQuery)
@@ -93,6 +203,14 @@ def register_callback_handler(client, session_maker):
                 user.expectation["expect"] = {"type": None, "data": None}
                 await session.commit()
                 await event.respond(_("wallet_creation_cancelled"))
+
+            elif command == "categoryalias":
+                await handle_command_categoryalias(
+                    session, event, user, data, _)
+
+            elif command == "walletalias":
+                await handle_command_walletalias(
+                    session, event, user, data, _)
 
             else:
                 raise Error("Got unexpected callback query command")
