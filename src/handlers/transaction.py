@@ -253,13 +253,16 @@ async def register_transaction(
         wallet.current_sum += amount
         wallet.transaction_count += 1
 
-    session.add(new_transaction, wallet)
-    await session.commit()
-
     category = await session.execute(
         select(Category).where(Category.id == category_id[1])
     )
     category = category.scalar_one_or_none()
+
+    if category:
+        category.transaction_count += 1
+
+    session.add_all([new_transaction, wallet, category])
+    await session.commit()
 
     wallet_total = wallet.init_sum + wallet.current_sum
     await event.reply(_("transaction_registered").format(

@@ -69,6 +69,7 @@ class Category(Base):
     holder = Column(BLOB, ForeignKey("users.id"), nullable=False)
     icon = Column(String(1), nullable=False)
     name = Column(String, nullable=False)
+    transaction_count = Column(BigInteger, nullable=False, default=0)
     comment = Column(Text, nullable=True)
 
     holder_user = relationship("User", back_populates="categories")
