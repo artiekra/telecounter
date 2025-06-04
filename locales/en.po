@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-03 21:13+0300\n"
+"POT-Creation-Date: 2025-06-04 16:27+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -55,22 +55,42 @@ msgstr ""
 msgid "category_created_successfully"
 msgstr "🏷 New category \"`{0}`\" **created succesfully**"
 
-#: src/handlers/callback.py:55 src/handlers/message.py:130
+#: src/handlers/callback.py:55 src/handlers/message.py:158
 msgid "transaction_handling_in_process"
 msgstr "⚙️ Continuing to process your transaction, `{0}`"
 
-#: src/handlers/message.py:38
-msgid "command_start"
+#: src/handlers/message.py:47
+msgid "command_start_no_wallets"
 msgstr ""
 "👋 **Welcome back!**\n"
 "\n"
-"✨ You can start sending transactions right away. Just type things like:\n"
+"✨ You have no wallets yet. Start by writing down your first transaction, "
+"just like this:\n"
 "```-5 food card\n"
 "+25 gift cash```\n"
 "\n"
 "**Need help?** Type /help for tips and commands 🧠"
 
-#: src/handlers/message.py:44
+#: src/handlers/message.py:55
+msgid "command_start_component_wallet_info"
+msgstr "▶️ *{0}* at {1} {2}"
+
+#: src/handlers/message.py:63
+msgid "command_start_component_wallets_not_shown_count"
+msgstr "(and {0} more..)"
+
+#: src/handlers/message.py:66
+msgid "command_start_template"
+msgstr ""
+"👋 **Welcome back!**\n"
+"Waiting for transactions to record :>\n"
+"\n"
+"👛 **Wallet overview:**\n"
+"```{0}```\n"
+"\n"
+"**Need help?** Type /help for tips and commands 🧠"
+
+#: src/handlers/message.py:72
 msgid "command_help"
 msgstr ""
 "💵 **Record transactions** in the following way:\n"
@@ -83,20 +103,20 @@ msgstr ""
 "whenever you use a category or a wallet that wasn't mentioned before, bot "
 "will prompt you to create it! :>"
 
-#: src/handlers/message.py:53
+#: src/handlers/message.py:81
 msgid "unknown_command"
 msgstr ""
 "❌ Sorry, **i don't seem to know** what {0} means..\n"
 "\n"
 "See info about bot usage with /help; if necessary you can get support at {1}"
 
-#: src/handlers/message.py:76
+#: src/handlers/message.py:104
 msgid "got_empty_message_for_transaction"
 msgstr ""
 "🤔 I expected to get info about a new transaction, but this doesn't seem "
 "like a text message"
 
-#: src/handlers/message.py:81
+#: src/handlers/message.py:109
 msgid "info_omitted_for_transaction_error"
 msgstr ""
 "🤔 To **record a transaction**, i need to get at least the amount, category "
@@ -104,11 +124,11 @@ msgstr ""
 "\n"
 "Please re-send the transaction with all the neccesarry info"
 
-#: src/handlers/message.py:93
+#: src/handlers/message.py:121
 msgid "non_numerical_sum_error"
 msgstr "🔢 Transaction amount must be a number"
 
-#: src/handlers/message.py:100
+#: src/handlers/message.py:128
 msgid "no_sign_specified_for_sum"
 msgstr ""
 "📊 Please specify if its income or a spend! Do that by putting a sign in "
@@ -116,33 +136,33 @@ msgstr ""
 "```-5 food card\n"
 "+25 gift cash```"
 
-#: src/handlers/message.py:123
+#: src/handlers/message.py:151
 msgid "wallet_created_successfully"
 msgstr "👛 New wallet \"`{0}`\" **created succesfully**"
 
-#: src/handlers/message.py:142
+#: src/handlers/message.py:170
 msgid "got_empty_message_for_wallet"
 msgstr ""
 "🤔 I expected to get info about a new wallet, but this doesn't seem like a "
 "text message"
 
-#: src/handlers/message.py:151
+#: src/handlers/message.py:179
 msgid "unsupported_currency_error"
 msgstr ""
 "❓ Sorry, I don't seem to know `{0}` currency. Please write **the code of "
 "your currency**, like `USD`, `EUR`, `UAH`, `RUB`, etc.."
 
-#: src/handlers/message.py:159
+#: src/handlers/message.py:187
 msgid "non_numerical_init_sum_error"
 msgstr "🔢 Initial amount for a wallet must be a number"
 
-#: src/handlers/message.py:174
+#: src/handlers/message.py:202
 msgid "got_empty_message_for_category"
 msgstr ""
 "🤔 I expected to get the name for a new category, but this doesn't seem like "
 "a text message"
 
-#: src/handlers/message.py:177
+#: src/handlers/message.py:205
 msgid "mutiple_word_category_name_error"
 msgstr ""
 "🤔 Sorry, category name can't have several words.. You can use underscores "
@@ -175,7 +195,7 @@ msgstr ""
 "```EUR 0\n"
 "USD 50 another_name```"
 
-#: src/handlers/transaction.py:142
+#: src/handlers/transaction.py:145
 msgid "transaction_registered"
 msgstr ""
 "☑️ **Registered transaction**\n"

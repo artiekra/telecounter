@@ -35,7 +35,35 @@ async def send_language_selection(event: events.NewMessage.Event) -> None:
 async def handle_command_start(session: AsyncSession, user: User,
                                _, event) -> None:
     """Handle /start command"""
-    await event.respond(_("command_start"))
+    MAX_WALLETS_DISPLAYED = 3
+
+    wallets = await session.execute(
+        select(Wallet).where(Wallet.holder == user.id)
+    )
+    wallets = wallets.scalars().all()
+    wallets = sorted(wallets, key=lambda x: x.transaction_count, reverse=True)
+
+    if len(wallets) == 0:
+        await event.respond(_("command_start_no_wallets"))
+        return
+
+    wallet_info_raw = []
+    for i in range(MAX_WALLETS_DISPLAYED):
+        if len(wallets) > i:
+            wallet_info_raw.append(wallets[i])
+
+    wallet_info = [_("command_start_component_wallet_info").format(
+        x.name, x.init_sum + x.current_sum, x.currency
+    ) for x in wallet_info_raw]
+
+    wallet_info_str = "\n".join(wallet_info)
+
+    if len(wallets) > MAX_WALLETS_DISPLAYED:
+        value = len(wallets) - MAX_WALLETS_DISPLAYED
+        component = _("command_start_component_wallets_not_shown_count") 
+        wallet_info_str += "\n" + component.format(value)
+
+    await event.respond(_("command_start_template").format(wallet_info_str))
 
 
 async def handle_command_help(session: AsyncSession, user: User,
