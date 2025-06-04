@@ -54,6 +54,7 @@ class Wallet(Base):
     currency = Column(String(8), nullable=False)  # like "USD" or "UAH"
     init_sum = Column(BigInteger, nullable=False, default=0)
     current_sum = Column(BigInteger, nullable=False, default=0)
+    transaction_count = Column(BigInteger, nullable=False, default=0)
     comment = Column(Text, nullable=True)
 
     holder_user = relationship("User", back_populates="wallets")

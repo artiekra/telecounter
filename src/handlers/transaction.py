@@ -131,6 +131,7 @@ async def register_transaction(
 
     if wallet:
         wallet.current_sum += amount
+        wallet.transaction_count += 1
 
     session.add(new_transaction, wallet)
     await session.commit()
