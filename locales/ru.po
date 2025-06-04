@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-04 17:26+0300\n"
+"POT-Creation-Date: 2025-06-04 20:54+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -50,7 +50,7 @@ msgstr ""
 "❌ Категория **не будет создана**, а значит я не могу зарегистрировать твою "
 "транзакцию; отправь её ещё раз и измени категорию при необходимости"
 
-#: src/handlers/callback.py:48
+#: src/handlers/callback.py:48 src/handlers/callback.py:85
 msgid "category_created_successfully"
 msgstr "🏷 Новая категория \"`{0}`\" **успешно создана**"
 
@@ -58,7 +58,31 @@ msgstr "🏷 Новая категория \"`{0}`\" **успешно созда
 msgid "transaction_handling_in_process"
 msgstr "⚙️ Продолжаю обработку твоей транзакции, `{0}`"
 
-#: src/handlers/callback.py:95
+#: src/handlers/callback.py:67
+#, fuzzy
+msgid "category_alias_creation_cancelled"
+msgstr ""
+"❌ Категория **не будет создана**, а значит я не могу зарегистрировать твою "
+"транзакцию; отправь её ещё раз и измени категорию при необходимости"
+
+#: src/handlers/callback.py:114
+#, fuzzy
+msgid "category_alias_created_successfully"
+msgstr "🏷 Новая категория \"`{0}`\" **успешно создана**"
+
+#: src/handlers/callback.py:134
+#, fuzzy
+msgid "wallet_alias_creation_cancelled"
+msgstr ""
+"❌ Кошелек **не будет создан**, а значит я не могу зарегистрировать твою "
+"транзакцию; отправь её ещё раз и измени кошелек при необходимости"
+
+#: src/handlers/callback.py:157
+#, fuzzy
+msgid "wallet_alias_created_successfully"
+msgstr "👛 Новый кошелёк \"`{0}`\" **успешно создан**"
+
+#: src/handlers/callback.py:205
 #, fuzzy
 msgid "wallet_creation_cancelled"
 msgstr ""
@@ -173,22 +197,26 @@ msgstr ""
 "🤔 Прости, название категории не может содержать несколько слов... Можешь "
 "использовать подчёркивания, `вот_так`"
 
-#: src/handlers/transaction.py:71
+#: src/handlers/message.py:214 src/handlers/message.py:219
+msgid "unexpected_msg_on_alias_prompt"
+msgstr ""
+
+#: src/handlers/transaction.py:103
 msgid "create_prompt_approve"
 msgstr "✅ Создать"
 
-#: src/handlers/transaction.py:73 src/handlers/transaction.py:92
+#: src/handlers/transaction.py:105 src/handlers/transaction.py:124
 msgid "create_prompt_cancel"
 msgstr "❌ Отмена"
 
-#: src/handlers/transaction.py:76
+#: src/handlers/transaction.py:108
 msgid "create_new_category_prompt"
 msgstr ""
 "🏷 Создать **новую категорию**, \"`{0}`\"?\n"
 "\n"
 "Если хочешь другое название — просто напиши его прямо сейчас!"
 
-#: src/handlers/transaction.py:95
+#: src/handlers/transaction.py:127
 msgid "create_new_wallet_prompt"
 msgstr ""
 "👛 Создаю **новый кошелёк**, \"`{0}`\"...\n"
@@ -198,7 +226,41 @@ msgstr ""
 "```EUR 0\n"
 "USD 50 другое_название```"
 
-#: src/handlers/transaction.py:150
+#: src/handlers/transaction.py:150 src/handlers/transaction.py:184
+#, fuzzy
+msgid "create_alias_prompt_approve"
+msgstr "✅ Создать"
+
+#: src/handlers/transaction.py:152 src/handlers/transaction.py:186
+#, fuzzy
+msgid "create_alias_prompt_new"
+msgstr "❌ Отмена"
+
+#: src/handlers/transaction.py:154 src/handlers/transaction.py:188
+#, fuzzy
+msgid "create_alias_prompt_cancel"
+msgstr "❌ Отмена"
+
+#: src/handlers/transaction.py:158
+#, fuzzy
+msgid "create_new_category_alias_prompt"
+msgstr ""
+"🏷 Создать **новую категорию**, \"`{0}`\"?\n"
+"\n"
+"Если хочешь другое название — просто напиши его прямо сейчас!"
+
+#: src/handlers/transaction.py:192
+#, fuzzy
+msgid "create_new_wallet_alias_prompt"
+msgstr ""
+"👛 Создаю **новый кошелёк**, \"`{0}`\"...\n"
+"\n"
+"Пришли мне сообщение с валютой, начальной суммой и (по желанию) новым именем "
+"(если не хочешь использовать `{0}`). Вот примеры:\n"
+"```EUR 0\n"
+"USD 50 другое_название```"
+
+#: src/handlers/transaction.py:265
 msgid "transaction_registered"
 msgstr ""
 "☑️ **Транзакция зарегистрирована**\n"

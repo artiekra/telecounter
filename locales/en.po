@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-04 17:26+0300\n"
+"POT-Creation-Date: 2025-06-04 20:54+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -51,7 +51,7 @@ msgstr ""
 "❌ Category **won't be created**, this also means I can't register your "
 "transaction; send the transaction again and change the category if neccesarry"
 
-#: src/handlers/callback.py:48
+#: src/handlers/callback.py:48 src/handlers/callback.py:85
 msgid "category_created_successfully"
 msgstr "🏷 New category \"`{0}`\" **created succesfully**"
 
@@ -59,7 +59,27 @@ msgstr "🏷 New category \"`{0}`\" **created succesfully**"
 msgid "transaction_handling_in_process"
 msgstr "⚙️ Continuing to process your transaction, `{0}`"
 
-#: src/handlers/callback.py:95
+#: src/handlers/callback.py:67
+msgid "category_alias_creation_cancelled"
+msgstr ""
+"❌ **Cancelled**. Send the transaction again and change the category if "
+"neccesarry"
+
+#: src/handlers/callback.py:114
+msgid "category_alias_created_successfully"
+msgstr "__Thanks, I won't ask this again__"
+
+#: src/handlers/callback.py:134
+msgid "wallet_alias_creation_cancelled"
+msgstr ""
+"❌ **Cancelled**. Send the transaction again and change the wallet if "
+"neccesarry"
+
+#: src/handlers/callback.py:157
+msgid "wallet_alias_created_successfully"
+msgstr "__Thanks, I won't ask this again__"
+
+#: src/handlers/callback.py:205
 msgid "wallet_creation_cancelled"
 msgstr ""
 "❌ Wallet **won't be created**, this also means I can't register your "
@@ -174,15 +194,21 @@ msgstr ""
 "🤔 Sorry, category name can't have several words.. You can use underscores "
 "if you wish, `just_like_this`"
 
-#: src/handlers/transaction.py:71
+#: src/handlers/message.py:214 src/handlers/message.py:219
+msgid "unexpected_msg_on_alias_prompt"
+msgstr ""
+"Please **choose** one of the options above! Or go back to the main menu by "
+"writing /start"
+
+#: src/handlers/transaction.py:103
 msgid "create_prompt_approve"
 msgstr "✅ Create"
 
-#: src/handlers/transaction.py:73 src/handlers/transaction.py:92
+#: src/handlers/transaction.py:105 src/handlers/transaction.py:124
 msgid "create_prompt_cancel"
 msgstr "❌ Cancel"
 
-#: src/handlers/transaction.py:76
+#: src/handlers/transaction.py:108
 msgid "create_new_category_prompt"
 msgstr ""
 "🏷 Create **new category**, \"`{0}`\"?\n"
@@ -190,7 +216,7 @@ msgstr ""
 "If you want to create a category under a **different name**, just send me "
 "the updated name right now!"
 
-#: src/handlers/transaction.py:95
+#: src/handlers/transaction.py:127
 msgid "create_new_wallet_prompt"
 msgstr ""
 "👛 Creating **new wallet**, \"`{0}`\"...\n"
@@ -201,7 +227,35 @@ msgstr ""
 "```EUR 0\n"
 "USD 50 another_name```"
 
-#: src/handlers/transaction.py:150
+#: src/handlers/transaction.py:150 src/handlers/transaction.py:184
+msgid "create_alias_prompt_approve"
+msgstr "✅"
+
+#: src/handlers/transaction.py:152 src/handlers/transaction.py:186
+msgid "create_alias_prompt_new"
+msgstr "➕"
+
+#: src/handlers/transaction.py:154 src/handlers/transaction.py:188
+msgid "create_alias_prompt_cancel"
+msgstr "❌"
+
+#: src/handlers/transaction.py:158
+msgid "create_new_category_alias_prompt"
+msgstr ""
+"🧠 **I think** you meant \"{1}\", not \"{0}\"\n"
+"\n"
+"Please choose what to do, (✅) use \"{1}\" or (➕) create a new category {0} "
+"or (❌) cancel this transaction altogether."
+
+#: src/handlers/transaction.py:192
+msgid "create_new_wallet_alias_prompt"
+msgstr ""
+"🧠 **I think** you meant \"{1}\", not \"{0}\"\n"
+"\n"
+"Please choose what to do, (✅) use \"{1}\" or (➕) create a new wallet {0} "
+"or (❌) cancel this transaction altogether."
+
+#: src/handlers/transaction.py:265
 msgid "transaction_registered"
 msgstr ""
 "☑️ **Registered transaction**\n"
