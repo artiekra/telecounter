@@ -139,7 +139,9 @@ async def register_transaction(
         select(Category).where(Category.id == category_id)
     )
     category = category.scalar_one_or_none()
+
+    wallet_total = wallet.init_sum + wallet.current_sum
     await event.reply(_("transaction_registered").format(
         *map(str, [amount, category.name, wallet.name,
-                   wallet.current_sum, wallet.currency])
+                   wallet_total, wallet.currency])
     ))
