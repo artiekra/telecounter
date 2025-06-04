@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-04 20:54+0300\n"
+"POT-Creation-Date: 2025-06-04 21:32+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -18,15 +18,15 @@ msgstr ""
 "Generated-By: Babel 2.17.0\n"
 "X-Generator: Poedit 3.6\n"
 
-#: src/handlers/callback.py:21
+#: src/handlers/callback.py:22
 msgid "language_set_popup"
 msgstr "Мову встановлено на українську"
 
-#: src/handlers/callback.py:22
+#: src/handlers/callback.py:23
 msgid "language_set_message"
 msgstr "🇺🇦 Мову успішно змінено!"
 
-#: src/handlers/callback.py:23
+#: src/handlers/callback.py:24
 msgid "tutorial"
 msgstr ""
 "👋 **Привіт!** І ласкаво просимо до бота :>\n"
@@ -43,51 +43,51 @@ msgstr ""
 "вказати валюту і створить його для подальшого використання; те саме з "
 "категоріями витрат/доходів!"
 
-#: src/handlers/callback.py:32
+#: src/handlers/callback.py:33
 msgid "category_creation_cancelled"
 msgstr ""
 "❌ Категорію **не буде створено**, а отже я не можу зареєструвати твою "
 "транзакцію; надішли її ще раз і за потреби зміни категорію"
 
-#: src/handlers/callback.py:48 src/handlers/callback.py:85
+#: src/handlers/callback.py:49 src/handlers/callback.py:86
 msgid "category_created_successfully"
 msgstr "🏷 Нова категорія \"`{0}`\" **успішно створена**"
 
-#: src/handlers/callback.py:55 src/handlers/message.py:158
+#: src/handlers/callback.py:56 src/handlers/message.py:181
 msgid "transaction_handling_in_process"
 msgstr "⚙️ Обробляю твою транзакцію, `{0}`"
 
-#: src/handlers/callback.py:67
+#: src/handlers/callback.py:68
 #, fuzzy
 msgid "category_alias_creation_cancelled"
 msgstr ""
 "❌ Категорію **не буде створено**, а отже я не можу зареєструвати твою "
 "транзакцію; надішли її ще раз і за потреби зміни категорію"
 
-#: src/handlers/callback.py:114
+#: src/handlers/callback.py:115
 #, fuzzy
 msgid "category_alias_created_successfully"
 msgstr "🏷 Нова категорія \"`{0}`\" **успішно створена**"
 
-#: src/handlers/callback.py:134
+#: src/handlers/callback.py:135
 #, fuzzy
 msgid "wallet_alias_creation_cancelled"
 msgstr ""
 "❌ Гаманець **не буде створено**, а отже я не можу зареєструвати твою "
 "транзакцію; надішли її ще раз і за потреби зміни гаманець"
 
-#: src/handlers/callback.py:157
+#: src/handlers/callback.py:158
 #, fuzzy
 msgid "wallet_alias_created_successfully"
 msgstr "👛 Новий гаманець \"`{0}`\" **успішно створено**"
 
-#: src/handlers/callback.py:205
+#: src/handlers/callback.py:206
 msgid "wallet_creation_cancelled"
 msgstr ""
 "❌ Гаманець **не буде створено**, а отже я не можу зареєструвати твою "
 "транзакцію; надішли її ще раз і за потреби зміни гаманець"
 
-#: src/handlers/message.py:47
+#: src/handlers/message.py:49
 msgid "command_start_no_wallets"
 msgstr ""
 "👋 **Ласкаво просимо назад!**\n"
@@ -99,15 +99,41 @@ msgstr ""
 "\n"
 "**Потрібна допомога?** Напиши /help для порад і команд 🧠"
 
-#: src/handlers/message.py:55
+#: src/handlers/message.py:57
 msgid "command_start_component_wallet_info"
 msgstr "▶️ *{0}* має {1} {2}"
 
-#: src/handlers/message.py:63
+#: src/handlers/message.py:65
 msgid "command_start_component_wallets_not_shown_count"
 msgstr "(та ще {0}..)"
 
-#: src/handlers/message.py:66
+#: src/handlers/message.py:69
+#, fuzzy
+msgid "command_start_button_wallets"
+msgstr ""
+"👋 **Ласкаво просимо назад!**\n"
+"\n"
+"✨ У тебе ще немає гаманців. Почни, написавши першу транзацію, для цього "
+"напиши щось на кшталт:\n"
+"```-75 їжа картка\n"
+"+1500 подарунок готівка```\n"
+"\n"
+"**Потрібна допомога?** Напиши /help для порад і команд 🧠"
+
+#: src/handlers/message.py:71
+#, fuzzy
+msgid "command_start_button_categories"
+msgstr ""
+"👋 **Ласкаво просимо назад!**\n"
+"\n"
+"✨ У тебе ще немає гаманців. Почни, написавши першу транзацію, для цього "
+"напиши щось на кшталт:\n"
+"```-75 їжа картка\n"
+"+1500 подарунок готівка```\n"
+"\n"
+"**Потрібна допомога?** Напиши /help для порад і команд 🧠"
+
+#: src/handlers/message.py:75
 msgid "command_start_template"
 msgstr ""
 "👋 **Ласкаво просимо назад!**\n"
@@ -118,7 +144,7 @@ msgstr ""
 "\n"
 "**Потрібна допомога?** Напиши /help для порад і команд 🧠"
 
-#: src/handlers/message.py:72
+#: src/handlers/message.py:82
 msgid "command_help"
 msgstr ""
 "💵 **Записуй транзакції** у такому форматі:\n"
@@ -131,20 +157,20 @@ msgstr ""
 "якщо ти використаєш нову категорію чи гаманець, бот запропонує створити "
 "їх! :>"
 
-#: src/handlers/message.py:81
+#: src/handlers/message.py:103
 msgid "unknown_command"
 msgstr ""
 "❌ Вибач, **я не знаю**, що таке {0}..\n"
 "\n"
 "Подивись інструкції з /help; якщо потрібно — звернись за підтримкою: {1}"
 
-#: src/handlers/message.py:104
+#: src/handlers/message.py:127
 msgid "got_empty_message_for_transaction"
 msgstr ""
 "🤔 Я очікував отримати інформацію про транзакцію, але схоже, це не текстове "
 "повідомлення"
 
-#: src/handlers/message.py:109
+#: src/handlers/message.py:132
 msgid "info_omitted_for_transaction_error"
 msgstr ""
 "🤔 Щоб **записати транзакцію**, мені потрібно щонайменше отримати суму, "
@@ -152,50 +178,50 @@ msgstr ""
 "\n"
 "Будь ласка, надішли транзакцію з усією необхідною інформацією"
 
-#: src/handlers/message.py:121
+#: src/handlers/message.py:144
 msgid "non_numerical_sum_error"
 msgstr "🔢 Сума транзакції має бути числом"
 
-#: src/handlers/message.py:128
+#: src/handlers/message.py:151
 msgid "no_sign_specified_for_sum"
 msgstr ""
 "📊 Вкажи, це дохід чи витрата! Для цього постав знак перед сумою:\n"
 "```-75 їжа картка\n"
 "+1500 подарунок готівка```"
 
-#: src/handlers/message.py:151
+#: src/handlers/message.py:174
 msgid "wallet_created_successfully"
 msgstr "👛 Новий гаманець \"`{0}`\" **успішно створено**"
 
-#: src/handlers/message.py:170
+#: src/handlers/message.py:193
 msgid "got_empty_message_for_wallet"
 msgstr ""
 "🤔 Я очікував отримати інформацію про новий гаманець, але схоже, це не "
 "текстове повідомлення"
 
-#: src/handlers/message.py:179
+#: src/handlers/message.py:202
 msgid "unsupported_currency_error"
 msgstr ""
 "❓ Вибач, я не знаю валюту `{0}`. Будь ласка, вкажи **код валюти**, "
 "наприклад `UAH`, `USD`, `EUR`, тощо.."
 
-#: src/handlers/message.py:187
+#: src/handlers/message.py:210
 msgid "non_numerical_init_sum_error"
 msgstr "🔢 Початкова сума у гаманці має бути числом"
 
-#: src/handlers/message.py:202
+#: src/handlers/message.py:225
 msgid "got_empty_message_for_category"
 msgstr ""
 "🤔 Я очікував отримати назву нової категорії, але схоже, це не текстове "
 "повідомлення"
 
-#: src/handlers/message.py:205
+#: src/handlers/message.py:228
 msgid "mutiple_word_category_name_error"
 msgstr ""
 "🤔 Вибач, назва категорії не може містити кілька слів.. Можеш використати "
 "підкреслення, `ось_таким_чином`"
 
-#: src/handlers/message.py:214 src/handlers/message.py:219
+#: src/handlers/message.py:237 src/handlers/message.py:242
 msgid "unexpected_msg_on_alias_prompt"
 msgstr ""
 

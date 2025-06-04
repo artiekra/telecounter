@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database.models import User, Category, CategoryAlias, WalletAlias
 from translate import setup_translations
 from handlers.transaction import register_transaction, create_wallet
+from handlers.message import COMMANDS
 
 
 async def update_user_language(event, new_language: str,
@@ -212,5 +213,8 @@ def register_callback_handler(client, session_maker):
                 await handle_command_walletalias(
                     session, event, user, data, _)
 
+            elif command == "menu":
+                await COMMANDS.get(data[1])(session, user, _, event)
+
             else:
-                raise Error("Got unexpected callback query command")
+                raise Exception("Got unexpected callback query command")

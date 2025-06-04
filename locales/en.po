@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-04 20:54+0300\n"
+"POT-Creation-Date: 2025-06-04 21:32+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -19,15 +19,15 @@ msgstr ""
 "Generated-By: Babel 2.17.0\n"
 "X-Generator: Poedit 3.6\n"
 
-#: src/handlers/callback.py:21
+#: src/handlers/callback.py:22
 msgid "language_set_popup"
 msgstr "Language set to English"
 
-#: src/handlers/callback.py:22
+#: src/handlers/callback.py:23
 msgid "language_set_message"
 msgstr "🇬🇧  Language set succesfully!"
 
-#: src/handlers/callback.py:23
+#: src/handlers/callback.py:24
 msgid "tutorial"
 msgstr ""
 "👋 **Hey there!** And welcome to the bot :>\n"
@@ -45,47 +45,47 @@ msgstr ""
 "will prompt you for currency and create it for further use; same for the "
 "income/spend categories!"
 
-#: src/handlers/callback.py:32
+#: src/handlers/callback.py:33
 msgid "category_creation_cancelled"
 msgstr ""
 "❌ Category **won't be created**, this also means I can't register your "
 "transaction; send the transaction again and change the category if neccesarry"
 
-#: src/handlers/callback.py:48 src/handlers/callback.py:85
+#: src/handlers/callback.py:49 src/handlers/callback.py:86
 msgid "category_created_successfully"
 msgstr "🏷 New category \"`{0}`\" **created succesfully**"
 
-#: src/handlers/callback.py:55 src/handlers/message.py:158
+#: src/handlers/callback.py:56 src/handlers/message.py:181
 msgid "transaction_handling_in_process"
 msgstr "⚙️ Continuing to process your transaction, `{0}`"
 
-#: src/handlers/callback.py:67
+#: src/handlers/callback.py:68
 msgid "category_alias_creation_cancelled"
 msgstr ""
 "❌ **Cancelled**. Send the transaction again and change the category if "
 "neccesarry"
 
-#: src/handlers/callback.py:114
+#: src/handlers/callback.py:115
 msgid "category_alias_created_successfully"
 msgstr "__Thanks, I won't ask this again__"
 
-#: src/handlers/callback.py:134
+#: src/handlers/callback.py:135
 msgid "wallet_alias_creation_cancelled"
 msgstr ""
 "❌ **Cancelled**. Send the transaction again and change the wallet if "
 "neccesarry"
 
-#: src/handlers/callback.py:157
+#: src/handlers/callback.py:158
 msgid "wallet_alias_created_successfully"
 msgstr "__Thanks, I won't ask this again__"
 
-#: src/handlers/callback.py:205
+#: src/handlers/callback.py:206
 msgid "wallet_creation_cancelled"
 msgstr ""
 "❌ Wallet **won't be created**, this also means I can't register your "
 "transaction; send the transaction again and change the wallet if neccesarry"
 
-#: src/handlers/message.py:47
+#: src/handlers/message.py:49
 msgid "command_start_no_wallets"
 msgstr ""
 "👋 **Welcome back!**\n"
@@ -97,15 +97,23 @@ msgstr ""
 "\n"
 "**Need help?** Type /help for tips and commands 🧠"
 
-#: src/handlers/message.py:55
+#: src/handlers/message.py:57
 msgid "command_start_component_wallet_info"
 msgstr "▶️ *{0}* at {1} {2}"
 
-#: src/handlers/message.py:63
+#: src/handlers/message.py:65
 msgid "command_start_component_wallets_not_shown_count"
 msgstr "(and {0} more..)"
 
-#: src/handlers/message.py:66
+#: src/handlers/message.py:69
+msgid "command_start_button_wallets"
+msgstr "👛 Wallets"
+
+#: src/handlers/message.py:71
+msgid "command_start_button_categories"
+msgstr "🏷 Categories"
+
+#: src/handlers/message.py:75
 msgid "command_start_template"
 msgstr ""
 "👋 **Welcome back!**\n"
@@ -116,7 +124,7 @@ msgstr ""
 "\n"
 "**Need help?** Type /help for tips and commands 🧠"
 
-#: src/handlers/message.py:72
+#: src/handlers/message.py:82
 msgid "command_help"
 msgstr ""
 "💵 **Record transactions** in the following way:\n"
@@ -129,20 +137,20 @@ msgstr ""
 "whenever you use a category or a wallet that wasn't mentioned before, bot "
 "will prompt you to create it! :>"
 
-#: src/handlers/message.py:81
+#: src/handlers/message.py:103
 msgid "unknown_command"
 msgstr ""
 "❌ Sorry, **i don't seem to know** what {0} means..\n"
 "\n"
 "See info about bot usage with /help; if necessary you can get support at {1}"
 
-#: src/handlers/message.py:104
+#: src/handlers/message.py:127
 msgid "got_empty_message_for_transaction"
 msgstr ""
 "🤔 I expected to get info about a new transaction, but this doesn't seem "
 "like a text message"
 
-#: src/handlers/message.py:109
+#: src/handlers/message.py:132
 msgid "info_omitted_for_transaction_error"
 msgstr ""
 "🤔 To **record a transaction**, i need to get at least the amount, category "
@@ -150,11 +158,11 @@ msgstr ""
 "\n"
 "Please re-send the transaction with all the neccesarry info"
 
-#: src/handlers/message.py:121
+#: src/handlers/message.py:144
 msgid "non_numerical_sum_error"
 msgstr "🔢 Transaction amount must be a number"
 
-#: src/handlers/message.py:128
+#: src/handlers/message.py:151
 msgid "no_sign_specified_for_sum"
 msgstr ""
 "📊 Please specify if its income or a spend! Do that by putting a sign in "
@@ -162,39 +170,39 @@ msgstr ""
 "```-5 food card\n"
 "+25 gift cash```"
 
-#: src/handlers/message.py:151
+#: src/handlers/message.py:174
 msgid "wallet_created_successfully"
 msgstr "👛 New wallet \"`{0}`\" **created succesfully**"
 
-#: src/handlers/message.py:170
+#: src/handlers/message.py:193
 msgid "got_empty_message_for_wallet"
 msgstr ""
 "🤔 I expected to get info about a new wallet, but this doesn't seem like a "
 "text message"
 
-#: src/handlers/message.py:179
+#: src/handlers/message.py:202
 msgid "unsupported_currency_error"
 msgstr ""
 "❓ Sorry, I don't seem to know `{0}` currency. Please write **the code of "
 "your currency**, like `USD`, `EUR`, `UAH`, `RUB`, etc.."
 
-#: src/handlers/message.py:187
+#: src/handlers/message.py:210
 msgid "non_numerical_init_sum_error"
 msgstr "🔢 Initial amount for a wallet must be a number"
 
-#: src/handlers/message.py:202
+#: src/handlers/message.py:225
 msgid "got_empty_message_for_category"
 msgstr ""
 "🤔 I expected to get the name for a new category, but this doesn't seem like "
 "a text message"
 
-#: src/handlers/message.py:205
+#: src/handlers/message.py:228
 msgid "mutiple_word_category_name_error"
 msgstr ""
 "🤔 Sorry, category name can't have several words.. You can use underscores "
 "if you wish, `just_like_this`"
 
-#: src/handlers/message.py:214 src/handlers/message.py:219
+#: src/handlers/message.py:237 src/handlers/message.py:242
 msgid "unexpected_msg_on_alias_prompt"
 msgstr ""
 "Please **choose** one of the options above! Or go back to the main menu by "
@@ -242,18 +250,18 @@ msgstr "❌"
 #: src/handlers/transaction.py:158
 msgid "create_new_category_alias_prompt"
 msgstr ""
-"🧠 **I think** you meant \"{1}\", not \"{0}\"\n"
+"🧠 **I think** you meant \"`{1}`\", not \"`{0}`\"\n"
 "\n"
-"Please choose what to do, (✅) use \"{1}\" or (➕) create a new category {0} "
-"or (❌) cancel this transaction altogether."
+"Please choose what to do, (✅) use \"`{1}`\" or (➕) create a new category "
+"\"`{0}`\" or (❌) cancel this transaction altogether."
 
 #: src/handlers/transaction.py:192
 msgid "create_new_wallet_alias_prompt"
 msgstr ""
-"🧠 **I think** you meant \"{1}\", not \"{0}\"\n"
+"🧠 **I think** you meant \"`{1}`\", not \"`{0}`\"\n"
 "\n"
-"Please choose what to do, (✅) use \"{1}\" or (➕) create a new wallet {0} "
-"or (❌) cancel this transaction altogether."
+"Please choose what to do, (✅) use \"`{1}`\" or (➕) create a new wallet "
+"\"`{0}`\" or (❌) cancel this transaction altogether."
 
 #: src/handlers/transaction.py:265
 msgid "transaction_registered"

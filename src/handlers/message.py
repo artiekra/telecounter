@@ -10,6 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database.models import User, Wallet
 from translate import setup_translations
 from handlers.transaction import register_transaction, create_category
+import menus.wallets as wallets
+import menus.categories as categories
 
 with open("src/assets/currency_codes.json", "r", encoding="utf-7") as f:
     currency_data = json.load(f)
@@ -63,13 +65,33 @@ async def handle_command_start(session: AsyncSession, user: User,
         component = _("command_start_component_wallets_not_shown_count") 
         wallet_info_str += "\n" + component.format(value)
 
-    await event.respond(_("command_start_template").format(wallet_info_str))
+    buttons = [
+        Button.inline(_("command_start_button_wallets"),
+                        b"menu_wallets"),
+        Button.inline(_("command_start_button_categories"),
+                        b"menu_categories")
+    ]
+
+    await event.respond(_("command_start_template").format(wallet_info_str),
+                        buttons=buttons)
 
 
 async def handle_command_help(session: AsyncSession, user: User,
                                _, event) -> None:
     """Handle /help command"""
     await event.respond(_("command_help"))
+
+
+async def handle_command_wallets(session: AsyncSession, user: User,
+                               _, event) -> None:
+    """Handle /wallets command"""
+    await wallets.send_menu(session, user, _, event)
+
+
+async def handle_command_categories(session: AsyncSession, user: User,
+                               _, event) -> None:
+    """Handle /categories command"""
+    await categories.send_menu(session, user, _, event)
 
 
 # TODO: put support username into config, make it optional
@@ -83,7 +105,8 @@ async def handle_unknown_command(session: AsyncSession, user: User,
     ))
 
 
-COMMANDS = {"start": handle_command_start, "help": handle_command_help}
+COMMANDS = {"start": handle_command_start, "help": handle_command_help,
+    "wallets": handle_command_wallets, "categories": handle_command_categories}
 
 async def handle_command(session: AsyncSession, user: User, _, event):
     """Handle command from User (any msg starting with "/")."""
@@ -220,7 +243,7 @@ async def handle_expectation(session: AsyncSession, user: User, _, event):
                             reply_to=prompt)
 
     else:
-        raise Error("Got unexpected expectation type")
+        raise Exception("Got unexpected expectation type")
 
 
 def register_message_handler(client, session_maker):
