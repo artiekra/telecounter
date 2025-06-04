@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-04 16:27+0300\n"
+"POT-Creation-Date: 2025-06-04 17:26+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -58,6 +58,12 @@ msgstr "🏷 New category \"`{0}`\" **created succesfully**"
 #: src/handlers/callback.py:55 src/handlers/message.py:158
 msgid "transaction_handling_in_process"
 msgstr "⚙️ Continuing to process your transaction, `{0}`"
+
+#: src/handlers/callback.py:95
+msgid "wallet_creation_cancelled"
+msgstr ""
+"❌ Wallet **won't be created**, this also means I can't register your "
+"transaction; send the transaction again and change the wallet if neccesarry"
 
 #: src/handlers/message.py:47
 msgid "command_start_no_wallets"
@@ -169,11 +175,11 @@ msgstr ""
 "if you wish, `just_like_this`"
 
 #: src/handlers/transaction.py:71
-msgid "create_new_category_prompt_approve"
+msgid "create_prompt_approve"
 msgstr "✅ Create"
 
-#: src/handlers/transaction.py:73
-msgid "create_new_category_prompt_cancel"
+#: src/handlers/transaction.py:73 src/handlers/transaction.py:92
+msgid "create_prompt_cancel"
 msgstr "❌ Cancel"
 
 #: src/handlers/transaction.py:76
@@ -184,7 +190,7 @@ msgstr ""
 "If you want to create a category under a **different name**, just send me "
 "the updated name right now!"
 
-#: src/handlers/transaction.py:91
+#: src/handlers/transaction.py:95
 msgid "create_new_wallet_prompt"
 msgstr ""
 "👛 Creating **new wallet**, \"`{0}`\"...\n"
@@ -195,7 +201,7 @@ msgstr ""
 "```EUR 0\n"
 "USD 50 another_name```"
 
-#: src/handlers/transaction.py:145
+#: src/handlers/transaction.py:150
 msgid "transaction_registered"
 msgstr ""
 "☑️ **Registered transaction**\n"

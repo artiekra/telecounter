@@ -14,7 +14,7 @@ async def find_category_by_name(
     session: AsyncSession,
     user: User,
     input_name: str,
-    threshold: int = 80
+    threshold: int = 90
 ) -> Optional[bytes]:
     """Fuzzy search for a category UUID for a given user by name."""
     result = await session.execute(
@@ -37,7 +37,7 @@ async def find_wallet_by_name(
     session: AsyncSession,
     user: User,
     input_name: str,
-    threshold: int = 80
+    threshold: int = 90
 ) -> Optional[bytes]:
     """Fuzzy search for a wallet UUID for a given user by name."""
     result = await session.execute(
@@ -68,9 +68,9 @@ async def create_category(
     await session.commit()
 
     buttons = [
-        Button.inline(_("create_new_category_prompt_approve"),
+        Button.inline(_("create_prompt_approve"),
                       b"category_approve"),
-        Button.inline(_("create_new_category_prompt_cancel"),
+        Button.inline(_("create_prompt_cancel"),
                       b"category_cancel")
     ]
     await event.respond(_("create_new_category_prompt").format(name),
@@ -88,7 +88,12 @@ async def create_wallet(
     user.expectation["expect"] = {"type": "new_wallet", "data": name}
     await session.commit()
 
-    await event.respond(_("create_new_wallet_prompt").format(name))
+    buttons = [
+        Button.inline(_("create_prompt_cancel"),
+                      b"wallet_cancel")
+    ]
+    await event.respond(_("create_new_wallet_prompt").format(name),
+                        buttons=buttons)
 
 
 async def register_transaction(

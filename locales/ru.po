@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-04 16:27+0300\n"
+"POT-Creation-Date: 2025-06-04 17:26+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -57,6 +57,13 @@ msgstr "🏷 Новая категория \"`{0}`\" **успешно созда
 #: src/handlers/callback.py:55 src/handlers/message.py:158
 msgid "transaction_handling_in_process"
 msgstr "⚙️ Продолжаю обработку твоей транзакции, `{0}`"
+
+#: src/handlers/callback.py:95
+#, fuzzy
+msgid "wallet_creation_cancelled"
+msgstr ""
+"❌ Кошелек **не будет создан**, а значит я не могу зарегистрировать твою "
+"транзакцию; отправь её ещё раз и измени кошелек при необходимости"
 
 #: src/handlers/message.py:47
 #, fuzzy
@@ -167,11 +174,11 @@ msgstr ""
 "использовать подчёркивания, `вот_так`"
 
 #: src/handlers/transaction.py:71
-msgid "create_new_category_prompt_approve"
+msgid "create_prompt_approve"
 msgstr "✅ Создать"
 
-#: src/handlers/transaction.py:73
-msgid "create_new_category_prompt_cancel"
+#: src/handlers/transaction.py:73 src/handlers/transaction.py:92
+msgid "create_prompt_cancel"
 msgstr "❌ Отмена"
 
 #: src/handlers/transaction.py:76
@@ -181,7 +188,7 @@ msgstr ""
 "\n"
 "Если хочешь другое название — просто напиши его прямо сейчас!"
 
-#: src/handlers/transaction.py:91
+#: src/handlers/transaction.py:95
 msgid "create_new_wallet_prompt"
 msgstr ""
 "👛 Создаю **новый кошелёк**, \"`{0}`\"...\n"
@@ -191,7 +198,7 @@ msgstr ""
 "```EUR 0\n"
 "USD 50 другое_название```"
 
-#: src/handlers/transaction.py:145
+#: src/handlers/transaction.py:150
 msgid "transaction_registered"
 msgstr ""
 "☑️ **Транзакция зарегистрирована**\n"

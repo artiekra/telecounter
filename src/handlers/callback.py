@@ -89,5 +89,10 @@ def register_callback_handler(client, session_maker):
             elif command == "category":
                 await handle_command_category(session, event, user, data, _)
 
+            elif command == "wallet":
+                user.expectation["expect"] = {"type": None, "data": None}
+                await session.commit()
+                await event.respond(_("wallet_creation_cancelled"))
+
             else:
                 raise Error("Got unexpected callback query command")
