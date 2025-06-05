@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-04 21:32+0300\n"
+"POT-Creation-Date: 2025-06-04 22:21+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -263,7 +263,7 @@ msgstr ""
 "Please choose what to do, (✅) use \"`{1}`\" or (➕) create a new wallet "
 "\"`{0}`\" or (❌) cancel this transaction altogether."
 
-#: src/handlers/transaction.py:265
+#: src/handlers/transaction.py:268
 msgid "transaction_registered"
 msgstr ""
 "☑️ **Registered transaction**\n"
@@ -271,3 +271,25 @@ msgstr ""
 "Category: {1}\n"
 "Using wallet: {2}```\n"
 "After this you have `{3}{4}` in your wallet (`{2}`)"
+
+#: src/menus/categories.py:18
+msgid "menu_categories_no_categories"
+msgstr ""
+"🏷 You have no categories yet. Start by creating a transaction!\n"
+"\n"
+"**Lost?** Type /help for info on usage 🧠"
+
+#: src/menus/categories.py:21
+msgid "menu_categories_component_category_info"
+msgstr ""
+"- `{0}`; [👁](https://t.me/telecounterbot?start=cv_{1})[✏️](https://t.me/"
+"telecounterbot?start=ce_{1})[❌](https://t.me/telecounterbot?start=cd_{1})"
+
+#: src/menus/categories.py:27
+msgid "menu_categories_template"
+msgstr ""
+"🏷 **Category overview**\n"
+"\n"
+"{0}\n"
+"\n"
+"__In total you have {1} categories__"

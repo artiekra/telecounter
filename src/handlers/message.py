@@ -1,6 +1,7 @@
 import time
 import uuid
 import json
+import re
 
 from telethon import events
 from telethon.tl.custom import Button
@@ -33,10 +34,9 @@ async def send_language_selection(event: events.NewMessage.Event) -> None:
     )
 
 
-# TODO: on /start, send some info about balances, some overview..
-async def handle_command_start(session: AsyncSession, user: User,
-                               _, event) -> None:
-    """Handle /start command"""
+async def send_start_menu(session: AsyncSession, user: User,
+                          _, event) -> None:
+    """Show start menu to the user."""
     MAX_WALLETS_DISPLAYED = 3
 
     wallets = await session.execute(
@@ -74,6 +74,41 @@ async def handle_command_start(session: AsyncSession, user: User,
 
     await event.respond(_("command_start_template").format(wallet_info_str),
                         buttons=buttons)
+
+
+async def handle_data(session: AsyncSession, user: User,
+                      _, event, prefix: str, uuid_hex: str) -> None:
+    """Handle /start command with valid data payload"""
+
+    uuid = bytes.fromhex(uuid_hex)
+
+    match prefix:
+        case "ce":
+            await categories.edit_menu(session, user, _, event, uuid)
+        case "cv":
+            await categories.view_menu(session, user, _, event, uuid)
+        case "cd":
+            await categories.delete_menu(session, user, _, event, uuid)
+        case _:
+            await send_start_menu(session, user, _, event)
+
+
+async def handle_command_start(session: AsyncSession, user: User,
+                               _, event) -> None:
+    """Handle /start command"""
+    DATA_PATTERN = r"^([a-zA-Z]{2})_([a-fA-F0-9]{32})$"
+
+    parts = event.raw_text.split()
+    if len(parts) > 1:
+        data = parts[1]
+        match = re.match(DATA_PATTERN, data)
+        if match:
+            prefix = match.group(1)
+            uuid_hex = match.group(2)
+            await handle_data(session, user, _, event, prefix, uuid_hex)
+            return
+
+    await send_start_menu(session, user, _, event)
 
 
 async def handle_command_help(session: AsyncSession, user: User,

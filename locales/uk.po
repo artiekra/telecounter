@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-04 21:32+0300\n"
+"POT-Creation-Date: 2025-06-04 22:21+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -284,7 +284,7 @@ msgstr ""
 "```EUR 0\n"
 "USD 50 інша_назва```"
 
-#: src/handlers/transaction.py:265
+#: src/handlers/transaction.py:268
 msgid "transaction_registered"
 msgstr ""
 "☑️ **Транзакцію зареєстровано**\n"
@@ -292,3 +292,33 @@ msgstr ""
 "Категорія: {1}\n"
 "Гаманець: {2}```\n"
 "Після цього у тебе в гаманці `{2}` залишилось `{3}{4}`"
+
+#: src/menus/categories.py:18
+#, fuzzy
+msgid "menu_categories_no_categories"
+msgstr ""
+"👋 **Ласкаво просимо назад!**\n"
+"\n"
+"✨ У тебе ще немає гаманців. Почни, написавши першу транзацію, для цього "
+"напиши щось на кшталт:\n"
+"```-75 їжа картка\n"
+"+1500 подарунок готівка```\n"
+"\n"
+"**Потрібна допомога?** Напиши /help для порад і команд 🧠"
+
+#: src/menus/categories.py:21
+#, fuzzy
+msgid "menu_categories_component_category_info"
+msgstr "▶️ *{0}* має {1} {2}"
+
+#: src/menus/categories.py:27
+#, fuzzy
+msgid "menu_categories_template"
+msgstr ""
+"👋 **Ласкаво просимо назад!**\n"
+"Чекаю на транзакції :>\n"
+"\n"
+"👛 **Огляд гаманців:**\n"
+"```{0}```\n"
+"\n"
+"**Потрібна допомога?** Напиши /help для порад і команд 🧠"
