@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-05 11:10+0300\n"
+"POT-Creation-Date: 2025-06-05 11:28+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -209,19 +209,31 @@ msgstr ""
 msgid "non_numerical_init_sum_error"
 msgstr "🔢 Начальная сумма в кошельке должна быть числом"
 
-#: src/handlers/message.py:260
+#: src/handlers/message.py:256
+#, fuzzy
+msgid "non_unique_wallet_name_error"
+msgstr "🔢 Сумма транзакции должна быть числом"
+
+#: src/handlers/message.py:270
 msgid "got_empty_message_for_category"
 msgstr ""
 "🤔 Я ожидал получить название новой категории, но, похоже, это не текстовое "
 "сообщение"
 
-#: src/handlers/message.py:263
+#: src/handlers/message.py:273
 msgid "mutiple_word_category_name_error"
 msgstr ""
 "🤔 Прости, название категории не может содержать несколько слов... Можешь "
 "использовать подчёркивания, `вот_так`"
 
-#: src/handlers/message.py:272 src/handlers/message.py:277
+#: src/handlers/message.py:284
+#, fuzzy
+msgid "non_unique_category_name_error"
+msgstr ""
+"🤔 Прости, название категории не может содержать несколько слов... Можешь "
+"использовать подчёркивания, `вот_так`"
+
+#: src/handlers/message.py:303 src/handlers/message.py:308
 msgid "unexpected_msg_on_alias_prompt"
 msgstr ""
 
@@ -350,17 +362,17 @@ msgstr ""
 "\n"
 "**Нужна помощь?** Напиши /help для подсказок и команд 🧠"
 
-#: src/menus/categories.py:120
+#: src/menus/categories.py:122
 #, fuzzy
 msgid "menu_categories_component_category_info"
 msgstr "▶️ *{0}* на {1} {2}"
 
-#: src/menus/categories.py:127
+#: src/menus/categories.py:129
 #, fuzzy
 msgid "menu_categories_component_deleted_amount"
 msgstr "▶️ *{0}* на {1} {2}"
 
-#: src/menus/categories.py:131
+#: src/menus/categories.py:133
 #, fuzzy
 msgid "menu_categories_template"
 msgstr ""

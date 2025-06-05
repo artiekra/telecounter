@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-05 11:10+0300\n"
+"POT-Creation-Date: 2025-06-05 11:28+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -140,7 +140,7 @@ msgstr ""
 #: src/handlers/message.py:138
 msgid "unknown_command"
 msgstr ""
-"❌ Sorry, **i don't seem to know** what {0} means..\n"
+"❌  Sorry, **i don't seem to know** what {0} means..\n"
 "\n"
 "See info about bot usage with /help; if necessary you can get support at {1}"
 
@@ -190,19 +190,29 @@ msgstr ""
 msgid "non_numerical_init_sum_error"
 msgstr "🔢 Initial amount for a wallet must be a number"
 
-#: src/handlers/message.py:260
+#: src/handlers/message.py:256
+msgid "non_unique_wallet_name_error"
+msgstr ""
+"❌ You already have a wallet with this name, please choose a unique one"
+
+#: src/handlers/message.py:270
 msgid "got_empty_message_for_category"
 msgstr ""
 "🤔 I expected to get the name for a new category, but this doesn't seem like "
 "a text message"
 
-#: src/handlers/message.py:263
+#: src/handlers/message.py:273
 msgid "mutiple_word_category_name_error"
 msgstr ""
 "🤔 Sorry, category name can't have several words.. You can use underscores "
 "if you wish, `just_like_this`"
 
-#: src/handlers/message.py:272 src/handlers/message.py:277
+#: src/handlers/message.py:284
+msgid "non_unique_category_name_error"
+msgstr ""
+"❌ You already have a category with this name, please choose a unique one"
+
+#: src/handlers/message.py:303 src/handlers/message.py:308
 msgid "unexpected_msg_on_alias_prompt"
 msgstr ""
 "Please **choose** one of the options above! Or go back to the main menu by "
@@ -323,17 +333,17 @@ msgstr ""
 "\n"
 "**Lost?** Type /help for info on usage 🧠"
 
-#: src/menus/categories.py:120
+#: src/menus/categories.py:122
 msgid "menu_categories_component_category_info"
 msgstr ""
 "- `{0}`; [👁](https://t.me/telecounterbot?start=cv_{1})[✏️](https://t.me/"
 "telecounterbot?start=ce_{1})[❌](https://t.me/telecounterbot?start=cd_{1})"
 
-#: src/menus/categories.py:127
+#: src/menus/categories.py:129
 msgid "menu_categories_component_deleted_amount"
 msgstr "- also, {0} deleted categories"
 
-#: src/menus/categories.py:131
+#: src/menus/categories.py:133
 msgid "menu_categories_template"
 msgstr ""
 "🏷 **Category overview**\n"

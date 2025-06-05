@@ -56,6 +56,7 @@ class Wallet(Base):
     init_sum = Column(BigInteger, nullable=False, default=0)
     current_sum = Column(BigInteger, nullable=False, default=0)
     transaction_count = Column(BigInteger, nullable=False, default=0)
+    is_deleted = Column(Boolean, default=False)
     comment = Column(Text, nullable=True)
 
     holder_user = relationship("User", back_populates="wallets")

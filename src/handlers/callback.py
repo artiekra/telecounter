@@ -2,7 +2,7 @@ import uuid
 import time
 
 from telethon import events
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import User, Category, CategoryAlias, WalletAlias
@@ -45,6 +45,15 @@ async def handle_command_category(session: AsyncSession, event,
     )
 
     session.add(new_category)
+
+    # delete matching aliases (same name)
+    await session.execute(
+        delete(CategoryAlias).where(
+            CategoryAlias.holder == user.id,
+            CategoryAlias.alias == category_name
+        )
+    )
+
     await session.commit()
     await session.refresh(new_category)
 

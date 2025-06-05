@@ -5,10 +5,10 @@ import re
 
 from telethon import events
 from telethon.tl.custom import Button
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.models import User, Wallet
+from database.models import User, Wallet, Category, WalletAlias, CategoryAlias
 from translate import setup_translations
 from handlers.transaction import register_transaction, create_category
 import menus.wallets as wallets
@@ -203,6 +203,15 @@ async def register_new_wallet(session: AsyncSession, event,
     )
 
     session.add(new_wallet)
+
+    # delete matching aliases (same name)
+    await session.execute(
+        delete(WalletAlias).where(
+            WalletAlias.holder == user.id,
+            WalletAlias.alias == data[0]
+        )
+    )
+
     await session.commit()
     await session.refresh(new_wallet)
 
@@ -245,9 +254,46 @@ async def handle_expectation_new_wallet(session: AsyncSession,
         await event.respond(_("non_numerical_init_sum_error"))
         return
 
+    # name uniqueness check
+    wallets = await session.execute(
+        select(Wallet).where(Wallet.holder == user.id).
+            where(Wallet.is_deleted == False).
+            where(Wallet.name == name)
+    )
+    wallets = wallets.scalars().all()
+    if len(wallets) != 0:
+        await event.respond(_("non_unique_wallet_name_error"))
+        return
+
     data = [name, currency, init_sum]
 
     await register_new_wallet(session, event, user, data, _)
+
+
+async def handle_expectation_new_category(session: AsyncSession,
+                                          user: User, _, event):
+    """Handle new_category expectation."""
+    raw_text = event.raw_text
+
+    if raw_text == "":
+        await event.respond(_("got_empty_message_for_category"))
+        return
+    if " " in raw_text or "\n" in raw_text:
+        await event.respond(_("mutiple_word_category_name_error"))
+        return
+
+    # name uniqueness check
+    categories = await session.execute(
+        select(Category).where(Category.holder == user.id).
+            where(Category.is_deleted == False).
+            where(Category.name == raw_text)
+    )
+    categories = categories.scalars().all()
+    if len(categories) != 0:
+        await event.respond(_("non_unique_category_name_error"))
+        return
+
+    await create_category(session, user, _, event, raw_text)
 
 
 async def handle_expectation(session: AsyncSession, user: User, _, event):
@@ -256,13 +302,7 @@ async def handle_expectation(session: AsyncSession, user: User, _, event):
     raw_text = event.raw_text
 
     if expect["type"] == "new_category":
-        if raw_text == "":
-            await event.respond(_("got_empty_message_for_category"))
-            return
-        if " " in raw_text or "\n" in raw_text:
-            await event.respond(_("mutiple_word_category_name_error"))
-            return
-        await create_category(session, user, _, event, raw_text)
+        await handle_expectation_new_category(session, user, _, event)
 
     elif expect["type"] == "new_wallet":
         await handle_expectation_new_wallet(session, user, _, event)
