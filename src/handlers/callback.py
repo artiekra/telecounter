@@ -7,7 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import User, Category, CategoryAlias, WalletAlias
 from translate import setup_translations
-from handlers.transaction import register_transaction, create_wallet
+from handlers.transaction import (register_transaction, create_wallet,
+    create_category)
 from handlers.message import COMMANDS
 import menus.wallets as wallets
 import menus.categories as categories
@@ -63,7 +64,7 @@ async def handle_command_category(session: AsyncSession, event,
     await session.commit()
 
     current_transaction = user.expectation["transaction"]
-    if current_transaction is not None:
+    if len(current_transaction) > 0:
         await event.respond(_("transaction_handling_in_process").format(
             " ".join(map(str, current_transaction))
         ))
@@ -100,7 +101,7 @@ async def handle_command_categoryalias(session: AsyncSession, event,
         await session.commit()
 
         current_transaction = user.expectation["transaction"]
-        if current_transaction is not None:
+        if len(current_transaction) > 0:
             # await event.respond(_("transaction_handling_in_process").format(
             #     " ".join(map(str, current_transaction))
             # ))
@@ -130,7 +131,7 @@ async def handle_command_categoryalias(session: AsyncSession, event,
         await session.commit()
 
         current_transaction = user.expectation.get("transaction")
-        if current_transaction:
+        if len(current_transaction) > 0:
             # await event.respond(_("transaction_handling_in_process").format(
             #     " ".join(map(str, current_transaction))
             # ))
@@ -173,7 +174,7 @@ async def handle_command_walletalias(session: AsyncSession, event,
         await session.commit()
 
         current_transaction = user.expectation.get("transaction")
-        if current_transaction:
+        if len(current_transaction) > 0:
             # await event.respond(_("transaction_handling_in_process").format(
             #     " ".join(map(str, current_transaction))
             # ))
@@ -216,6 +217,8 @@ def register_callback_handler(client, session_maker):
 
             # update language based on callback data
             if command == "lang":
+                user.expectation["expect"] = {"type": None, "data": None}
+                user.expectation["transaction"] = []
                 new_language = data[1]
                 await update_user_language(event, new_language, user, session)
 
@@ -235,10 +238,22 @@ def register_callback_handler(client, session_maker):
                 await handle_command_walletalias(
                     session, event, user, data, _)
 
+            elif command == "add":
+                user.expectation["expect"] = {"type": None, "data": None}
+                user.expectation["transaction"] = []
+                if data[1] == "wallet":
+                    await create_wallet(session, user, _, event)
+                elif data[1] == "category":
+                    await create_category(session, user, _, event)
+
             elif command == "menu":
+                user.expectation["expect"] = {"type": None, "data": None}
+                user.expectation["transaction"] = []
                 await COMMANDS.get(data[1])(session, user, _, event)
 
             elif command == "action":
+                user.expectation["expect"] = {"type": None, "data": None}
+                user.expectation["transaction"] = []
                 await handle_command_action(session, event, user, data, _)
 
             else:

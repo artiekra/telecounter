@@ -93,17 +93,26 @@ async def create_category(
     user: User,
     _,
     event,
-    name: str
+    name: str = None
 ) -> None:
     """Prompt user for creation of a new category."""
     user.expectation["expect"] = {"type": "new_category", "data": name}
     await session.commit()
 
+    if name is None:
+        buttons = [
+            Button.inline(_("create_prompt_cancel"),
+                          b"category_cancel")
+        ]
+        await event.respond(_("create_new_unnamed_category_prompt"),
+                            buttons=buttons)
+        return
+
     buttons = [
         Button.inline(_("create_prompt_approve"),
-                      b"category_approve"),
+                    b"category_approve"),
         Button.inline(_("create_prompt_cancel"),
-                      b"category_cancel")
+                    b"category_cancel")
     ]
     await event.respond(_("create_new_category_prompt").format(name),
                         buttons=buttons)
@@ -114,7 +123,7 @@ async def create_wallet(
     user: User,
     _,
     event,
-    name: str
+    name: str = None
 ) -> None:
     """Prompt user for creation of a new wallet."""
     user.expectation["expect"] = {"type": "new_wallet", "data": name}
@@ -124,6 +133,12 @@ async def create_wallet(
         Button.inline(_("create_prompt_cancel"),
                       b"wallet_cancel")
     ]
+
+    if name is None:
+        await event.respond(_("create_new_unnamed_wallet_prompt"),
+                            buttons=buttons)
+        return
+
     await event.respond(_("create_new_wallet_prompt").format(name),
                         buttons=buttons)
 

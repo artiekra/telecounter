@@ -66,10 +66,14 @@ async def send_start_menu(session: AsyncSession, user: User,
         wallet_info_str += "\n" + component.format(value)
 
     buttons = [
-        Button.inline(_("command_start_button_wallets"),
+        [Button.inline(_("command_start_button_add_wallet"),
+                        b"add_wallet"),
+        Button.inline(_("command_start_button_add_category"),
+                        b"add_category")],
+        [Button.inline(_("command_start_button_wallets"),
                         b"menu_wallets"),
         Button.inline(_("command_start_button_categories"),
-                        b"menu_categories")
+                        b"menu_categories")]
     ]
 
     await event.respond(_("command_start_template").format(wallet_info_str),
@@ -242,6 +246,10 @@ async def handle_expectation_new_wallet(session: AsyncSession,
     init_sum = parts[1] if len(parts) > 1 else "0"
     name = parts[2] if len(parts) > 2 else user.expectation["expect"]["data"]
 
+    if name is None:
+        await event.respond(_("unspecified_wallet_name_error"))
+        return
+
     if currency.upper() not in ALLOWED_CURRENCIES:
         await event.respond(_("unsupported_currency_error").format(currency))
         return
@@ -355,6 +363,7 @@ def register_message_handler(client, session_maker):
 
             if event.raw_text.startswith("/"):
                 user.expectation["expect"] = {"type": None, "data": None}
+                user.expectation["transaction"] = []
                 await session.commit()
                 await handle_command(session, user, _, event)
                 return
