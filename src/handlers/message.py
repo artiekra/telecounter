@@ -2,6 +2,7 @@ import time
 import uuid
 import json
 import re
+import os
 
 from telethon import events
 from telethon.tl.custom import Button
@@ -151,14 +152,14 @@ async def handle_command_stats(session: AsyncSession, user: User,
     await stats.send_menu(session, user, _, event)
 
 
-# TODO: put support username into config, make it optional
+# TODO: make support username it optional
 async def handle_unknown_command(session: AsyncSession, user: User,
                                  _, event) -> None:
     """Handle unknown commands"""
     command = event.raw_text.split()[0]
 
     await event.respond(_("unknown_command").format(
-        command, "@support"
+        command, os.getenv("SUPPORT_USERNAME", "[not specified]")
     ))
 
 
