@@ -1,13 +1,46 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from telethon.tl.custom import Button
 
 from database.models import User, Category
+
+
+async def handle_action(session: AsyncSession, event,
+                        user: User, data: list, _) -> None:
+    """Handle user pressing a button under one of the action menus."""
+
+    if data[1][1] == "d":
+        uuid = bytes.fromhex(data[2])
+        await event.edit(_("category_deleted_succesfully"))
+
+    else:
+        raise Exception(
+            'Got unexpected data for callback command "action" (categories)'
+        )
+
+
+async def check_ownership(session: AsyncSession, user: User,
+                          uuid: bytes) -> bool:
+    """Check if category belongs to User, return True if so."""
+    result = await session.execute(
+        select(Category).where(Category.id == uuid, Category.holder == user.id)
+    )
+    category = result.scalar_one_or_none()
+
+    if category:
+        return True
+
+    await event.respond(_("category_action_ownership_check_failed"))
 
 
 async def edit_menu(session: AsyncSession, user: User, _, event,
                     uuid: bytes) -> None:
     """Send category edit menu to the user."""
     await event.delete()
+
+    is_owner = await check_ownership(session, user, uuid)
+    if not is_owner:
+        return
 
     await event.respond(f"category edit, for {uuid.hex()}")
 
@@ -17,15 +50,36 @@ async def view_menu(session: AsyncSession, user: User, _, event,
     """Send category view menu to the user."""
     await event.delete()
 
+    is_owner = await check_ownership(session, user, uuid)
+    if not is_owner:
+        return
+
     await event.respond(f"category view, for {uuid.hex()}")
 
 
 async def delete_menu(session: AsyncSession, user: User, _, event,
-                    uuid: bytes) -> None:
+                      uuid: bytes) -> None:
     """Send category delete menu to the user."""
     await event.delete()
 
-    await event.respond(f"category delete, for {uuid.hex()}")
+    is_owner = await check_ownership(session, user, uuid)
+    if not is_owner:
+        return
+
+    name = await session.execute(
+        select(Category.name)
+        .where(Category.id == uuid)
+    )
+    name = name.scalar_one_or_none()
+
+    buttons = [
+        Button.inline(_("category_action_delete_approve"),
+                      "action_cd_"+uuid.hex()),
+        Button.inline(_("category_action_delete_cancel"),
+                      b"menu_categories")
+    ]
+    await event.respond(_("delete_category_prompt").format(name),
+                        buttons=buttons)
 
 
 async def send_menu(session: AsyncSession, user: User, _, event) -> None:

@@ -9,6 +9,8 @@ from database.models import User, Category, CategoryAlias, WalletAlias
 from translate import setup_translations
 from handlers.transaction import register_transaction, create_wallet
 from handlers.message import COMMANDS
+import menus.wallets as wallets
+import menus.categories as categories
 
 
 async def update_user_language(event, new_language: str,
@@ -169,11 +171,23 @@ async def handle_command_walletalias(session: AsyncSession, event,
             await register_transaction(session, user, _, event, current_transaction)
 
 
+async def handle_command_action(session: AsyncSession, event,
+                                user: User, data: list, _) -> None:
+    """Handle user pressing a button under one of the action menus."""
+
+    if data[1][0] == "c":
+        await categories.handle_action(session, event, user, data, _)
+
+    else:
+        raise Exception('Got unexpected data for callback command "action"')
+
+
 def register_callback_handler(client, session_maker):
 
     @client.on(events.CallbackQuery)
     async def callback_handler(event):
         data = event.data.decode('utf-8')
+        print(data)
 
         # get the user from DB
         telegram_id = event.sender_id
@@ -215,6 +229,9 @@ def register_callback_handler(client, session_maker):
 
             elif command == "menu":
                 await COMMANDS.get(data[1])(session, user, _, event)
+
+            elif command == "action":
+                await handle_command_action(session, event, user, data, _)
 
             else:
                 raise Exception("Got unexpected callback query command")
