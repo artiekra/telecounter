@@ -48,8 +48,8 @@ msgstr ""
 #: src/handlers/callback.py:36
 msgid "category_creation_cancelled"
 msgstr ""
-"❌ Category **won't be created**, this also means I can't register your "
-"transaction; send the transaction again and change the category if neccesarry"
+"❌ Category **won't be created**; you can create category from start menu or "
+"by sending a transaction that uses it"
 
 #: src/handlers/callback.py:61 src/handlers/callback.py:98
 msgid "category_created_successfully"
@@ -82,8 +82,8 @@ msgstr "__Thanks, I won't ask this again__"
 #: src/handlers/callback.py:231
 msgid "wallet_creation_cancelled"
 msgstr ""
-"❌ Wallet **won't be created**, this also means I can't register your "
-"transaction; send the transaction again and change the wallet if neccesarry"
+"❌ Wallet **won't be created**; you can create wallet from start menu or by "
+"sending a transaction that uses it"
 
 #: src/handlers/message.py:49
 msgid "command_start_no_wallets"
