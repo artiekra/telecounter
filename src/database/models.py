@@ -70,6 +70,7 @@ class Category(Base):
     icon = Column(String(1), nullable=False)
     name = Column(String, nullable=False)
     transaction_count = Column(BigInteger, nullable=False, default=0)
+    is_deleted = Column(Boolean, default=False)
     comment = Column(Text, nullable=True)
 
     holder_user = relationship("User", back_populates="categories")

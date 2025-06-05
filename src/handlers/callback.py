@@ -187,7 +187,6 @@ def register_callback_handler(client, session_maker):
     @client.on(events.CallbackQuery)
     async def callback_handler(event):
         data = event.data.decode('utf-8')
-        print(data)
 
         # get the user from DB
         telegram_id = event.sender_id

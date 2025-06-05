@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-04 22:21+0300\n"
+"POT-Creation-Date: 2025-06-05 11:10+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -18,15 +18,15 @@ msgstr ""
 "Generated-By: Babel 2.17.0\n"
 "X-Generator: Poedit 3.6\n"
 
-#: src/handlers/callback.py:22
+#: src/handlers/callback.py:24
 msgid "language_set_popup"
 msgstr "Язык установлен на русский"
 
-#: src/handlers/callback.py:23
+#: src/handlers/callback.py:25
 msgid "language_set_message"
 msgstr "🇷🇺 Язык успешно установлен!"
 
-#: src/handlers/callback.py:24
+#: src/handlers/callback.py:26
 msgid "tutorial"
 msgstr ""
 "👋 **Приветик!** Добро пожаловать в бота :>\n"
@@ -44,45 +44,45 @@ msgstr ""
 "указать валюту и создаст его для дальнейшего использования; то же самое "
 "касается новых категорий расходов или доходов!"
 
-#: src/handlers/callback.py:33
+#: src/handlers/callback.py:35
 msgid "category_creation_cancelled"
 msgstr ""
 "❌ Категория **не будет создана**, а значит я не могу зарегистрировать твою "
 "транзакцию; отправь её ещё раз и измени категорию при необходимости"
 
-#: src/handlers/callback.py:49 src/handlers/callback.py:86
+#: src/handlers/callback.py:51 src/handlers/callback.py:88
 msgid "category_created_successfully"
 msgstr "🏷 Новая категория \"`{0}`\" **успешно создана**"
 
-#: src/handlers/callback.py:56 src/handlers/message.py:181
+#: src/handlers/callback.py:58 src/handlers/message.py:216
 msgid "transaction_handling_in_process"
 msgstr "⚙️ Продолжаю обработку твоей транзакции, `{0}`"
 
-#: src/handlers/callback.py:68
+#: src/handlers/callback.py:70
 #, fuzzy
 msgid "category_alias_creation_cancelled"
 msgstr ""
 "❌ Категория **не будет создана**, а значит я не могу зарегистрировать твою "
 "транзакцию; отправь её ещё раз и измени категорию при необходимости"
 
-#: src/handlers/callback.py:115
+#: src/handlers/callback.py:117
 #, fuzzy
 msgid "category_alias_created_successfully"
 msgstr "🏷 Новая категория \"`{0}`\" **успешно создана**"
 
-#: src/handlers/callback.py:135
+#: src/handlers/callback.py:137
 #, fuzzy
 msgid "wallet_alias_creation_cancelled"
 msgstr ""
 "❌ Кошелек **не будет создан**, а значит я не могу зарегистрировать твою "
 "транзакцию; отправь её ещё раз и измени кошелек при необходимости"
 
-#: src/handlers/callback.py:158
+#: src/handlers/callback.py:160
 #, fuzzy
 msgid "wallet_alias_created_successfully"
 msgstr "👛 Новый кошелёк \"`{0}`\" **успешно создан**"
 
-#: src/handlers/callback.py:206
+#: src/handlers/callback.py:219
 #, fuzzy
 msgid "wallet_creation_cancelled"
 msgstr ""
@@ -144,7 +144,7 @@ msgstr ""
 "\n"
 "**Нужна помощь?** Напиши /help для подсказок и команд 🧠"
 
-#: src/handlers/message.py:82
+#: src/handlers/message.py:117
 msgid "command_help"
 msgstr ""
 "💵 **Записывай транзакции** в следующем формате:\n"
@@ -156,7 +156,7 @@ msgstr ""
 "💬 Бот **не знает**, что такое `food`, `gift`, `card` или `cash`. Но если ты "
 "используешь новую категорию или кошелёк — бот предложит создать их! :>"
 
-#: src/handlers/message.py:103
+#: src/handlers/message.py:138
 msgid "unknown_command"
 msgstr ""
 "❌ Прости, **я не знаю**, что такое {0}..\n"
@@ -164,13 +164,13 @@ msgstr ""
 "Ознакомься с инструкциями через /help; если что — можешь получить помощь "
 "здесь: {1}"
 
-#: src/handlers/message.py:127
+#: src/handlers/message.py:162
 msgid "got_empty_message_for_transaction"
 msgstr ""
 "🤔 Я ожидал получить информацию о транзакции, но похоже, это не текстовое "
 "сообщение"
 
-#: src/handlers/message.py:132
+#: src/handlers/message.py:167
 msgid "info_omitted_for_transaction_error"
 msgstr ""
 "🤔 Чтобы **записать транзакцию**, мне нужно как минимум получить сумму, "
@@ -178,50 +178,50 @@ msgstr ""
 "\n"
 "Пожалуйста, отправь транзакцию заново с полной информацией"
 
-#: src/handlers/message.py:144
+#: src/handlers/message.py:179
 msgid "non_numerical_sum_error"
 msgstr "🔢 Сумма транзакции должна быть числом"
 
-#: src/handlers/message.py:151
+#: src/handlers/message.py:186
 msgid "no_sign_specified_for_sum"
 msgstr ""
 "📊 Укажи, это доход или расход! Для этого поставь знак перед суммой:\n"
 "```-150 еда карта\n"
 "+3000 подарок наличка```"
 
-#: src/handlers/message.py:174
+#: src/handlers/message.py:209
 msgid "wallet_created_successfully"
 msgstr "👛 Новый кошелёк \"`{0}`\" **успешно создан**"
 
-#: src/handlers/message.py:193
+#: src/handlers/message.py:228
 msgid "got_empty_message_for_wallet"
 msgstr ""
 "🤔 Я ожидал получить информацию о новом кошельке, но похоже, это не "
 "текстовое сообщение"
 
-#: src/handlers/message.py:202
+#: src/handlers/message.py:237
 msgid "unsupported_currency_error"
 msgstr ""
 "❓ Извини, я не знаю валюту `{0}`. Укажи **код валюты**, например `RUB`, "
 "`USD`, `EUR` и т.д."
 
-#: src/handlers/message.py:210
+#: src/handlers/message.py:245
 msgid "non_numerical_init_sum_error"
 msgstr "🔢 Начальная сумма в кошельке должна быть числом"
 
-#: src/handlers/message.py:225
+#: src/handlers/message.py:260
 msgid "got_empty_message_for_category"
 msgstr ""
 "🤔 Я ожидал получить название новой категории, но, похоже, это не текстовое "
 "сообщение"
 
-#: src/handlers/message.py:228
+#: src/handlers/message.py:263
 msgid "mutiple_word_category_name_error"
 msgstr ""
 "🤔 Прости, название категории не может содержать несколько слов... Можешь "
 "использовать подчёркивания, `вот_так`"
 
-#: src/handlers/message.py:237 src/handlers/message.py:242
+#: src/handlers/message.py:272 src/handlers/message.py:277
 msgid "unexpected_msg_on_alias_prompt"
 msgstr ""
 
@@ -293,7 +293,41 @@ msgstr ""
 "Кошелёк: {2}```\n"
 "Теперь в кошельке `{2}` у тебя `{3}{4}`"
 
-#: src/menus/categories.py:18
+#: src/menus/categories.py:23
+#, fuzzy
+msgid "category_deleted_succesfully"
+msgstr "🏷 Новая категория \"`{0}`\" **успешно создана**"
+
+#: src/menus/categories.py:42
+#, fuzzy
+msgid "category_action_ownership_check_failed"
+msgstr ""
+"❌ Категория **не будет создана**, а значит я не могу зарегистрировать твою "
+"транзакцию; отправь её ещё раз и измени категорию при необходимости"
+
+#: src/menus/categories.py:85
+#, fuzzy
+msgid "category_action_delete_approve"
+msgstr ""
+"❌ Категория **не будет создана**, а значит я не могу зарегистрировать твою "
+"транзакцию; отправь её ещё раз и измени категорию при необходимости"
+
+#: src/menus/categories.py:87
+#, fuzzy
+msgid "category_action_delete_cancel"
+msgstr ""
+"❌ Категория **не будет создана**, а значит я не могу зарегистрировать твою "
+"транзакцию; отправь её ещё раз и измени категорию при необходимости"
+
+#: src/menus/categories.py:90
+#, fuzzy
+msgid "delete_category_prompt"
+msgstr ""
+"🏷 Создать **новую категорию**, \"`{0}`\"?\n"
+"\n"
+"Если хочешь другое название — просто напиши его прямо сейчас!"
+
+#: src/menus/categories.py:115
 #, fuzzy
 msgid "menu_categories_no_categories"
 msgstr ""
@@ -305,12 +339,28 @@ msgstr ""
 "\n"
 "**Нужна помощь?** Напиши /help для подсказок и команд 🧠"
 
-#: src/menus/categories.py:21
+#: src/menus/categories.py:117
+#, fuzzy
+msgid "menu_categories_only_deleted"
+msgstr ""
+"👋 **С возвращением!**\n"
+"\n"
+"👛 **Осмотр:**\n"
+"```{0}```\n"
+"\n"
+"**Нужна помощь?** Напиши /help для подсказок и команд 🧠"
+
+#: src/menus/categories.py:120
 #, fuzzy
 msgid "menu_categories_component_category_info"
 msgstr "▶️ *{0}* на {1} {2}"
 
-#: src/menus/categories.py:27
+#: src/menus/categories.py:127
+#, fuzzy
+msgid "menu_categories_component_deleted_amount"
+msgstr "▶️ *{0}* на {1} {2}"
+
+#: src/menus/categories.py:131
 #, fuzzy
 msgid "menu_categories_template"
 msgstr ""
