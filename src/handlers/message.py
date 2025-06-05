@@ -345,6 +345,10 @@ async def handle_expectation(session: AsyncSession, user: User, _, event):
         await event.respond(_("unexpected_msg_on_alias_prompt"),
                             reply_to=prompt)
 
+    if expect["type"] == "edit_category":
+        await categories.handle_expectation_edit_category(
+            session, user, _, event)
+
     else:
         raise Exception("Got unexpected expectation type")
 

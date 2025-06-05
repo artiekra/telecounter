@@ -374,8 +374,8 @@ msgstr ""
 #: src/menus/categories.py:122
 msgid "menu_categories_component_category_info"
 msgstr ""
-"- `{0}`; [👁](https://t.me/telecounterbot?start=cv_{1})[✏️](https://t.me/"
-"telecounterbot?start=ce_{1})[❌](https://t.me/telecounterbot?start=cd_{1})"
+"- `{0}`; [👁](https://t.me/telecounterbot?start=cv_{1}) [✏️](https://t.me/"
+"telecounterbot?start=ce_{1}) [❌](https://t.me/telecounterbot?start=cd_{1})"
 
 #: src/menus/categories.py:129
 msgid "menu_categories_component_deleted_amount"

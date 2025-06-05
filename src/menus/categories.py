@@ -1,8 +1,54 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, delete
 from telethon.tl.custom import Button
 
-from database.models import User, Category
+from database.models import User, Category, CategoryAlias
+
+
+async def handle_expectation_edit_category(session: AsyncSession,
+                                           user: User, _, event):
+    """Handle edit_category expectation."""
+    uuid = bytes.fromhex(user.expectation["expect"]["data"])
+    raw_text = event.raw_text
+
+    if raw_text == "":
+        await event.respond(_("got_empty_message_for_category"))
+        return
+    if " " in raw_text or "\n" in raw_text:
+        await event.respond(_("mutiple_word_category_name_error"))
+        return
+
+    # name uniqueness check
+    categories = await session.execute(
+        select(Category).where(Category.holder == user.id).
+            where(Category.is_deleted == False).
+            where(Category.name == raw_text)
+    )
+    categories = categories.scalars().all()
+    if len(categories) != 0:
+        await event.respond(_("non_unique_category_name_error"))
+        return
+
+    # delete matching aliases (same name)
+    await session.execute(
+        delete(CategoryAlias).where(
+            CategoryAlias.holder == user.id,
+            CategoryAlias.alias == raw_text
+        )
+    )
+
+    category = await session.execute(
+        select(Category).where(Category.id == uuid)
+    )
+    category = category.scalar_one_or_none()
+    if category:
+        category.name = raw_text
+        await session.commit()
+        await session.refresh(category)
+        await event.respond(_("category_edited_successfully").format(raw_text))
+
+    user.expectation["expect"] = {"type": None, "data": None}
+    await session.commit()
 
 
 async def handle_action(session: AsyncSession, event,
@@ -51,7 +97,14 @@ async def edit_menu(session: AsyncSession, user: User, _, event,
     if not is_owner:
         return
 
-    await event.respond(f"category edit, for {uuid.hex()}")
+    user.expectation["expect"] = {"type": "edit_category", "data": uuid.hex()}
+    await session.commit()
+
+    buttons = [
+        Button.inline(_("category_action_edit_cancel"),
+                      b"menu_categories")
+    ]
+    await event.respond(_("edit_category_prompt"), buttons=buttons)
 
 
 async def view_menu(session: AsyncSession, user: User, _, event,
