@@ -15,7 +15,8 @@ import menus.categories as categories
 
 
 async def update_user_language(event, new_language: str,
-                               user: User, session: AsyncSession):
+                               user: User, session: AsyncSession,
+                               command: str):
     """Update user lang in db, notify the user."""
     user.language = new_language
     session.add(user)
@@ -24,7 +25,9 @@ async def update_user_language(event, new_language: str,
 
     await event.answer(_("language_set_popup"))
     await event.edit(_("language_set_message"), buttons=None)
-    await event.respond(_("tutorial"))
+
+    if command == "lang":
+        await event.respond(_("tutorial"))
 
 
 async def handle_command_category(session: AsyncSession, event,
@@ -216,11 +219,12 @@ def register_callback_handler(client, session_maker):
             command = data[0]
 
             # update language based on callback data
-            if command == "lang":
+            if command == "lang" or command == "plang":
                 user.expectation["expect"] = {"type": None, "data": None}
                 user.expectation["transaction"] = []
                 new_language = data[1]
-                await update_user_language(event, new_language, user, session)
+                await update_user_language(event, new_language, user,
+                                           session, command)
 
             elif command == "category":
                 await handle_command_category(session, event, user, data, _)

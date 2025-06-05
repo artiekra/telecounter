@@ -25,7 +25,7 @@ msgstr "Language set to English"
 
 #: src/handlers/callback.py:26
 msgid "language_set_message"
-msgstr "🇬🇧  Language set succesfully!"
+msgstr "🇬🇧  Language set succesfully! You can change it later with /language"
 
 #: src/handlers/callback.py:27
 msgid "tutorial"
@@ -385,6 +385,7 @@ msgstr "- also, {0} deleted categories"
 msgid "menu_categories_template"
 msgstr ""
 "🏷 **Category overview**\n"
+"Press on emoji to: (👁) view (✏️) rename (❌) delete individual categories!\n"
 "\n"
 "{0}\n"
 "\n"

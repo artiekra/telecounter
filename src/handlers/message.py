@@ -129,7 +129,11 @@ async def handle_command_start(session: AsyncSession, user: User,
 async def handle_command_help(session: AsyncSession, user: User,
                                _, event) -> None:
     """Handle /help command"""
-    await event.respond(_("command_help"))
+    buttons = [
+        Button.inline(_("back_to_main_menu_button"),
+                      b"menu_start")
+    ]
+    await event.respond(_("command_help"), buttons=buttons)
 
 
 async def handle_command_wallets(session: AsyncSession, user: User,
@@ -156,6 +160,21 @@ async def handle_command_stats(session: AsyncSession, user: User,
     await stats.send_menu(session, user, _, event)
 
 
+async def handle_command_language(session: AsyncSession, user: User,
+                                  _, event) -> None:
+    """Handle /language command"""
+    buttons = [
+        [Button.inline("🇬🇧 English", b"plang_en")],
+        [Button.inline("🇺🇦 Українська", b"plang_uk"),
+         Button.inline("🇷🇺 Русский", b"plang_ru")]
+    ]
+
+    await event.respond(
+        "Choose a new language:",
+        buttons=buttons
+    )
+
+
 # TODO: make support username it optional
 async def handle_unknown_command(session: AsyncSession, user: User,
                                  _, event) -> None:
@@ -169,7 +188,8 @@ async def handle_unknown_command(session: AsyncSession, user: User,
 
 COMMANDS = {"start": handle_command_start, "help": handle_command_help,
     "wallets": handle_command_wallets, "categories": handle_command_categories,
-    "transactions": handle_command_transactions, "stats": handle_command_stats}
+    "transactions": handle_command_transactions, "stats": handle_command_stats,
+    "language": handle_command_language}
 
 async def handle_command(session: AsyncSession, user: User, _, event):
     """Handle command from User (any msg starting with "/")."""

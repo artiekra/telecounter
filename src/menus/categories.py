@@ -179,11 +179,11 @@ async def send_menu(session: AsyncSession, user: User, _, event) -> None:
     ) for x in categories]
 
     category_info_str = "\n".join(category_info)
-    if del_categories_count != 0:
-        category_info_str += "\n" +\
-            _("menu_categories_component_deleted_amount").format(
-                del_categories_count
-            )
+    # if del_categories_count != 0:
+    #     category_info_str += "\n" +\
+    #         _("menu_categories_component_deleted_amount").format(
+    #             del_categories_count
+    #         )
 
     buttons = [
         Button.inline(_("back_to_main_menu_button"),
