@@ -46,6 +46,7 @@ async def handle_expectation_edit_category(session: AsyncSession,
         await session.commit()
         await session.refresh(category)
         await event.respond(_("category_edited_successfully").format(raw_text))
+        await send_menu(session, user, _, event)
 
     user.expectation["expect"] = {"type": None, "data": None}
     await session.commit()
@@ -67,6 +68,7 @@ async def handle_action(session: AsyncSession, event,
         await session.commit()
 
         await event.edit(_("category_deleted_succesfully"))
+        await send_menu(session, user, _, event)
 
     else:
         raise Exception(
@@ -183,5 +185,9 @@ async def send_menu(session: AsyncSession, user: User, _, event) -> None:
                 del_categories_count
             )
 
+    buttons = [
+        Button.inline(_("back_to_main_menu_button"),
+                      b"menu_start")
+    ]
     await event.respond(_("menu_categories_template").format(
-        category_info_str, len(categories)))
+        category_info_str, len(categories)), buttons=buttons)

@@ -109,15 +109,19 @@ async def handle_command_start(session: AsyncSession, user: User,
     """Handle /start command"""
     DATA_PATTERN = r"^([a-zA-Z]{2})_([a-fA-F0-9]{32})$"
 
-    parts = event.raw_text.split()
-    if len(parts) > 1:
-        data = parts[1]
-        match = re.match(DATA_PATTERN, data)
-        if match:
-            prefix = match.group(1)
-            uuid_hex = match.group(2)
-            await handle_data(session, user, _, event, prefix, uuid_hex)
-            return
+    try:
+        raw_text = event.raw_text
+        parts = event.raw_text.split()
+        if len(parts) > 1:
+            data = parts[1]
+            match = re.match(DATA_PATTERN, data)
+            if match:
+                prefix = match.group(1)
+                uuid_hex = match.group(2)
+                await handle_data(session, user, _, event, prefix, uuid_hex)
+                return
+    except AttributeError:
+        pass
 
     await send_start_menu(session, user, _, event)
 
