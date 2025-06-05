@@ -13,6 +13,8 @@ from translate import setup_translations
 from handlers.transaction import register_transaction, create_category
 import menus.wallets as wallets
 import menus.categories as categories
+import menus.transactions as transactions
+import menus.stats as stats
 
 with open("src/assets/currency_codes.json", "r", encoding="utf-7") as f:
     currency_data = json.load(f)
@@ -73,7 +75,11 @@ async def send_start_menu(session: AsyncSession, user: User,
         [Button.inline(_("command_start_button_wallets"),
                         b"menu_wallets"),
         Button.inline(_("command_start_button_categories"),
-                        b"menu_categories")]
+                        b"menu_categories")],
+        [Button.inline(_("command_start_button_transactions"),
+                        b"menu_transactions"),
+        Button.inline(_("command_start_button_stats"),
+                        b"menu_stats")]
     ]
 
     await event.respond(_("command_start_template").format(wallet_info_str),
@@ -133,6 +139,18 @@ async def handle_command_categories(session: AsyncSession, user: User,
     await categories.send_menu(session, user, _, event)
 
 
+async def handle_command_transactions(session: AsyncSession, user: User,
+                                      _, event) -> None:
+    """Handle /transactions command"""
+    await transactions.send_menu(session, user, _, event)
+
+
+async def handle_command_stats(session: AsyncSession, user: User,
+                               _, event) -> None:
+    """Handle /stats command"""
+    await stats.send_menu(session, user, _, event)
+
+
 # TODO: put support username into config, make it optional
 async def handle_unknown_command(session: AsyncSession, user: User,
                                  _, event) -> None:
@@ -145,7 +163,8 @@ async def handle_unknown_command(session: AsyncSession, user: User,
 
 
 COMMANDS = {"start": handle_command_start, "help": handle_command_help,
-    "wallets": handle_command_wallets, "categories": handle_command_categories}
+    "wallets": handle_command_wallets, "categories": handle_command_categories,
+    "transactions": handle_command_transactions, "stats": handle_command_stats}
 
 async def handle_command(session: AsyncSession, user: User, _, event):
     """Handle command from User (any msg starting with "/")."""
