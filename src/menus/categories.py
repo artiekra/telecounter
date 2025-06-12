@@ -1,8 +1,11 @@
+from datetime import datetime
+
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from sqlalchemy import select, func, delete
 from telethon.tl.custom import Button
 
-from database.models import User, Category, CategoryAlias
+from database.models import User, Category, CategoryAlias, Transaction
 
 
 async def handle_expectation_edit_category(session: AsyncSession,
@@ -109,16 +112,82 @@ async def edit_menu(session: AsyncSession, user: User, _, event,
     await event.respond(_("edit_category_prompt"), buttons=buttons)
 
 
+def format_component_transaction(transaction: Transaction, _) -> str:
+    """Format a transaction for category view menu."""
+
+    # set emoji indicator
+    if transaction.sum > 0: emoji_indicator = "🟩"
+    elif transaction.sum < 0: emoji_indicator = "🟥"
+    else: emoji_indicator = "🟨"
+
+    return _("category_action_view_component_transaction").format(
+        emoji_indicator, transaction.sum, transaction.wallet.currency,
+        transaction.wallet.name 
+    )
+
+
 async def view_menu(session: AsyncSession, user: User, _, event,
                     uuid: bytes) -> None:
     """Send category view menu to the user."""
+    MAX_TRANSACTIONS_SHOWN = 5
+
     await event.delete()
 
     is_owner = await check_ownership(session, user, uuid)
     if not is_owner:
         return
 
-    await event.respond(f"category view, for {uuid.hex()}")
+    category = await session.execute(
+        select(Category)
+        .where(Category.id == uuid)
+        .where(Category.is_deleted == False)
+    )
+    category = category.scalar_one_or_none()
+
+    if category is None:
+        await event.respond(_("category_action_view_not_found_error"))
+        return
+
+    # TODO: optimize to only select 5 latest
+    full_transactions = await session.execute(
+        select(Transaction)
+        .options(
+            selectinload(Transaction.category),
+            selectinload(Transaction.wallet)
+        )
+        .where(Transaction.category_id == uuid)
+    )
+    full_transactions = full_transactions.scalars().all()
+
+    transactions = full_transactions[::-1]
+    if len(transactions) > MAX_TRANSACTIONS_SHOWN:
+        transactions = transactions[:MAX_TRANSACTIONS_SHOWN]
+
+    formatted_created_on = datetime.utcfromtimestamp(
+        category.created_at).date().isoformat()
+
+    buttons = [
+        Button.inline(_("universal_back_button"), b"menu_categories")
+    ]
+    if len(transactions) == 0:
+        await event.respond(_("category_action_view_no_transactions").format(
+            category.icon, category.name, formatted_created_on,
+            category.transaction_count
+        ), buttons=buttons)
+        return
+
+    transaction_component = "\n".join(
+        map(lambda x: format_component_transaction(x, _), transactions))
+
+    if len(full_transactions) > MAX_TRANSACTIONS_SHOWN:
+        not_shown_count = len(full_transactions) - MAX_TRANSACTIONS_SHOWN
+        transaction_component += ("\n" +
+            _("universal_component_not_shown_count").format(not_shown_count))
+
+    await event.respond(_("category_action_view").format(
+        category.icon, category.name, formatted_created_on,
+        category.transaction_count, transaction_component
+    ), buttons=buttons)
 
 
 async def delete_menu(session: AsyncSession, user: User, _, event,

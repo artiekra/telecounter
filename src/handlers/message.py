@@ -65,7 +65,7 @@ async def send_start_menu(session: AsyncSession, user: User,
 
     if len(wallets) > MAX_WALLETS_DISPLAYED:
         value = len(wallets) - MAX_WALLETS_DISPLAYED
-        component = _("command_start_component_wallets_not_shown_count") 
+        component = _("universal_component_not_shown_count") 
         wallet_info_str += "\n" + component.format(value)
 
     buttons = [
@@ -90,7 +90,6 @@ async def send_start_menu(session: AsyncSession, user: User,
 async def handle_data(session: AsyncSession, user: User,
                       _, event, prefix: str, uuid_hex: str) -> None:
     """Handle /start command with valid data payload"""
-
     uuid = bytes.fromhex(uuid_hex)
 
     match prefix:
@@ -111,17 +110,19 @@ async def handle_command_start(session: AsyncSession, user: User,
 
     try:
         raw_text = event.raw_text
-        parts = event.raw_text.split()
-        if len(parts) > 1:
-            data = parts[1]
-            match = re.match(DATA_PATTERN, data)
-            if match:
-                prefix = match.group(1)
-                uuid_hex = match.group(2)
-                await handle_data(session, user, _, event, prefix, uuid_hex)
-                return
     except AttributeError:
-        pass
+        await send_start_menu(session, user, _, event)
+        return
+
+    parts = event.raw_text.split()
+    if len(parts) > 1:
+        data = parts[1]
+        match = re.match(DATA_PATTERN, data)
+        if match:
+            prefix = match.group(1)
+            uuid_hex = match.group(2)
+            await handle_data(session, user, _, event, prefix, uuid_hex)
+            return
 
     await send_start_menu(session, user, _, event)
 
@@ -379,6 +380,7 @@ async def handle_expectation(session: AsyncSession, user: User, _, event):
 
 
 def register_message_handler(client, session_maker):
+
     @client.on(events.NewMessage)
     async def new_msg_handler(event) -> None:
         """Check if user is known, handle new message."""
