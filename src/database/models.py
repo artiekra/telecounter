@@ -50,6 +50,7 @@ class Wallet(Base):
 
     id = Column(BLOB, primary_key=True, default=gen_uuid)
     holder = Column(BLOB, ForeignKey("users.id"), nullable=False)
+    created_at = Column(BigInteger, nullable=False)  # unix timestamp
     icon = Column(String(1), nullable=False)
     name = Column(String, nullable=False)
     currency = Column(String(8), nullable=False)  # like "USD" or "UAH"
@@ -68,6 +69,7 @@ class Category(Base):
 
     id = Column(BLOB, primary_key=True, default=gen_uuid)
     holder = Column(BLOB, ForeignKey("users.id"), nullable=False)
+    created_at = Column(BigInteger, nullable=False)  # unix timestamp
     icon = Column(String(1), nullable=False)
     name = Column(String, nullable=False)
     transaction_count = Column(BigInteger, nullable=False, default=0)

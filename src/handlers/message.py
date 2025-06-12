@@ -244,6 +244,7 @@ async def register_new_wallet(session: AsyncSession, event,
     new_wallet = Wallet(
         id=uuid.uuid4().bytes,
         holder=user.id,
+        created_at=int(time.time()),
         icon="✨",
         name=data[0],
         currency=data[1],

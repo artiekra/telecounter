@@ -44,6 +44,7 @@ async def handle_command_category(session: AsyncSession, event,
     new_category = Category(
         id=uuid.uuid4().bytes,
         holder=user.id,
+        created_at=int(time.time()),
         icon="✨",
         name=category_name
     )
