@@ -200,7 +200,6 @@ async def view_menu(session: AsyncSession, user: User, _, event,
     full_transactions = await session.execute(
         select(Transaction)
         .options(
-            selectinload(Transaction.category),
             selectinload(Transaction.wallet)
         )
         .where(Transaction.category_id == uuid)
@@ -220,8 +219,7 @@ async def view_menu(session: AsyncSession, user: User, _, event,
     ]
     if len(transactions) == 0:
         await event.respond(_("category_action_view_no_transactions").format(
-            category.icon, category.name, formatted_created_on,
-            category.transaction_count
+            category.icon, category.name, formatted_created_on
         ), buttons=buttons)
         return
 

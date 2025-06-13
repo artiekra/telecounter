@@ -99,6 +99,12 @@ async def handle_data(session: AsyncSession, user: User,
             await categories.view_menu(session, user, _, event, uuid)
         case "cd":
             await categories.delete_menu(session, user, _, event, uuid)
+        case "we":
+            await wallets.edit_menu(session, user, _, event, uuid)
+        case "wv":
+            await wallets.view_menu(session, user, _, event, uuid)
+        case "wd":
+            await wallets.delete_menu(session, user, _, event, uuid)
         case _:
             await send_start_menu(session, user, _, event)
 
@@ -369,15 +375,17 @@ async def handle_expectation_page(session: AsyncSession, user: User, _, event):
         await categories.send_menu(
             session, user, _, event, page, msg_id
         )
-        user.expectation["expect"] = {"type": None, "data": None}
-        await session.commit()
-        await event.client.send_message(
-            entity=event.chat_id,
-            reply_to=msg_id,
-            message=_("beamed_to_page_successfully").format(str(page))
+    elif type_ == "w":
+        await wallets.send_menu(
+            session, user, _, event, page, msg_id
         )
-    else:
-        raise Exception('Got unexpected data for expectation "page"')
+    user.expectation["expect"] = {"type": None, "data": None}
+    await session.commit()
+    await event.client.send_message(
+        entity=event.chat_id,
+        reply_to=msg_id,
+        message=_("beamed_to_page_successfully").format(str(page))
+    )
 
 
 async def handle_expectation(session: AsyncSession, user: User, _, event):
@@ -401,15 +409,19 @@ async def handle_expectation(session: AsyncSession, user: User, _, event):
         await event.respond(_("unexpected_msg_on_alias_prompt"),
                             reply_to=prompt)
 
-    if expect["type"] == "edit_category":
+    elif expect["type"] == "edit_category":
         await categories.handle_expectation_edit_category(
             session, user, _, event)
 
-    if expect["type"] == "page":
+    elif expect["type"] == "edit_wallet":
+        await wallets.handle_expectation_edit_wallet(
+            session, user, _, event)
+
+    elif expect["type"] == "page":
         await handle_expectation_page(session, user, _, event)
 
     else:
-        raise Exception("Got unexpected expectation type")
+        raise Exception("Got unexpected expectation type: " + expect["type"])
 
 
 def register_message_handler(client, session_maker):

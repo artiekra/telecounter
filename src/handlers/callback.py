@@ -207,6 +207,9 @@ async def handle_command_action(session: AsyncSession, event,
     if data[1][0] == "c":
         await categories.handle_action(session, event, user, data, _)
 
+    if data[1][0] == "w":
+        await wallets.handle_action(session, event, user, data, _)
+
     else:
         raise Exception('Got unexpected data for callback command "action"')
 
@@ -215,21 +218,23 @@ async def handle_command_page(session: AsyncSession, event,
                               user: User, data: list, _) -> None:
     """Handle user pressing a pagination button."""
 
-    if data[1] == "c":
-        msg_id = int(bytes.fromhex(data[2]).decode("utf-8"))
-        try:
-            page = int(data[3])
-        except IndexError:
-            page = None
-        if page:
+    msg_id = int(bytes.fromhex(data[2]).decode("utf-8"))
+    try:
+        page = int(data[3])
+    except IndexError:
+        page = None
+    if page:
+        if data[1] == "c":
             await categories.send_menu(
                 session, user, _, event, page, msg_id
             )
-            return
-        await universal_custom_page_input_workflow(
-            session, event, user, _, "c", msg_id)
-    else:
-        raise Exception('Got unexpected data for callback command "page"')
+        elif data[1] == "w":
+            await wallets.send_menu(
+                session, user, _, event, page, msg_id
+            )
+        return
+    await universal_custom_page_input_workflow(
+        session, event, user, _, data[1], msg_id)
 
 
 async def handle_command_export(session: AsyncSession, event,
@@ -238,6 +243,8 @@ async def handle_command_export(session: AsyncSession, event,
 
     if data[1] == "categories":
         await categories.export(session, event, user, _)
+    elif data[1] == "wallets":
+        await wallets.export(session, event, user, _)
     else:
         raise Exception('Got unexpected data for callback command "export"')
 
