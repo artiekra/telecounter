@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-13 14:11+0300\n"
+"POT-Creation-Date: 2025-06-13 16:28+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -45,41 +45,45 @@ msgstr ""
 "will prompt you for currency and create it for further use; same for the "
 "income/spend categories!"
 
-#: src/handlers/callback.py:39
+#: src/handlers/callback.py:45
+msgid "universal_prompt_page_number"
+msgstr "#️⃣ Enter **page number** to go to"
+
+#: src/handlers/callback.py:54
 msgid "category_creation_cancelled"
 msgstr ""
 "❌ Category **won't be created**; you can create category from start menu or "
 "by sending a transaction that uses it"
 
-#: src/handlers/callback.py:65 src/handlers/callback.py:102
+#: src/handlers/callback.py:80 src/handlers/callback.py:117
 msgid "category_created_successfully"
 msgstr "🏷 New category \"`{0}`\" **created succesfully**"
 
-#: src/handlers/callback.py:72 src/handlers/message.py:275
+#: src/handlers/callback.py:87 src/handlers/message.py:275
 msgid "transaction_handling_in_process"
 msgstr "⚙️ Continuing to process your transaction, `{0}`"
 
-#: src/handlers/callback.py:84
+#: src/handlers/callback.py:99
 msgid "category_alias_creation_cancelled"
 msgstr ""
 "❌ **Cancelled**. Send the transaction again and change the category if "
 "neccesarry"
 
-#: src/handlers/callback.py:131
+#: src/handlers/callback.py:146
 msgid "category_alias_created_successfully"
 msgstr "__Thanks, I won't ask this again__"
 
-#: src/handlers/callback.py:151
+#: src/handlers/callback.py:166
 msgid "wallet_alias_creation_cancelled"
 msgstr ""
 "❌ **Cancelled**. Send the transaction again and change the wallet if "
 "neccesarry"
 
-#: src/handlers/callback.py:174
+#: src/handlers/callback.py:189
 msgid "wallet_alias_created_successfully"
 msgstr "__Thanks, I won't ask this again__"
 
-#: src/handlers/callback.py:236
+#: src/handlers/callback.py:272
 msgid "wallet_creation_cancelled"
 msgstr ""
 "❌ Wallet **won't be created**; you can create wallet from start menu or by "
@@ -101,7 +105,8 @@ msgstr ""
 msgid "command_start_component_wallet_info"
 msgstr "▶️ *{0}* at {1} {2}"
 
-#: src/handlers/message.py:68 src/menus/categories.py:195
+#: src/handlers/message.py:68 src/menus/categories.py:197
+#: src/menus/categories.py:222
 msgid "universal_component_not_shown_count"
 msgstr "(and {0} more..)"
 
@@ -140,8 +145,8 @@ msgstr ""
 "\n"
 "**Need help?** Type /help for tips and commands 🧠"
 
-#: src/handlers/message.py:134 src/menus/categories.py:268
-#: src/menus/categories.py:294
+#: src/handlers/message.py:134 src/menus/categories.py:280
+#: src/menus/categories.py:325 src/menus/categories.py:351
 msgid "back_to_main_menu_button"
 msgstr "◀️ Main menu"
 
@@ -220,24 +225,40 @@ msgid "non_unique_wallet_name_error"
 msgstr ""
 "❌ You already have a wallet with this name, please choose a unique one"
 
-#: src/handlers/message.py:333 src/menus/categories.py:18
+#: src/handlers/message.py:333 src/menus/categories.py:19
 msgid "got_empty_message_for_category"
 msgstr ""
 "🤔 I expected to get the name for a new category, but this doesn't seem like "
 "a text message"
 
-#: src/handlers/message.py:336 src/menus/categories.py:21
+#: src/handlers/message.py:336 src/menus/categories.py:22
 msgid "mutiple_word_category_name_error"
 msgstr ""
 "🤔 Sorry, category name can't have several words.. You can use underscores "
 "if you wish, `just_like_this`"
 
-#: src/handlers/message.py:347 src/menus/categories.py:32
+#: src/handlers/message.py:347 src/menus/categories.py:33
 msgid "non_unique_category_name_error"
 msgstr ""
 "❌ You already have a category with this name, please choose a unique one"
 
-#: src/handlers/message.py:366 src/handlers/message.py:371
+#: src/handlers/message.py:359
+#, fuzzy
+msgid "got_empty_message_for_page_number"
+msgstr ""
+"🤔 I expected to get the name for a new category, but this doesn't seem like "
+"a text message"
+
+#: src/handlers/message.py:365
+#, fuzzy
+msgid "non_numerical_page_number_error"
+msgstr "🔢 Transaction amount must be a number"
+
+#: src/handlers/message.py:377
+msgid "beamed_to_page_successfully"
+msgstr "🌀 **Beamed you** to page `{0}`!"
+
+#: src/handlers/message.py:396 src/handlers/message.py:401
 msgid "unexpected_msg_on_alias_prompt"
 msgstr ""
 "Please **choose** one of the options above! Or go back to the main menu by "
@@ -325,16 +346,16 @@ msgstr ""
 "Using wallet: {2}```\n"
 "After this you have `{3}{4}` in your wallet (`{2}`)"
 
-#: src/menus/categories.py:51
+#: src/menus/categories.py:52
 #, fuzzy
 msgid "category_edited_successfully"
 msgstr "🏷 New category \"`{0}`\" **created succesfully**"
 
-#: src/menus/categories.py:80
+#: src/menus/categories.py:81
 msgid "category_deleted_succesfully"
 msgstr "🗑 Category deleted succesfully"
 
-#: src/menus/categories.py:100
+#: src/menus/categories.py:101
 msgid "category_action_ownership_check_got_deleted"
 msgstr ""
 "❌ Sorry, something went wrong\n"
@@ -342,7 +363,7 @@ msgstr ""
 "It seems like this category **was deleted**, you can instead see and edit "
 "all your categories with /categories"
 
-#: src/menus/categories.py:102
+#: src/menus/categories.py:103
 msgid "category_action_ownership_check_failed"
 msgstr ""
 "❌ Sorry, something went wrong\n"
@@ -353,12 +374,12 @@ msgstr ""
 "\n"
 "You can see and edit all your categories with /categories"
 
-#: src/menus/categories.py:118
+#: src/menus/categories.py:119
 #, fuzzy
 msgid "category_action_edit_cancel"
 msgstr "◀️ Go back"
 
-#: src/menus/categories.py:121
+#: src/menus/categories.py:122
 #, fuzzy
 msgid "edit_category_prompt"
 msgstr ""
@@ -371,20 +392,20 @@ msgstr ""
 "\n"
 "😨 You **cannot** recover a category after deleting it!"
 
-#: src/menus/categories.py:132
+#: src/menus/categories.py:133
 msgid "category_action_view_component_transaction"
 msgstr "{0} {1} {2} [{3}]"
 
-#: src/menus/categories.py:158
+#: src/menus/categories.py:159
 #, fuzzy
 msgid "category_action_view_not_found_error"
 msgstr "◀️ Go back"
 
-#: src/menus/categories.py:180
+#: src/menus/categories.py:182
 msgid "universal_back_button"
 msgstr "◀️ Go back"
 
-#: src/menus/categories.py:183
+#: src/menus/categories.py:185
 msgid "category_action_view_no_transactions"
 msgstr ""
 "{0} Category **{1}**\n"
@@ -392,7 +413,7 @@ msgstr ""
 "\n"
 "Used in **no transactions**"
 
-#: src/menus/categories.py:197
+#: src/menus/categories.py:199
 msgid "category_action_view"
 msgstr ""
 "{0} Category **{1}**\n"
@@ -402,19 +423,19 @@ msgstr ""
 "```{4}```\n"
 "View all transactions with /transactions"
 
-#: src/menus/categories.py:215
+#: src/menus/categories.py:217
 msgid "category_action_view_component_aliases"
 msgstr "Sometimes called {0}"
 
-#: src/menus/categories.py:238
+#: src/menus/categories.py:245
 msgid "category_action_delete_approve"
 msgstr "🗑 Delete"
 
-#: src/menus/categories.py:240
+#: src/menus/categories.py:247
 msgid "category_action_delete_cancel"
 msgstr "◀️ Go back"
 
-#: src/menus/categories.py:243
+#: src/menus/categories.py:250
 msgid "delete_category_prompt"
 msgstr ""
 "🗑 **Delete** this category, \"`{0}`\"?\n"
@@ -426,14 +447,14 @@ msgstr ""
 "\n"
 "😨 You **cannot** recover a category after deleting it!"
 
-#: src/menus/categories.py:272
+#: src/menus/categories.py:284
 msgid "menu_categories_no_categories"
 msgstr ""
 "🏷 You have no categories yet. Start by creating a transaction!\n"
 "\n"
 "**Lost?** Type /help for info on usage 🧠"
 
-#: src/menus/categories.py:275
+#: src/menus/categories.py:287
 msgid "menu_categories_only_deleted"
 msgstr ""
 "🏷 You have no categories yet. Start by creating a transaction!\n"
@@ -442,13 +463,13 @@ msgstr ""
 "\n"
 "**Lost?** Type /help for info on usage 🧠"
 
-#: src/menus/categories.py:280
+#: src/menus/categories.py:301
 msgid "menu_categories_component_category_info"
 msgstr ""
 "- `{0}`; [👁](https://t.me/telecounterbot?start=cv_{1}) [✏️](https://t.me/"
 "telecounterbot?start=ce_{1}) [❌](https://t.me/telecounterbot?start=cd_{1})"
 
-#: src/menus/categories.py:286
+#: src/menus/categories.py:307
 msgid "menu_categories_template"
 msgstr ""
 "🏷 **Category overview**\n"
@@ -458,7 +479,7 @@ msgstr ""
 "\n"
 "__In total you have {1} categories__"
 
-#: src/menus/categories.py:289
+#: src/menus/categories.py:310
 msgid "menu_categories_component_deleted_amount"
 msgstr "__, as well as {0} deleted categories__"
 

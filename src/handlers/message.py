@@ -350,6 +350,36 @@ async def handle_expectation_new_category(session: AsyncSession,
     await create_category(session, user, _, event, raw_text)
 
 
+async def handle_expectation_page(session: AsyncSession, user: User, _, event):
+    """Handle page expectation."""
+    type_, msg_id = user.expectation["expect"]["data"]
+    raw_text = event.raw_text
+
+    if raw_text == "":
+        await event.respond(_("got_empty_message_for_page_number"))
+        return
+
+    try:
+        page = int(raw_text)
+    except ValueError:
+        await event.respond(_("non_numerical_page_number_error"))
+        return
+
+    if type_ == "c":
+        await categories.send_menu(
+            session, user, _, event, page, msg_id
+        )
+        user.expectation["expect"] = {"type": None, "data": None}
+        await session.commit()
+        await event.client.send_message(
+            entity=event.chat_id,
+            reply_to=msg_id,
+            message=_("beamed_to_page_successfully").format(str(page))
+        )
+    else:
+        raise Exception('Got unexpected data for expectation "page"')
+
+
 async def handle_expectation(session: AsyncSession, user: User, _, event):
     """Handle bot flow if data is expected from user."""
     expect = user.expectation["expect"]
@@ -374,6 +404,9 @@ async def handle_expectation(session: AsyncSession, user: User, _, event):
     if expect["type"] == "edit_category":
         await categories.handle_expectation_edit_category(
             session, user, _, event)
+
+    if expect["type"] == "page":
+        await handle_expectation_page(session, user, _, event)
 
     else:
         raise Exception("Got unexpected expectation type")

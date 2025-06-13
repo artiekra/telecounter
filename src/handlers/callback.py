@@ -30,6 +30,21 @@ async def update_user_language(event, new_language: str,
         await event.respond(_("tutorial"))
 
 
+async def universal_custom_page_input_workflow(
+    session: AsyncSession,
+    event,
+    user: User,
+    _,
+    type_: str,
+    msg_id: int
+) -> None:
+    """Ask user for a page to go to."""
+    user.expectation["expect"] = {"type": "page", "data": [type_, msg_id]}
+    await session.commit()
+
+    await event.respond(_("universal_prompt_page_number"))
+
+
 async def handle_command_category(session: AsyncSession, event,
                                   user: User, data: list, _) -> None:
     """Handle user pressing a button under category creation prompt msg."""
@@ -202,11 +217,17 @@ async def handle_command_page(session: AsyncSession, event,
 
     if data[1] == "c":
         msg_id = int(bytes.fromhex(data[2]).decode("utf-8"))
-        page = int(data[3])
-        await categories.send_menu(
-            session, user, _, event, page, msg_id
-        )
-
+        try:
+            page = int(data[3])
+        except IndexError:
+            page = None
+        if page:
+            await categories.send_menu(
+                session, user, _, event, page, msg_id
+            )
+            return
+        await universal_custom_page_input_workflow(
+            session, event, user, _, "c", msg_id)
     else:
         raise Exception('Got unexpected data for callback command "page"')
 

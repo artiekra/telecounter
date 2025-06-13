@@ -340,9 +340,10 @@ async def send_menu(session: AsyncSession, user: User, _,
     if page_count > 1:
         msg_id = str(message.id).encode("utf-8").hex()
         back_button_data = "page_c_" + msg_id + "_" + str(page-1)
+        main_button_data = "page_c_" + msg_id
         forward_button_data = "page_c_" + msg_id + "_" + str(page+1)
         pagination_buttons = [Button.inline("◀️", back_button_data),
-            Button.inline(f"{page} / {page_count}", b"menu_start"),
+            Button.inline(f"{page} / {page_count}", main_button_data),
             Button.inline("▶️", forward_button_data)]
 
     buttons = [
