@@ -1,3 +1,4 @@
+import math
 from datetime import datetime, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -250,9 +251,12 @@ async def delete_menu(session: AsyncSession, user: User, _, event,
                         buttons=buttons)
 
 
-async def send_menu(session: AsyncSession, user: User, _, event) -> None:
+async def send_menu(session: AsyncSession, user: User, _,
+                    event, page: int = 1, original_msg: int = None) -> None:
     """Send categories menu to the user."""
+    CATEGORIES_PER_PAGE = 3
 
+    # TODO: include pagination into a query
     categories = await session.execute(
         select(Category).where(Category.holder == user.id).
             where(Category.is_deleted == False)
@@ -260,6 +264,8 @@ async def send_menu(session: AsyncSession, user: User, _, event) -> None:
     categories = categories.scalars().all()
     categories = sorted(categories,
                         key=lambda x: x.transaction_count, reverse=True)
+
+    categories_count = len(categories)
 
     del_categories_count = await session.execute(
         select(func.count()).select_from(Category).where(
@@ -283,6 +289,15 @@ async def send_menu(session: AsyncSession, user: User, _, event) -> None:
             ), buttons=buttons)
         return
 
+    page_count = math.ceil(len(categories) / CATEGORIES_PER_PAGE)
+
+    if page < 1: page = 1
+    if page > page_count: page = page_count
+
+    categories = categories[
+        (page-1)*CATEGORIES_PER_PAGE:page*CATEGORIES_PER_PAGE
+    ]
+
     category_info = [_("menu_categories_component_category_info").format(
         x.name, x.id.hex()
     ) for x in categories]
@@ -290,14 +305,49 @@ async def send_menu(session: AsyncSession, user: User, _, event) -> None:
     category_info_str = "\n".join(category_info)
 
     content = _("menu_categories_template").format(
-        category_info_str, len(categories))
+        category_info_str, categories_count)
     if del_categories_count != 0:
         content += _("menu_categories_component_deleted_amount").format(
                 del_categories_count
             )
 
+    # get the id of newly sent message, and then add buttons according to that
+
+    pagination_buttons = []
+
+    if page_count > 1:
+        pagination_buttons = [Button.inline("◀️", b"none"),
+            Button.inline(f"{page} / {page_count}", b"none"),
+            Button.inline("▶️", b"none")]
+
     buttons = [
-        Button.inline(_("back_to_main_menu_button"),
-                      b"menu_start")
+        pagination_buttons,
+        [Button.inline(_("back_to_main_menu_button"),
+            b"menu_start")]
     ]
-    await event.respond(content, buttons=buttons)
+    if original_msg is None:
+        message = await event.respond(content, buttons=buttons)
+    else:
+        message = await event.client.edit_message(
+            entity=event.chat_id,
+            message=original_msg,
+            text=content,
+            buttons=buttons
+        )
+
+    pagination_buttons = []
+
+    if page_count > 1:
+        msg_id = str(message.id).encode("utf-8").hex()
+        back_button_data = "page_c_" + msg_id + "_" + str(page-1)
+        forward_button_data = "page_c_" + msg_id + "_" + str(page+1)
+        pagination_buttons = [Button.inline("◀️", back_button_data),
+            Button.inline(f"{page} / {page_count}", b"menu_start"),
+            Button.inline("▶️", forward_button_data)]
+
+    buttons = [
+        pagination_buttons,
+        [Button.inline(_("back_to_main_menu_button"),
+            b"menu_start")]
+    ]
+    await message.edit(content, buttons=buttons)

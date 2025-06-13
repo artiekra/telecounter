@@ -196,11 +196,26 @@ async def handle_command_action(session: AsyncSession, event,
         raise Exception('Got unexpected data for callback command "action"')
 
 
+async def handle_command_page(session: AsyncSession, event,
+                              user: User, data: list, _) -> None:
+    """Handle user pressing a pagination button."""
+
+    if data[1] == "c":
+        msg_id = int(bytes.fromhex(data[2]).decode("utf-8"))
+        page = int(data[3])
+        await categories.send_menu(
+            session, user, _, event, page, msg_id
+        )
+
+    else:
+        raise Exception('Got unexpected data for callback command "page"')
+
+
 def register_callback_handler(client, session_maker):
 
     @client.on(events.CallbackQuery)
     async def callback_handler(event):
-        data = event.data.decode('utf-8')
+        data = event.data.decode("utf-8")
 
         # get the user from DB
         telegram_id = event.sender_id
@@ -260,6 +275,9 @@ def register_callback_handler(client, session_maker):
                 user.expectation["expect"] = {"type": None, "data": None}
                 user.expectation["transaction"] = []
                 await handle_command_action(session, event, user, data, _)
+
+            elif command == "page":
+                await handle_command_page(session, event, user, data, _)
 
             else:
                 raise Exception("Got unexpected callback query command")
