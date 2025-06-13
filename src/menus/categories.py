@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -139,6 +139,7 @@ async def view_menu(session: AsyncSession, user: User, _, event,
                     uuid: bytes) -> None:
     """Send category view menu to the user."""
     MAX_TRANSACTIONS_SHOWN = 5
+    MAX_ALIASES_SHOWN = 5
 
     await event.delete()
 
@@ -172,8 +173,9 @@ async def view_menu(session: AsyncSession, user: User, _, event,
     if len(transactions) > MAX_TRANSACTIONS_SHOWN:
         transactions = transactions[:MAX_TRANSACTIONS_SHOWN]
 
-    formatted_created_on = datetime.utcfromtimestamp(
-        category.created_at).date().isoformat()
+    formatted_created_on = datetime.fromtimestamp(
+        category.created_at, tz=timezone.utc
+    ).strftime("%Y-%m-%d, %H:%M UTC")
 
     buttons = [
         Button.inline(_("universal_back_button"), b"menu_categories")
@@ -193,10 +195,34 @@ async def view_menu(session: AsyncSession, user: User, _, event,
         transaction_component += ("\n" +
             _("universal_component_not_shown_count").format(not_shown_count))
 
-    await event.respond(_("category_action_view").format(
+    content = _("category_action_view").format(
         category.icon, category.name, formatted_created_on,
         category.transaction_count, transaction_component
-    ), buttons=buttons)
+    )
+
+    # TODO: optimize to only select 5 latest
+    full_aliases = await session.execute(
+        select(CategoryAlias)
+        .where(CategoryAlias.category == uuid)
+    )
+    full_aliases = full_aliases.scalars().all()
+
+    aliases = full_aliases[::-1]
+    if len(aliases) > MAX_ALIASES_SHOWN:
+        aliases = aliases[:MAX_ALIASES_SHOWN]
+
+    if len(aliases) > 0:
+        content += ("\n\n" +
+            _("category_action_view_component_aliases").format(
+                ", ".join([f"`{x.alias}`" for x in aliases])
+            ))
+        if len(full_aliases) > MAX_ALIASES_SHOWN:
+            content += (" " +
+                _("universal_component_not_shown_count").format(
+                    len(full_aliases) - MAX_ALIASES_SHOWN
+                ))
+
+    await event.respond(content, buttons=buttons)
 
 
 async def delete_menu(session: AsyncSession, user: User, _, event,

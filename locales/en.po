@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-13 13:06+0300\n"
+"POT-Creation-Date: 2025-06-13 14:11+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -101,7 +101,7 @@ msgstr ""
 msgid "command_start_component_wallet_info"
 msgstr "▶️ *{0}* at {1} {2}"
 
-#: src/handlers/message.py:68 src/menus/categories.py:194
+#: src/handlers/message.py:68 src/menus/categories.py:195
 msgid "universal_component_not_shown_count"
 msgstr "(and {0} more..)"
 
@@ -140,8 +140,8 @@ msgstr ""
 "\n"
 "**Need help?** Type /help for tips and commands 🧠"
 
-#: src/handlers/message.py:134 src/menus/categories.py:248
-#: src/menus/categories.py:274
+#: src/handlers/message.py:134 src/menus/categories.py:268
+#: src/menus/categories.py:294
 msgid "back_to_main_menu_button"
 msgstr "◀️ Main menu"
 
@@ -375,16 +375,16 @@ msgstr ""
 msgid "category_action_view_component_transaction"
 msgstr "{0} {1} {2} [{3}]"
 
-#: src/menus/categories.py:157
+#: src/menus/categories.py:158
 #, fuzzy
 msgid "category_action_view_not_found_error"
 msgstr "◀️ Go back"
 
-#: src/menus/categories.py:179
+#: src/menus/categories.py:180
 msgid "universal_back_button"
 msgstr "◀️ Go back"
 
-#: src/menus/categories.py:182
+#: src/menus/categories.py:183
 msgid "category_action_view_no_transactions"
 msgstr ""
 "{0} Category **{1}**\n"
@@ -392,24 +392,29 @@ msgstr ""
 "\n"
 "Used in **no transactions**"
 
-#: src/menus/categories.py:196
+#: src/menus/categories.py:197
 msgid "category_action_view"
 msgstr ""
 "{0} Category **{1}**\n"
 "__Created on {2}__\n"
 "\n"
 "Used in **{3} transaction(s)**, latest being:\n"
-"```{4}```"
+"```{4}```\n"
+"View all transactions with /transactions"
 
-#: src/menus/categories.py:218
+#: src/menus/categories.py:215
+msgid "category_action_view_component_aliases"
+msgstr "Sometimes called {0}"
+
+#: src/menus/categories.py:238
 msgid "category_action_delete_approve"
 msgstr "🗑 Delete"
 
-#: src/menus/categories.py:220
+#: src/menus/categories.py:240
 msgid "category_action_delete_cancel"
 msgstr "◀️ Go back"
 
-#: src/menus/categories.py:223
+#: src/menus/categories.py:243
 msgid "delete_category_prompt"
 msgstr ""
 "🗑 **Delete** this category, \"`{0}`\"?\n"
@@ -421,14 +426,14 @@ msgstr ""
 "\n"
 "😨 You **cannot** recover a category after deleting it!"
 
-#: src/menus/categories.py:252
+#: src/menus/categories.py:272
 msgid "menu_categories_no_categories"
 msgstr ""
 "🏷 You have no categories yet. Start by creating a transaction!\n"
 "\n"
 "**Lost?** Type /help for info on usage 🧠"
 
-#: src/menus/categories.py:255
+#: src/menus/categories.py:275
 msgid "menu_categories_only_deleted"
 msgstr ""
 "🏷 You have no categories yet. Start by creating a transaction!\n"
@@ -437,13 +442,13 @@ msgstr ""
 "\n"
 "**Lost?** Type /help for info on usage 🧠"
 
-#: src/menus/categories.py:260
+#: src/menus/categories.py:280
 msgid "menu_categories_component_category_info"
 msgstr ""
 "- `{0}`; [👁](https://t.me/telecounterbot?start=cv_{1}) [✏️](https://t.me/"
 "telecounterbot?start=ce_{1}) [❌](https://t.me/telecounterbot?start=cd_{1})"
 
-#: src/menus/categories.py:266
+#: src/menus/categories.py:286
 msgid "menu_categories_template"
 msgstr ""
 "🏷 **Category overview**\n"
@@ -453,7 +458,7 @@ msgstr ""
 "\n"
 "__In total you have {1} categories__"
 
-#: src/menus/categories.py:269
+#: src/menus/categories.py:289
 msgid "menu_categories_component_deleted_amount"
 msgstr "__, as well as {0} deleted categories__"
 
