@@ -60,16 +60,12 @@ async def handle_expectation_edit_category(session: AsyncSession,
 
 async def export(session: AsyncSession, event, user: User, _ ):
     """Handle export callback - send back user categories as csv."""
+    await event.respond(_("export_started"))
+
     result = await session.execute(
         select(Category).where(Category.holder == user.id)
     )
     categories = result.scalars().all()
-
-    if not categories:
-        await event.respond(_("no_categories_found"))
-        return
-
-    await event.respond(_("export_started"))
 
     # prepare csv in memory
     csv_buffer = StringIO()
