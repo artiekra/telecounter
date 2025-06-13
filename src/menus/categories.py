@@ -68,6 +68,13 @@ async def handle_action(session: AsyncSession, event,
         category = category.scalar_one_or_none()
         category.is_deleted = True
         session.add(category)
+
+        await session.execute(
+            delete(CategoryAlias).where(
+                CategoryAlias.category == category.id
+            )
+        )
+
         await session.commit()
 
         await event.edit(_("category_deleted_succesfully"))
@@ -80,17 +87,19 @@ async def handle_action(session: AsyncSession, event,
 
 
 async def check_ownership(session: AsyncSession, user: User,
-                          uuid: bytes) -> bool:
+                          _, event, uuid: bytes) -> bool:
     """Check if category belongs to User, return True if so."""
     result = await session.execute(
         select(Category).where(Category.id == uuid, Category.holder == user.id)
     )
     category = result.scalar_one_or_none()
 
-    if category:
+    if category and not category.is_deleted:
         return True
-
-    await event.respond(_("category_action_ownership_check_failed"))
+    elif category and category.is_deleted:
+        await event.respond(_("category_action_ownership_check_got_deleted"))
+    else:
+        await event.respond(_("category_action_ownership_check_failed"))
 
 
 async def edit_menu(session: AsyncSession, user: User, _, event,
@@ -98,7 +107,7 @@ async def edit_menu(session: AsyncSession, user: User, _, event,
     """Send category edit menu to the user."""
     await event.delete()
 
-    is_owner = await check_ownership(session, user, uuid)
+    is_owner = await check_ownership(session, user, _, event, uuid)
     if not is_owner:
         return
 
@@ -133,7 +142,7 @@ async def view_menu(session: AsyncSession, user: User, _, event,
 
     await event.delete()
 
-    is_owner = await check_ownership(session, user, uuid)
+    is_owner = await check_ownership(session, user, _, event, uuid)
     if not is_owner:
         return
 
@@ -195,7 +204,7 @@ async def delete_menu(session: AsyncSession, user: User, _, event,
     """Send category delete menu to the user."""
     await event.delete()
 
-    is_owner = await check_ownership(session, user, uuid)
+    is_owner = await check_ownership(session, user, _, event, uuid)
     if not is_owner:
         return
 
@@ -235,12 +244,17 @@ async def send_menu(session: AsyncSession, user: User, _, event) -> None:
     del_categories_count = del_categories_count.scalar_one()
 
     if len(categories) == 0:
+        buttons = [
+            Button.inline(_("back_to_main_menu_button"),
+                        b"menu_start")
+        ]
         if del_categories_count == 0:
-            await event.respond(_("menu_categories_no_categories"))
+            await event.respond(_("menu_categories_no_categories"),
+                                buttons=buttons)
         else:
             await event.respond(_("menu_categories_only_deleted").format(
                 del_categories_count
-            ))
+            ), buttons=buttons)
         return
 
     category_info = [_("menu_categories_component_category_info").format(
@@ -248,15 +262,16 @@ async def send_menu(session: AsyncSession, user: User, _, event) -> None:
     ) for x in categories]
 
     category_info_str = "\n".join(category_info)
-    # if del_categories_count != 0:
-    #     category_info_str += "\n" +\
-    #         _("menu_categories_component_deleted_amount").format(
-    #             del_categories_count
-    #         )
+
+    content = _("menu_categories_template").format(
+        category_info_str, len(categories))
+    if del_categories_count != 0:
+        content += _("menu_categories_component_deleted_amount").format(
+                del_categories_count
+            )
 
     buttons = [
         Button.inline(_("back_to_main_menu_button"),
                       b"menu_start")
     ]
-    await event.respond(_("menu_categories_template").format(
-        category_info_str, len(categories)), buttons=buttons)
+    await event.respond(content, buttons=buttons)

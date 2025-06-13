@@ -31,6 +31,7 @@ async def find_category_by_name(
     # get all categories
     result = await session.execute(
         select(Category).where(Category.holder == user.id)
+        .where(Category.is_deleted == False)
     )
     categories = result.scalars().all()
 
@@ -70,6 +71,7 @@ async def find_wallet_by_name(
     # get all wallets
     result = await session.execute(
         select(Wallet).where(Wallet.holder == user.id)
+        .where(Wallet.is_deleted == False)
     )
     wallets = result.scalars().all()
 
