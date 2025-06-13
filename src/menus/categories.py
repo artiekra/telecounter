@@ -1,4 +1,6 @@
+import csv
 import math
+from io import StringIO, BytesIO
 from datetime import datetime, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -54,6 +56,45 @@ async def handle_expectation_edit_category(session: AsyncSession,
 
     user.expectation["expect"] = {"type": None, "data": None}
     await session.commit()
+
+
+async def export(session: AsyncSession, event, user: User, _ ):
+    """Handle export callback - send back user categories as csv."""
+    result = await session.execute(
+        select(Category).where(Category.holder == user.id)
+    )
+    categories = result.scalars().all()
+
+    if not categories:
+        await event.respond(_("no_categories_found"))
+        return
+
+    await event.respond(_("export_started"))
+
+    # prepare csv in memory
+    csv_buffer = StringIO()
+    writer = csv.writer(csv_buffer)
+    writer.writerow(["created_at", "name", "transaction_count", "is_deleted"])
+
+    for category in categories:
+
+        created_at = datetime.utcfromtimestamp(category.created_at).isoformat()
+        is_deleted = "false" if not category.is_deleted else "true"
+
+        writer.writerow([
+            created_at,
+            category.name,
+            category.transaction_count,
+            is_deleted
+        ])
+
+    # convert to bytes for sending
+    csv_bytes = BytesIO(csv_buffer.getvalue().encode("utf-8"))
+
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    csv_bytes.name = f"export_categories_{today}.csv"
+
+    await event.respond(_("export_categories_caption"), file=csv_bytes)
 
 
 async def handle_action(session: AsyncSession, event,
@@ -254,7 +295,7 @@ async def delete_menu(session: AsyncSession, user: User, _, event,
 async def send_menu(session: AsyncSession, user: User, _,
                     event, page: int = 1, original_msg: int = None) -> None:
     """Send categories menu to the user."""
-    CATEGORIES_PER_PAGE = 3
+    CATEGORIES_PER_PAGE = 20
 
     # TODO: include pagination into a query
     categories = await session.execute(
@@ -322,8 +363,8 @@ async def send_menu(session: AsyncSession, user: User, _,
 
     buttons = [
         pagination_buttons,
-        [Button.inline(_("back_to_main_menu_button"),
-            b"menu_start")]
+        [Button.inline(_("export_button"), b"export_categories"),
+         Button.inline(_("back_to_main_menu_button"), b"menu_start")]
     ]
     if original_msg is None:
         message = await event.respond(content, buttons=buttons)
@@ -348,7 +389,7 @@ async def send_menu(session: AsyncSession, user: User, _,
 
     buttons = [
         pagination_buttons,
-        [Button.inline(_("back_to_main_menu_button"),
-            b"menu_start")]
+        [Button.inline(_("export_button"), b"export_categories"),
+         Button.inline(_("back_to_main_menu_button"), b"menu_start")]
     ]
     await message.edit(content, buttons=buttons)

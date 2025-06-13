@@ -232,6 +232,16 @@ async def handle_command_page(session: AsyncSession, event,
         raise Exception('Got unexpected data for callback command "page"')
 
 
+async def handle_command_export(session: AsyncSession, event,
+                                user: User, data: list, _) -> None:
+    """Handle user pressing an export button."""
+
+    if data[1] == "categories":
+        await categories.export(session, event, user, _)
+    else:
+        raise Exception('Got unexpected data for callback command "export"')
+
+
 def register_callback_handler(client, session_maker):
 
     @client.on(events.CallbackQuery)
@@ -299,6 +309,9 @@ def register_callback_handler(client, session_maker):
 
             elif command == "page":
                 await handle_command_page(session, event, user, data, _)
+
+            elif command == "export":
+                await handle_command_export(session, event, user, data, _)
 
             else:
                 raise Exception("Got unexpected callback query command")
