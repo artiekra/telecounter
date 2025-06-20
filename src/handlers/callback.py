@@ -12,6 +12,8 @@ from handlers.transaction import (register_transaction, create_wallet,
 from handlers.message import COMMANDS
 import menus.wallets as wallets
 import menus.categories as categories
+import menus.transactions as transactions
+import menus.stats as stats
 
 
 async def update_user_language(event, new_language: str,
@@ -232,6 +234,10 @@ async def handle_command_page(session: AsyncSession, event,
             await wallets.send_menu(
                 session, user, _, event, page, msg_id
             )
+        elif data[1] == "t":
+            await transactions.send_menu(
+                session, user, _, event, page, msg_id
+            )
         return
     await universal_custom_page_input_workflow(
         session, event, user, _, data[1], msg_id)
@@ -245,6 +251,8 @@ async def handle_command_export(session: AsyncSession, event,
         await categories.export(session, event, user, _)
     elif data[1] == "wallets":
         await wallets.export(session, event, user, _)
+    elif data[1] == "transactions":
+        await transactions.export(session, event, user, _)
     else:
         raise Exception('Got unexpected data for callback command "export"')
 

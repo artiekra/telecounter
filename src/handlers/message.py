@@ -105,6 +105,10 @@ async def handle_data(session: AsyncSession, user: User,
             await wallets.view_menu(session, user, _, event, uuid)
         case "wd":
             await wallets.delete_menu(session, user, _, event, uuid)
+        case "tv":
+            await transactions.view_menu(session, user, _, event, uuid)
+        case "td":
+            await transactions.delete_menu(session, user, _, event, uuid)
         case _:
             await send_start_menu(session, user, _, event)
 
@@ -377,6 +381,10 @@ async def handle_expectation_page(session: AsyncSession, user: User, _, event):
         )
     elif type_ == "w":
         await wallets.send_menu(
+            session, user, _, event, page, msg_id
+        )
+    elif type_ == "t":
+        await transactions.send_menu(
             session, user, _, event, page, msg_id
         )
     user.expectation["expect"] = {"type": None, "data": None}

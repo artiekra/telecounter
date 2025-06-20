@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-06-13 23:00+0300\n"
+"POT-Creation-Date: 2025-06-20 22:56+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -19,15 +19,15 @@ msgstr ""
 "Generated-By: Babel 2.17.0\n"
 "X-Generator: Poedit 3.6\n"
 
-#: src/handlers/callback.py:26
+#: src/handlers/callback.py:28
 msgid "language_set_popup"
 msgstr "Language set to English"
 
-#: src/handlers/callback.py:27
+#: src/handlers/callback.py:29
 msgid "language_set_message"
 msgstr "🇬🇧  Language set succesfully! You can change it later with /language"
 
-#: src/handlers/callback.py:30
+#: src/handlers/callback.py:32
 msgid "tutorial"
 msgstr ""
 "👋 **Hey there!** And welcome to the bot :>\n"
@@ -45,45 +45,45 @@ msgstr ""
 "will prompt you for currency and create it for further use; same for the "
 "income/spend categories!"
 
-#: src/handlers/callback.py:45
+#: src/handlers/callback.py:47
 msgid "universal_prompt_page_number"
 msgstr "#️⃣ Enter **page number** to go to"
 
-#: src/handlers/callback.py:54
+#: src/handlers/callback.py:56
 msgid "category_creation_cancelled"
 msgstr ""
 "❌ Category **won't be created**; you can create category from start menu or "
 "by sending a transaction that uses it"
 
-#: src/handlers/callback.py:80 src/handlers/callback.py:117
+#: src/handlers/callback.py:82 src/handlers/callback.py:119
 msgid "category_created_successfully"
 msgstr "🏷 New category \"`{0}`\" **created succesfully**"
 
-#: src/handlers/callback.py:87 src/handlers/message.py:281
+#: src/handlers/callback.py:89 src/handlers/message.py:285
 msgid "transaction_handling_in_process"
 msgstr "⚙️ Continuing to process your transaction, `{0}`"
 
-#: src/handlers/callback.py:99
+#: src/handlers/callback.py:101
 msgid "category_alias_creation_cancelled"
 msgstr ""
 "❌ **Cancelled**. Send the transaction again and change the category if "
 "neccesarry"
 
-#: src/handlers/callback.py:146
+#: src/handlers/callback.py:148
 msgid "category_alias_created_successfully"
 msgstr "__Thanks, I won't ask this again__"
 
-#: src/handlers/callback.py:166
+#: src/handlers/callback.py:168
 msgid "wallet_alias_creation_cancelled"
 msgstr ""
 "❌ **Cancelled**. Send the transaction again and change the wallet if "
 "neccesarry"
 
-#: src/handlers/callback.py:189
+#: src/handlers/callback.py:191
 msgid "wallet_alias_created_successfully"
 msgstr "__Thanks, I won't ask this again__"
 
-#: src/handlers/callback.py:289
+#: src/handlers/callback.py:297
 msgid "wallet_creation_cancelled"
 msgstr ""
 "❌ Wallet **won't be created**; you can create wallet from start menu or by "
@@ -146,13 +146,15 @@ msgstr ""
 "\n"
 "**Need help?** Type /help for tips and commands 🧠"
 
-#: src/handlers/message.py:140 src/menus/categories.py:315
+#: src/handlers/message.py:144 src/menus/categories.py:315
 #: src/menus/categories.py:361 src/menus/categories.py:387
-#: src/menus/wallets.py:349 src/menus/wallets.py:395 src/menus/wallets.py:421
+#: src/menus/transactions.py:187 src/menus/transactions.py:235
+#: src/menus/transactions.py:261 src/menus/wallets.py:349
+#: src/menus/wallets.py:395 src/menus/wallets.py:421
 msgid "back_to_main_menu_button"
 msgstr "◀️ Main menu"
 
-#: src/handlers/message.py:143
+#: src/handlers/message.py:147
 msgid "command_help"
 msgstr ""
 "💵 **Record transactions** in the following way:\n"
@@ -165,20 +167,20 @@ msgstr ""
 "whenever you use a category or a wallet that wasn't mentioned before, bot "
 "will prompt you to create it! :>"
 
-#: src/handlers/message.py:191
+#: src/handlers/message.py:195
 msgid "unknown_command"
 msgstr ""
 "❌  Sorry, **i don't seem to know** what {0} means..\n"
 "\n"
 "See info about bot usage with /help; if necessary you can get support at {1}"
 
-#: src/handlers/message.py:217
+#: src/handlers/message.py:221
 msgid "got_empty_message_for_transaction"
 msgstr ""
 "🤔 I expected to get info about a new transaction, but this doesn't seem "
 "like a text message"
 
-#: src/handlers/message.py:222
+#: src/handlers/message.py:226
 msgid "info_omitted_for_transaction_error"
 msgstr ""
 "🤔 To **record a transaction**, i need to get at least the amount, category "
@@ -186,11 +188,11 @@ msgstr ""
 "\n"
 "Please re-send the transaction with all the neccesarry info"
 
-#: src/handlers/message.py:234
+#: src/handlers/message.py:238
 msgid "non_numerical_sum_error"
 msgstr "🔢 Transaction amount must be a number"
 
-#: src/handlers/message.py:241
+#: src/handlers/message.py:245
 msgid "no_sign_specified_for_sum"
 msgstr ""
 "📊 Please specify if its income or a spend! Do that by putting a sign in "
@@ -198,70 +200,70 @@ msgstr ""
 "```-5 food card\n"
 "+25 gift cash```"
 
-#: src/handlers/message.py:274
+#: src/handlers/message.py:278
 msgid "wallet_created_successfully"
 msgstr "👛 New wallet \"`{0}`\" **created succesfully**"
 
-#: src/handlers/message.py:293 src/menus/wallets.py:26
+#: src/handlers/message.py:297 src/menus/wallets.py:26
 msgid "got_empty_message_for_wallet"
 msgstr ""
 "🤔 I expected to get info about a new wallet, but this doesn't seem like a "
 "text message"
 
-#: src/handlers/message.py:302 src/menus/wallets.py:35
+#: src/handlers/message.py:306 src/menus/wallets.py:35
 msgid "unspecified_wallet_name_error"
 msgstr "❌ Please specify **the name** for your wallet"
 
-#: src/handlers/message.py:306 src/menus/wallets.py:39
+#: src/handlers/message.py:310 src/menus/wallets.py:39
 msgid "unsupported_currency_error"
 msgstr ""
 "❓ Sorry, I don't seem to know `{0}` currency. Please write **the code of "
 "your currency**, like `USD`, `EUR`, `UAH`, `RUB`, etc.."
 
-#: src/handlers/message.py:314 src/menus/wallets.py:47
+#: src/handlers/message.py:318 src/menus/wallets.py:47
 msgid "non_numerical_init_sum_error"
 msgstr "🔢 Initial amount for a wallet must be a number"
 
-#: src/handlers/message.py:325 src/menus/wallets.py:59
+#: src/handlers/message.py:329 src/menus/wallets.py:59
 msgid "non_unique_wallet_name_error"
 msgstr ""
 "❌ You already have a wallet with this name, please choose a unique one"
 
-#: src/handlers/message.py:339 src/menus/categories.py:21
+#: src/handlers/message.py:343 src/menus/categories.py:21
 msgid "got_empty_message_for_category"
 msgstr ""
 "🤔 I expected to get the name for a new category, but this doesn't seem like "
 "a text message"
 
-#: src/handlers/message.py:342 src/menus/categories.py:24
+#: src/handlers/message.py:346 src/menus/categories.py:24
 msgid "mutiple_word_category_name_error"
 msgstr ""
 "🤔 Sorry, category name can't have several words.. You can use underscores "
 "if you wish, `just_like_this`"
 
-#: src/handlers/message.py:353 src/menus/categories.py:35
+#: src/handlers/message.py:357 src/menus/categories.py:35
 msgid "non_unique_category_name_error"
 msgstr ""
 " You already have a category with this name, please choose a unique one"
 
-#: src/handlers/message.py:365
+#: src/handlers/message.py:369
 msgid "got_empty_message_for_page_number"
 msgstr ""
 "🤔 I expected to get the page number to beam you to, but this doesn't seem "
 "like a text message.. Enter a correct page number or go back to main menu by "
 "using /start"
 
-#: src/handlers/message.py:371
+#: src/handlers/message.py:375
 msgid "non_numerical_page_number_error"
 msgstr ""
 "❌ Page **must be** a number! Enter a correct page number or go back to main "
 "menu by using /start"
 
-#: src/handlers/message.py:387
+#: src/handlers/message.py:395
 msgid "beamed_to_page_successfully"
 msgstr "🌀 **Beamed you** to page `{0}`!"
 
-#: src/handlers/message.py:404 src/handlers/message.py:409
+#: src/handlers/message.py:412 src/handlers/message.py:417
 msgid "unexpected_msg_on_alias_prompt"
 msgstr ""
 "Please **choose** one of the options above! Or go back to the main menu by "
@@ -353,7 +355,8 @@ msgstr ""
 msgid "category_edited_successfully"
 msgstr "✅ Category name **changed succesfully**! It is now `{0}`"
 
-#: src/menus/categories.py:63 src/menus/wallets.py:91
+#: src/menus/categories.py:63 src/menus/transactions.py:16
+#: src/menus/wallets.py:91
 msgid "export_started"
 msgstr "⚙️ Started **exporting data**, please wait.."
 
@@ -406,7 +409,8 @@ msgstr ""
 "\n"
 "The category you are trying to view info about couldn't be found."
 
-#: src/menus/categories.py:218 src/menus/wallets.py:250
+#: src/menus/categories.py:218 src/menus/transactions.py:133
+#: src/menus/wallets.py:250
 msgid "universal_back_button"
 msgstr "◀️ Go back"
 
@@ -489,9 +493,110 @@ msgid "menu_categories_component_deleted_amount"
 msgstr "__, as well as {0} deleted categories__"
 
 #: src/menus/categories.py:360 src/menus/categories.py:386
+#: src/menus/transactions.py:234 src/menus/transactions.py:260
 #: src/menus/wallets.py:394 src/menus/wallets.py:420
 msgid "export_button"
 msgstr " 📥 Export"
+
+#: src/menus/stats.py:8
+msgid "feature_under_development"
+msgstr ""
+"😅 Sorry, this feature is still under development, please wait a bit :>"
+
+#: src/menus/transactions.py:50
+#, fuzzy
+msgid "export_transactions_caption"
+msgstr "📥 Your wallets exported **succesfully**!"
+
+#: src/menus/transactions.py:75
+#, fuzzy
+msgid "transaction_deleted_succesfully"
+msgstr "🗑 Category deleted succesfully"
+
+#: src/menus/transactions.py:95
+#, fuzzy
+msgid "transaction_action_ownership_check_got_deleted"
+msgstr ""
+"❌ Sorry, something went wrong\n"
+"\n"
+"It seems like this category **was deleted**, you can instead see and edit "
+"all your categories with /categories"
+
+#: src/menus/transactions.py:97
+#, fuzzy
+msgid "transaction_action_ownership_check_failed"
+msgstr ""
+"❌ Sorry, something went wrong\n"
+"\n"
+"It seems like you are **not the owner** of this category, maybe you tried "
+"editing someone else's category by pressing a button on a forwarded "
+"message?\n"
+"\n"
+"You can see and edit all your categories with /categories"
+
+#: src/menus/transactions.py:120
+#, fuzzy
+msgid "transaction_action_view_not_found_error"
+msgstr ""
+"❌ Sorry, something went wrong\n"
+"\n"
+"The category you are trying to view info about couldn't be found."
+
+#: src/menus/transactions.py:135
+msgid "transaction_action_view"
+msgstr ""
+"{0} Transaction, `{1} {2}`\n"
+"__Created on {3}__\n"
+"\n"
+"Wallet: {4} [edit]\n"
+"Category: {5} [edit]"
+
+#: src/menus/transactions.py:159
+#, fuzzy
+msgid "transaction_action_delete_approve"
+msgstr "🗑 Delete"
+
+#: src/menus/transactions.py:161
+#, fuzzy
+msgid "transaction_action_delete_cancel"
+msgstr "◀️ Go back"
+
+#: src/menus/transactions.py:164
+#, fuzzy
+msgid "delete_transaction_prompt"
+msgstr ""
+"🗑 **Delete** this category, \"`{0}`\"?\n"
+"\n"
+"Transactions using this category **WILL NOT** be deleted, but you:\n"
+"- Won't be able to create new transactions with this category\n"
+"- Won't see any info about this category\n"
+"- This category won't be included in stats\n"
+"\n"
+"😨 You **cannot** recover a category after deleting it!"
+
+#: src/menus/transactions.py:190
+msgid "menu_transactions_no_transactions"
+msgstr ""
+"📜 You have no transactions yet. Start by creating it!\n"
+"\n"
+"**Lost?** Type /help for info on usage 🧠"
+
+#: src/menus/transactions.py:211
+msgid "menu_transactions_component_transaction_info"
+msgstr ""
+"{0} `{1} {2}` [{3}, {4}] [👁](https://t.me/telecounterbot?start=tv_{5}) [❌]"
+"(https://t.me/telecounterbot?start=td_{5})"
+
+#: src/menus/transactions.py:220
+msgid "menu_transactions_template"
+msgstr ""
+"📜 **Transaction overview**\n"
+"Press on emoji to: (👁) view (❌) delete individual transactions! You can "
+"also press the category or wallet name to view info about them\n"
+"\n"
+"{0}\n"
+"\n"
+"__In total you have {1} transactions__"
 
 #: src/menus/wallets.py:80
 msgid "wallet_edited_successfully"
@@ -602,14 +707,14 @@ msgstr ""
 #: src/menus/wallets.py:353
 msgid "menu_wallets_no_wallets"
 msgstr ""
-"🏷 You have no wallets yet. Start by creating a transaction!\n"
+"👛 You have no wallets yet. Start by creating a transaction!\n"
 "\n"
 "**Lost?** Type /help for info on usage 🧠"
 
 #: src/menus/wallets.py:356
 msgid "menu_wallets_only_deleted"
 msgstr ""
-"🏷 You have no wallets yet. Start by creating a transaction!\n"
+"👛 You have no wallets yet. Start by creating a transaction!\n"
 "\n"
 "__You have {0} deleted wallets__\n"
 "\n"
@@ -625,7 +730,7 @@ msgstr ""
 #: src/menus/wallets.py:376
 msgid "menu_wallets_template"
 msgstr ""
-"🏷 **Wallet overview**\n"
+"👛 **Wallet overview**\n"
 "Press on emoji to: (👁) view (✏️) edit (❌) delete individual wallets!\n"
 "\n"
 "{0}\n"
@@ -635,6 +740,46 @@ msgstr ""
 #: src/menus/wallets.py:379
 msgid "menu_wallets_component_deleted_amount"
 msgstr "__, as well as {0} deleted wallets__"
+
+#, fuzzy
+#~ msgid "unspecified_transaction_name_error"
+#~ msgstr "❌ Please specify **the name** for your wallet"
+
+#, fuzzy
+#~ msgid "non_unique_transaction_name_error"
+#~ msgstr ""
+#~ " You already have a category with this name, please choose a unique one"
+
+#, fuzzy
+#~ msgid "transaction_edited_successfully"
+#~ msgstr "✅ Category name **changed succesfully**! It is now `{0}`"
+
+#, fuzzy
+#~ msgid "transaction_action_edit_cancel"
+#~ msgstr "❌ Cancel"
+
+#, fuzzy
+#~ msgid "edit_transaction_prompt"
+#~ msgstr ""
+#~ "🏷 Editing **the name** of a category\n"
+#~ "\n"
+#~ "Please send me a new name for it!"
+
+#, fuzzy
+#~ msgid "transaction_action_view_component_transaction"
+#~ msgstr "{0} {1} {2} [{3}]"
+
+#, fuzzy
+#~ msgid "transaction_action_view_no_transactions"
+#~ msgstr ""
+#~ "{0} Category **{1}**\n"
+#~ "__Created on {2}__\n"
+#~ "\n"
+#~ "Used in **no transactions**"
+
+#, fuzzy
+#~ msgid "transaction_action_view_component_aliases"
+#~ msgstr "💬 Sometimes called {0}"
 
 #~ msgid "mutiple_word_wallet_name_error"
 #~ msgstr ""

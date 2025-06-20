@@ -1,9 +1,3 @@
-# TODO: case insensitivity
-# TODO: suggest converting when editing wallet and changing currency
-# TODO: remove aliases on rename
-# TODO: add logging
-# TODO: put all the category/wallet actions in one place and access it through
-# a link in the name of that category/wallet?
 import os
 import time
 import uuid
