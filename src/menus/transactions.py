@@ -57,17 +57,8 @@ async def handle_action(session: AsyncSession, event,
     if data[1][1] == "d":
         uuid = bytes.fromhex(data[2])
 
-        transaction = await session.execute(
-            select(Transaction).where(Transaction.id == uuid)
-        )
-        transaction = transaction.scalar_one_or_none()
-        transaction.is_deleted = True
-        session.add(transaction)
-
         await session.execute(
-            delete(TransactionAlias).where(
-                TransactionAlias.transaction == transaction.id
-            )
+            delete(Transaction).where(Transaction.id == uuid)
         )
 
         await session.commit()
@@ -133,7 +124,8 @@ async def view_menu(session: AsyncSession, user: User, _, event,
     ]
     await event.respond(_("transaction_action_view").format(
         emoji_indicator, transaction.sum, transaction.wallet.currency,
-        formatted_datetime, transaction.wallet.name, transaction.category.name
+        formatted_datetime, transaction.wallet.name, transaction.category.name,
+        transaction.wallet.id.hex(), transaction.category.id.hex()
     ), buttons=buttons)
     return
 
@@ -147,19 +139,13 @@ async def delete_menu(session: AsyncSession, user: User, _, event,
     if not is_owner:
         return
 
-    name = await session.execute(
-        select(Transaction.name)
-        .where(Transaction.id == uuid)
-    )
-    name = name.scalar_one_or_none()
-
     buttons = [
         Button.inline(_("transaction_action_delete_approve"),
-                      "action_wd_"+uuid.hex()),
+                      "action_td_"+uuid.hex()),
         Button.inline(_("transaction_action_delete_cancel"),
                       b"menu_transactions")
     ]
-    await event.respond(_("delete_transaction_prompt").format(name),
+    await event.respond(_("delete_transaction_prompt"),
                         buttons=buttons)
 
 

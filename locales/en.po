@@ -504,43 +504,38 @@ msgstr ""
 "😅 Sorry, this feature is still under development, please wait a bit :>"
 
 #: src/menus/transactions.py:50
-#, fuzzy
 msgid "export_transactions_caption"
-msgstr "📥 Your wallets exported **succesfully**!"
+msgstr "📥 Your transactions exported **succesfully**!"
 
 #: src/menus/transactions.py:75
-#, fuzzy
 msgid "transaction_deleted_succesfully"
-msgstr "🗑 Category deleted succesfully"
+msgstr "🗑 Transaction deleted succesfully"
 
 #: src/menus/transactions.py:95
-#, fuzzy
 msgid "transaction_action_ownership_check_got_deleted"
 msgstr ""
 "❌ Sorry, something went wrong\n"
 "\n"
-"It seems like this category **was deleted**, you can instead see and edit "
-"all your categories with /categories"
+"It seems like this transaction **was deleted**, you can instead see and edit "
+"all your transactions with /transactions"
 
 #: src/menus/transactions.py:97
-#, fuzzy
 msgid "transaction_action_ownership_check_failed"
 msgstr ""
 "❌ Sorry, something went wrong\n"
 "\n"
-"It seems like you are **not the owner** of this category, maybe you tried "
-"editing someone else's category by pressing a button on a forwarded "
+"It seems like you are **not the owner** of this transaction, maybe you tried "
+"editing someone else's transaction by pressing a button on a forwarded "
 "message?\n"
 "\n"
-"You can see and edit all your categories with /categories"
+"You can see and edit all your transactions with /transactions"
 
 #: src/menus/transactions.py:120
-#, fuzzy
 msgid "transaction_action_view_not_found_error"
 msgstr ""
 "❌ Sorry, something went wrong\n"
 "\n"
-"The category you are trying to view info about couldn't be found."
+"The transaction you are trying to view info about couldn't be found."
 
 #: src/menus/transactions.py:135
 msgid "transaction_action_view"
@@ -548,31 +543,23 @@ msgstr ""
 "{0} Transaction, `{1} {2}`\n"
 "__Created on {3}__\n"
 "\n"
-"Wallet: {4} [edit]\n"
-"Category: {5} [edit]"
+"Wallet: [{4}](https://t.me/telecounterbot?start=wv_{6})\n"
+"Category: [{5}](https://t.me/telecounterbot?start=cv_{7})"
 
 #: src/menus/transactions.py:159
-#, fuzzy
 msgid "transaction_action_delete_approve"
 msgstr "🗑 Delete"
 
 #: src/menus/transactions.py:161
-#, fuzzy
 msgid "transaction_action_delete_cancel"
 msgstr "◀️ Go back"
 
 #: src/menus/transactions.py:164
-#, fuzzy
 msgid "delete_transaction_prompt"
 msgstr ""
-"🗑 **Delete** this category, \"`{0}`\"?\n"
+"🗑 **Delete** this transaction?\n"
 "\n"
-"Transactions using this category **WILL NOT** be deleted, but you:\n"
-"- Won't be able to create new transactions with this category\n"
-"- Won't see any info about this category\n"
-"- This category won't be included in stats\n"
-"\n"
-"😨 You **cannot** recover a category after deleting it!"
+"😨 You **cannot** recover a transaction after deleting it!"
 
 #: src/menus/transactions.py:190
 msgid "menu_transactions_no_transactions"

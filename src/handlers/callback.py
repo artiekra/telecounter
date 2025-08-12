@@ -212,6 +212,9 @@ async def handle_command_action(session: AsyncSession, event,
     if data[1][0] == "w":
         await wallets.handle_action(session, event, user, data, _)
 
+    if data[1][0] == "t":
+        await transactions.handle_action(session, event, user, data, _)
+
     else:
         raise Exception('Got unexpected data for callback command "action"')
 
