@@ -1,14 +1,115 @@
 import csv
 import math
 from io import StringIO, BytesIO
-from datetime import datetime, timezone
+from datetime import datetime, date, timezone
+from dateutil import parser
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from sqlalchemy import select, func, delete
+from sqlalchemy import select, func, delete, update
 from telethon.tl.custom import Button
 
 from database.models import User, Transaction, Wallet, Category
+from handlers.transaction import register_transaction
+
+
+def parse_time(s: str) -> float|None:
+    """Parse flexible UTC date/time string and return Unix timestamp."""
+    s = s.strip()
+    try:
+        dt = parser.parse(s, dayfirst=True, fuzzy=False)
+    except parser.ParserError:
+        return None
+    
+    # if its just a time (no date part), use today
+    if dt.date() == datetime.now().date() and all(x not in s for x in ['-', '.', '/']):
+        dt = datetime.combine(date.today(), dt.time())
+    
+    # ensure UTC
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    else:
+        dt = dt.astimezone(timezone.utc)
+    
+    return dt.timestamp()
+
+
+async def handle_expectation_edit_transaction(session: AsyncSession,
+                                         user: User, _, event):
+    """Handle edit_transaction expectation."""
+    uuid = bytes.fromhex(user.expectation["expect"]["data"])
+    raw_text = event.raw_text
+
+    if raw_text == "":
+        await event.respond(_("got_empty_message_for_transaction"))
+        return
+
+    parts = event.raw_text.split()
+    if len(parts) < 3:
+        await event.respond(_("info_omitted_for_transaction_error"))
+        return
+
+    raw_sum, category, wallet = parts[:3]
+    
+    # sum = parts[0] if len(parts) > 0 else None
+    # category = parts[1] if len(parts) > 1 else None
+    # wallet = parts[2] if len(parts) > 2 else None
+
+    try:
+        sum = float(raw_sum.replace(",", "."))
+    except ValueError:
+        await event.respond(_("non_numerical_sum_error"))
+        return
+    
+    # checking this after checking for numerical value (and
+    #  not before!) allows
+    #  for more clear errors
+    if raw_sum[0] not in "+-":
+        await event.respond(_("no_sign_specified_for_sum"))
+        return
+
+    result = await register_transaction(session, user, _, event,
+                                        [sum, category, wallet], True)
+    if result:
+        await session.execute(
+            delete(Transaction).where(Transaction.id == uuid)
+        )
+
+        await session.commit()
+
+
+async def handle_expectation_reschedule_transaction(session: AsyncSession,
+                                                    user: User, _, event):
+    """Handle reschedule_transaction expectation."""
+    uuid = bytes.fromhex(user.expectation["expect"]["data"])
+    raw_text = event.raw_text
+
+    if raw_text == "":
+        await event.respond(_("got_empty_message_for_transaction_time"))
+        return
+
+    new_timestamp = parse_time(raw_text)
+    if new_timestamp is None:
+        await event.respond(_("could_not_parse_transaction_time"))
+        return
+
+    new_timestamp_formatted = datetime.fromtimestamp(
+        new_timestamp, tz=timezone.utc
+    ).strftime("%Y-%m-%d, %H:%M UTC")
+
+    await session.execute(
+        update(Transaction).
+        where(Transaction.id == uuid).
+        values(datetime=new_timestamp)
+    )
+    await session.commit()
+
+    buttons = [
+        Button.inline(_("universal_back_button"), b"menu_transactions")
+    ]
+    await event.reply(_("transaction_rescheduled").format(
+        *map(str, [new_timestamp_formatted])
+    ), buttons=buttons)
 
 
 async def export(session: AsyncSession, event, user: User, _ ):
@@ -130,6 +231,45 @@ async def view_menu(session: AsyncSession, user: User, _, event,
     return
 
 
+async def edit_menu(session: AsyncSession, user: User, _, event,
+                    uuid: bytes) -> None:
+    """Send transaction edit menu to the user."""
+    await event.delete()
+
+    is_owner = await check_ownership(session, user, _, event, uuid)
+    if not is_owner:
+        return
+
+    user.expectation["expect"] = {"type": "edit_transaction", "data": uuid.hex()}
+    await session.commit()
+
+    buttons = [
+        Button.inline(_("transaction_action_edit_cancel"),
+                      b"menu_transactions")
+    ]
+    await event.respond(_("edit_transaction_prompt"), buttons=buttons)
+
+
+async def reschedule_menu(session: AsyncSession, user: User, _, event,
+                          uuid: bytes) -> None:
+    """Send transaction rescheduling menu to the user."""
+    await event.delete()
+
+    is_owner = await check_ownership(session, user, _, event, uuid)
+    if not is_owner:
+        return
+
+    user.expectation["expect"] = {"type": "reschedule_transaction",
+                                  "data": uuid.hex()}
+    await session.commit()
+
+    buttons = [
+        Button.inline(_("transaction_action_reschedule_cancel"),
+                      b"menu_transactions")
+    ]
+    await event.respond(_("reschedule_transaction_prompt"), buttons=buttons)
+
+
 async def delete_menu(session: AsyncSession, user: User, _, event,
                       uuid: bytes) -> None:
     """Send transaction delete menu to the user."""
@@ -195,7 +335,8 @@ async def send_menu(session: AsyncSession, user: User, _,
         new = _("menu_transactions_component_transaction_info").format(
             emoji_indicator, transaction.sum, transaction.wallet.currency,
             transaction.category.name, transaction.wallet.name,
-            transaction.id.hex()
+            transaction.id.hex(), transaction.category.id.hex(),
+            transaction.wallet.id.hex()
         )
         transaction_info.append(new)
 

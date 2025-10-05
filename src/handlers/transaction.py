@@ -218,8 +218,9 @@ async def register_transaction(
     user: User,
     _,
     event,
-    data: list
-) -> None:
+    data: list,
+    is_editing: bool = False
+) -> bool:
     """Register transaction in the db, handle creating new category/wallet."""
     amount, category, wallet = data
 
@@ -232,25 +233,25 @@ async def register_transaction(
         await session.commit()
         await create_category_alias(session, user, _, event,
                                     category, category_id[1])
-        return
+        return False
     if wallet_id[0] == "fuzzy":
         user.expectation["transaction"] = data
         await session.commit()
         await create_wallet_alias(session, user, _, event,
                                   wallet, wallet_id[1])
-        return
+        return False
 
     # create category/wallet if neccesarry
     if category_id[0] == "none":
         user.expectation["transaction"] = data
         await session.commit()
         await create_category(session, user, _, event, category)
-        return
+        return False
     if wallet_id[0] == "none":
         user.expectation["transaction"] = data
         await session.commit()
         await create_wallet(session, user, _, event, wallet)
-        return
+        return False
 
     new_transaction = Transaction(
         holder=user.id,
@@ -282,7 +283,19 @@ async def register_transaction(
     await session.commit()
 
     wallet_total = wallet.init_sum + wallet.current_sum
+
+    if is_editing:
+        buttons = [
+            Button.inline(_("universal_back_button"), b"menu_transactions")
+        ]
+        await event.reply(_("transaction_edited").format(
+            *map(str, [amount, category.name, wallet.name,
+                    wallet_total, wallet.currency])
+        ), buttons=buttons)
+        return True
+
     await event.reply(_("transaction_registered").format(
         *map(str, [amount, category.name, wallet.name,
                    wallet_total, wallet.currency])
     ))
+    return True

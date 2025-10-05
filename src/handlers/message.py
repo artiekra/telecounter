@@ -109,6 +109,10 @@ async def handle_data(session: AsyncSession, user: User,
             await transactions.view_menu(session, user, _, event, uuid)
         case "td":
             await transactions.delete_menu(session, user, _, event, uuid)
+        case "te":
+            await transactions.edit_menu(session, user, _, event, uuid)
+        case "ts":
+            await transactions.reschedule_menu(session, user, _, event, uuid)
         case _:
             await send_start_menu(session, user, _, event)
 
@@ -423,6 +427,14 @@ async def handle_expectation(session: AsyncSession, user: User, _, event):
 
     elif expect["type"] == "edit_wallet":
         await wallets.handle_expectation_edit_wallet(
+            session, user, _, event)
+
+    elif expect["type"] == "edit_transaction":
+        await transactions.handle_expectation_edit_transaction(
+            session, user, _, event)
+
+    elif expect["type"] == "reschedule_transaction":
+        await transactions.handle_expectation_reschedule_transaction(
             session, user, _, event)
 
     elif expect["type"] == "page":
