@@ -12,6 +12,7 @@ class LowercaseString(TypeDecorator):
     """Ensures that all strings stored in this column are lowercase."""
 
     impl = String
+    cache_ok = True
 
     def process_bind_param(self, value, dialect):
         if value is not None:
