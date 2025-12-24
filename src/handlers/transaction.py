@@ -1,21 +1,21 @@
 import time
-from typing import Optional
 
-from thefuzz import process
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from telethon.tl.custom import Button
+from thefuzz import process
 
-from database.models import (User, Category, Wallet,
-    Transaction, TransactionType, CategoryAlias, WalletAlias)
+from database.models import (Category, CategoryAlias, Transaction,
+                             TransactionType, User, Wallet, WalletAlias)
 
 
 async def find_category_by_name(
     session: AsyncSession,
     user: User,
     input_name: str,
-    threshold: int = 75
-) -> Optional[bytes]:
+    threshold: int = 75,
+    # ) -> tuple[str, Optional[bytes]]:
+):
     """Find category UUID for a user by fuzzy match or alias name."""
 
     # check aliases for exact match
@@ -30,7 +30,8 @@ async def find_category_by_name(
 
     # get all categories
     result = await session.execute(
-        select(Category).where(Category.holder == user.id)
+        select(Category)
+        .where(Category.holder == user.id)
         .where(Category.is_deleted == False)
     )
     categories = result.scalars().all()
@@ -51,11 +52,8 @@ async def find_category_by_name(
 
 
 async def find_wallet_by_name(
-    session: AsyncSession,
-    user: User,
-    input_name: str,
-    threshold: int = 75
-) -> Optional[bytes]:
+    session: AsyncSession, user: User, input_name: str, threshold: int = 75
+):
     """Find wallet UUID for a user by alias or fuzzy name match."""
 
     # check aliases for exact match
@@ -70,8 +68,7 @@ async def find_wallet_by_name(
 
     # get all wallets
     result = await session.execute(
-        select(Wallet).where(Wallet.holder == user.id)
-        .where(Wallet.is_deleted == False)
+        select(Wallet).where(Wallet.holder == user.id).where(Wallet.is_deleted == False)
     )
     wallets = result.scalars().all()
 
@@ -91,123 +88,93 @@ async def find_wallet_by_name(
 
 
 async def create_category(
-    session: AsyncSession,
-    user: User,
-    _,
-    event,
-    name: str = None
+    session: AsyncSession, user: User, _, event, name: str | None = None
 ) -> None:
     """Prompt user for creation of a new category."""
     user.expectation["expect"] = {"type": "new_category", "data": name}
     await session.commit()
 
     if name is None:
-        buttons = [
-            Button.inline(_("create_prompt_cancel"),
-                          b"category_cancel")
-        ]
-        await event.respond(_("create_new_unnamed_category_prompt"),
-                            buttons=buttons)
+        buttons = [Button.inline(_("create_prompt_cancel"), b"category_cancel")]
+        await event.respond(_("create_new_unnamed_category_prompt"), buttons=buttons)
         return
 
     buttons = [
-        Button.inline(_("create_prompt_approve"),
-                    b"category_approve"),
-        Button.inline(_("create_prompt_cancel"),
-                    b"category_cancel")
+        Button.inline(_("create_prompt_approve"), b"category_approve"),
+        Button.inline(_("create_prompt_cancel"), b"category_cancel"),
     ]
-    await event.respond(_("create_new_category_prompt").format(name),
-                        buttons=buttons)
+    await event.respond(_("create_new_category_prompt").format(name), buttons=buttons)
 
 
 async def create_wallet(
-    session: AsyncSession,
-    user: User,
-    _,
-    event,
-    name: str = None
+    session: AsyncSession, user: User, _, event, name: str | None = None
 ) -> None:
     """Prompt user for creation of a new wallet."""
     user.expectation["expect"] = {"type": "new_wallet", "data": name}
     await session.commit()
 
-    buttons = [
-        Button.inline(_("create_prompt_cancel"),
-                      b"wallet_cancel")
-    ]
+    buttons = [Button.inline(_("create_prompt_cancel"), b"wallet_cancel")]
 
     if name is None:
-        await event.respond(_("create_new_unnamed_wallet_prompt"),
-                            buttons=buttons)
+        await event.respond(_("create_new_unnamed_wallet_prompt"), buttons=buttons)
         return
 
-    await event.respond(_("create_new_wallet_prompt").format(name),
-                        buttons=buttons)
+    await event.respond(_("create_new_wallet_prompt").format(name), buttons=buttons)
 
 
 async def create_category_alias(
-    session: AsyncSession,
-    user: User,
-    _,
-    event,
-    name: str,
-    prediction_id
+    session: AsyncSession, user: User, _, event, name: str, prediction_id
 ) -> None:
     """Prompt user about the correctness of fuzzy match for category name."""
     result = await session.execute(
-        select(Category.name)
-        .where(Category.id == prediction_id)
+        select(Category.name).where(Category.id == prediction_id)
     )
     prediction_name = result.scalar_one_or_none()
 
-    user.expectation["expect"] = {"type": "new_category_alias",
-        "data": [name, prediction_id.hex(), prediction_name]}
+    user.expectation["expect"] = {
+        "type": "new_category_alias",
+        "data": [name, prediction_id.hex(), prediction_name],
+    }
 
     buttons = [
-        Button.inline(_("create_alias_prompt_approve"),
-                        b"categoryalias_approve"),
-        Button.inline(_("create_alias_prompt_new"),
-                        b"categoryalias_new"),
-        Button.inline(_("create_alias_prompt_cancel"),
-                        b"categoryalias_cancel")
+        Button.inline(_("create_alias_prompt_approve"), b"categoryalias_approve"),
+        Button.inline(_("create_alias_prompt_new"), b"categoryalias_new"),
+        Button.inline(_("create_alias_prompt_cancel"), b"categoryalias_cancel"),
     ]
 
-    prompt = await event.respond(_("create_new_category_alias_prompt").format(
-        name, prediction_name), buttons=buttons)
+    prompt = await event.respond(
+        _("create_new_category_alias_prompt").format(name, prediction_name),
+        buttons=buttons,
+    )
 
     user.expectation["message"] = prompt.id
     await session.commit()
 
 
 async def create_wallet_alias(
-    session: AsyncSession,
-    user: User,
-    _,
-    event,
-    name: str,
-    prediction_id
+    session: AsyncSession, user: User, _, event, name: str, prediction_id
 ) -> None:
     """Prompt user about the correctness of fuzzy match for wallet name."""
     result = await session.execute(
-        select(Wallet.name)
-        .where(Wallet.id == prediction_id)
+        select(Wallet.name).where(Wallet.id == prediction_id)
     )
     prediction_name = result.scalar_one_or_none()
 
-    user.expectation["expect"] = {"type": "new_wallet_alias",
-        "data": [name, prediction_id.hex(), prediction_name]}
+    user.expectation["expect"] = {
+        "type": "new_wallet_alias",
+        "data": [name, prediction_id.hex(), prediction_name],
+    }
 
     buttons = [
-        Button.inline(_("create_alias_prompt_approve"),
-                        b"walletalias_approve"),
-        Button.inline(_("create_alias_prompt_new"),
-                        b"walletalias_new"),
-        Button.inline(_("create_alias_prompt_cancel"),
-                        b"walletalias_cancel")
+        Button.inline(_("create_alias_prompt_approve"), b"walletalias_approve"),
+        Button.inline(_("create_alias_prompt_new"), b"walletalias_new"),
+        Button.inline(_("create_alias_prompt_cancel"), b"walletalias_cancel"),
     ]
 
-    prompt = await event.respond(_("create_new_wallet_alias_prompt").format(
-        name, prediction_name), buttons=buttons)
+    prompt = await event.respond(
+        _("create_new_wallet_alias_prompt").format(name, prediction_name),
+        buttons=buttons,
+    )
 
     user.expectation["message"] = prompt.id
     await session.commit()
@@ -220,7 +187,7 @@ async def register_transaction(
     event,
     data: list,
     is_editing: bool = False,
-    custom_datetime = None
+    custom_datetime=None,
 ) -> bool:
     """Register transaction in the db, handle creating new category/wallet."""
     amount, category, wallet = data
@@ -232,14 +199,12 @@ async def register_transaction(
     if category_id[0] == "fuzzy":
         user.expectation["transaction"] = data
         await session.commit()
-        await create_category_alias(session, user, _, event,
-                                    category, category_id[1])
+        await create_category_alias(session, user, _, event, category, category_id[1])
         return False
     if wallet_id[0] == "fuzzy":
         user.expectation["transaction"] = data
         await session.commit()
-        await create_wallet_alias(session, user, _, event,
-                                  wallet, wallet_id[1])
+        await create_wallet_alias(session, user, _, event, wallet, wallet_id[1])
         return False
 
     # create category/wallet if neccesarry
@@ -260,12 +225,10 @@ async def register_transaction(
         type=TransactionType.INCOME,
         wallet_id=wallet_id[1],
         category_id=category_id[1],
-        sum=amount
+        sum=amount,
     )
 
-    wallet = await session.execute(
-        select(Wallet).where(Wallet.id == wallet_id[1])
-    )
+    wallet = await session.execute(select(Wallet).where(Wallet.id == wallet_id[1]))
     wallet = wallet.scalar_one_or_none()
 
     if wallet:
@@ -286,17 +249,23 @@ async def register_transaction(
     wallet_total = wallet.init_sum + wallet.current_sum
 
     if is_editing:
-        buttons = [
-            Button.inline(_("universal_back_button"), b"menu_transactions")
-        ]
-        await event.reply(_("transaction_edited").format(
-            *map(str, [amount, category.name, wallet.name,
-                    wallet_total, wallet.currency])
-        ), buttons=buttons)
+        buttons = [Button.inline(_("universal_back_button"), b"menu_transactions")]
+        await event.reply(
+            _("transaction_edited").format(
+                *map(
+                    str,
+                    [amount, category.name, wallet.name, wallet_total, wallet.currency],
+                )
+            ),
+            buttons=buttons,
+        )
         return True
 
-    await event.reply(_("transaction_registered").format(
-        *map(str, [amount, category.name, wallet.name,
-                   wallet_total, wallet.currency])
-    ))
+    await event.reply(
+        _("transaction_registered").format(
+            *map(
+                str, [amount, category.name, wallet.name, wallet_total, wallet.currency]
+            )
+        )
+    )
     return True

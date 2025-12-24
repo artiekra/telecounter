@@ -1,24 +1,24 @@
-import uuid
 import time
+import uuid
 
-from telethon import events
-from sqlalchemy import select, delete
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from telethon import events
 
-from database.models import User, Category, CategoryAlias, WalletAlias
-from translate import setup_translations
-from handlers.transaction import (register_transaction, create_wallet,
-    create_category)
-from handlers.message import COMMANDS
-import menus.wallets as wallets
 import menus.categories as categories
-import menus.transactions as transactions
 import menus.stats as stats
+import menus.transactions as transactions
+import menus.wallets as wallets
+from database.models import Category, CategoryAlias, User, WalletAlias
+from handlers.message import COMMANDS
+from handlers.transaction import (create_category, create_wallet,
+                                  register_transaction)
+from translate import setup_translations
 
 
-async def update_user_language(event, new_language: str,
-                               user: User, session: AsyncSession,
-                               command: str):
+async def update_user_language(
+    event, new_language: str, user: User, session: AsyncSession, command: str
+):
     """Update user lang in db, notify the user."""
     user.language = new_language
     session.add(user)
@@ -33,12 +33,7 @@ async def update_user_language(event, new_language: str,
 
 
 async def universal_custom_page_input_workflow(
-    session: AsyncSession,
-    event,
-    user: User,
-    _,
-    type_: str,
-    msg_id: int
+    session: AsyncSession, event, user: User, _, type_: str, msg_id: int
 ) -> None:
     """Ask user for a page to go to."""
     user.expectation["expect"] = {"type": "page", "data": [type_, msg_id]}
@@ -47,8 +42,9 @@ async def universal_custom_page_input_workflow(
     await event.respond(_("universal_prompt_page_number"))
 
 
-async def handle_command_category(session: AsyncSession, event,
-                                  user: User, data: list, _) -> None:
+async def handle_command_category(
+    session: AsyncSession, event, user: User, data: list, _
+) -> None:
     """Handle user pressing a button under category creation prompt msg."""
     if data[1] == "cancel":
         user.expectation["expect"] = {"type": None, "data": None}
@@ -63,7 +59,7 @@ async def handle_command_category(session: AsyncSession, event,
         holder=user.id,
         created_at=int(time.time()),
         icon="✨",
-        name=category_name
+        name=category_name,
     )
 
     session.add(new_category)
@@ -71,8 +67,7 @@ async def handle_command_category(session: AsyncSession, event,
     # delete matching aliases (same name)
     await session.execute(
         delete(CategoryAlias).where(
-            CategoryAlias.holder == user.id,
-            CategoryAlias.alias == category_name
+            CategoryAlias.holder == user.id, CategoryAlias.alias == category_name
         )
     )
 
@@ -86,14 +81,17 @@ async def handle_command_category(session: AsyncSession, event,
 
     current_transaction = user.expectation["transaction"]
     if len(current_transaction) > 0:
-        await event.respond(_("transaction_handling_in_process").format(
-            " ".join(map(str, current_transaction))
-        ))
+        await event.respond(
+            _("transaction_handling_in_process").format(
+                " ".join(map(str, current_transaction))
+            )
+        )
         await register_transaction(session, user, _, event, current_transaction)
 
 
-async def handle_command_categoryalias(session: AsyncSession, event,
-                                       user: User, data: list, _) -> None:
+async def handle_command_categoryalias(
+    session: AsyncSession, event, user: User, data: list, _
+) -> None:
     """Handle user pressing a button under category alias creation msg."""
     if data[1] == "cancel":
         user.expectation["expect"] = {"type": None, "data": None}
@@ -105,18 +103,14 @@ async def handle_command_categoryalias(session: AsyncSession, event,
         category_name = user.expectation["expect"]["data"][0]
 
         new_category = Category(
-            id=uuid.uuid4().bytes,
-            holder=user.id,
-            icon="✨",
-            name=category_name
+            id=uuid.uuid4().bytes, holder=user.id, icon="✨", name=category_name
         )
 
         session.add(new_category)
         await session.commit()
         await session.refresh(new_category)
 
-        await event.edit(
-            _("category_created_successfully").format(category_name))
+        await event.edit(_("category_created_successfully").format(category_name))
 
         user.expectation["expect"] = {"type": None, "data": None}
         await session.commit()
@@ -126,13 +120,11 @@ async def handle_command_categoryalias(session: AsyncSession, event,
             # await event.respond(_("transaction_handling_in_process").format(
             #     " ".join(map(str, current_transaction))
             # ))
-            await register_transaction(session, user, _, event,
-                                       current_transaction)
+            await register_transaction(session, user, _, event, current_transaction)
 
     elif data[1] == "approve":
         alias_name = user.expectation["expect"]["data"][0]
-        actual_category_id = bytes.fromhex(
-            user.expectation["expect"]["data"][1])
+        actual_category_id = bytes.fromhex(user.expectation["expect"]["data"][1])
 
         new_alias = CategoryAlias(
             id=uuid.uuid4().bytes,
@@ -144,9 +136,7 @@ async def handle_command_categoryalias(session: AsyncSession, event,
         session.add(new_alias)
         await session.commit()
 
-        await event.edit(
-            _("category_alias_created_successfully").format(alias_name)
-        )
+        await event.edit(_("category_alias_created_successfully").format(alias_name))
 
         user.expectation["expect"] = {"type": None, "data": None}
         await session.commit()
@@ -159,8 +149,9 @@ async def handle_command_categoryalias(session: AsyncSession, event,
             await register_transaction(session, user, _, event, current_transaction)
 
 
-async def handle_command_walletalias(session: AsyncSession, event,
-                                     user: User, data: list, _) -> None:
+async def handle_command_walletalias(
+    session: AsyncSession, event, user: User, data: list, _
+) -> None:
     """Handle user pressing a button under category alias creation msg."""
     if data[1] == "cancel":
         user.expectation["expect"] = {"type": None, "data": None}
@@ -174,8 +165,7 @@ async def handle_command_walletalias(session: AsyncSession, event,
 
     elif data[1] == "approve":
         alias_name = user.expectation["expect"]["data"][0]
-        actual_wallet_id = bytes.fromhex(
-                user.expectation["expect"]["data"][1])
+        actual_wallet_id = bytes.fromhex(user.expectation["expect"]["data"][1])
 
         new_alias = WalletAlias(
             id=uuid.uuid4().bytes,
@@ -187,9 +177,7 @@ async def handle_command_walletalias(session: AsyncSession, event,
         session.add(new_alias)
         await session.commit()
 
-        await event.edit(
-            _("wallet_alias_created_successfully").format(alias_name)
-        )
+        await event.edit(_("wallet_alias_created_successfully").format(alias_name))
 
         user.expectation["expect"] = {"type": None, "data": None}
         await session.commit()
@@ -202,8 +190,9 @@ async def handle_command_walletalias(session: AsyncSession, event,
             await register_transaction(session, user, _, event, current_transaction)
 
 
-async def handle_command_action(session: AsyncSession, event,
-                                user: User, data: list, _) -> None:
+async def handle_command_action(
+    session: AsyncSession, event, user: User, data: list, _
+) -> None:
     """Handle user pressing a button under one of the action menus."""
 
     if data[1][0] == "c":
@@ -219,8 +208,9 @@ async def handle_command_action(session: AsyncSession, event,
         raise Exception('Got unexpected data for callback command "action"')
 
 
-async def handle_command_page(session: AsyncSession, event,
-                              user: User, data: list, _) -> None:
+async def handle_command_page(
+    session: AsyncSession, event, user: User, data: list, _
+) -> None:
     """Handle user pressing a pagination button."""
 
     msg_id = int(bytes.fromhex(data[2]).decode("utf-8"))
@@ -230,24 +220,18 @@ async def handle_command_page(session: AsyncSession, event,
         page = None
     if page:
         if data[1] == "c":
-            await categories.send_menu(
-                session, user, _, event, page, msg_id
-            )
+            await categories.send_menu(session, user, _, event, page, msg_id)
         elif data[1] == "w":
-            await wallets.send_menu(
-                session, user, _, event, page, msg_id
-            )
+            await wallets.send_menu(session, user, _, event, page, msg_id)
         elif data[1] == "t":
-            await transactions.send_menu(
-                session, user, _, event, page, msg_id
-            )
+            await transactions.send_menu(session, user, _, event, page, msg_id)
         return
-    await universal_custom_page_input_workflow(
-        session, event, user, _, data[1], msg_id)
+    await universal_custom_page_input_workflow(session, event, user, _, data[1], msg_id)
 
 
-async def handle_command_export(session: AsyncSession, event,
-                                user: User, data: list, _) -> None:
+async def handle_command_export(
+    session: AsyncSession, event, user: User, data: list, _
+) -> None:
     """Handle user pressing an export button."""
 
     if data[1] == "categories":
@@ -288,8 +272,7 @@ def register_callback_handler(client, session_maker):
                 user.expectation["expect"] = {"type": None, "data": None}
                 user.expectation["transaction"] = []
                 new_language = data[1]
-                await update_user_language(event, new_language, user,
-                                           session, command)
+                await update_user_language(event, new_language, user, session, command)
 
             elif command == "category":
                 await handle_command_category(session, event, user, data, _)
@@ -300,12 +283,10 @@ def register_callback_handler(client, session_maker):
                 await event.respond(_("wallet_creation_cancelled"))
 
             elif command == "categoryalias":
-                await handle_command_categoryalias(
-                    session, event, user, data, _)
+                await handle_command_categoryalias(session, event, user, data, _)
 
             elif command == "walletalias":
-                await handle_command_walletalias(
-                    session, event, user, data, _)
+                await handle_command_walletalias(session, event, user, data, _)
 
             elif command == "add":
                 user.expectation["expect"] = {"type": None, "data": None}
@@ -318,7 +299,7 @@ def register_callback_handler(client, session_maker):
             elif command == "menu":
                 user.expectation["expect"] = {"type": None, "data": None}
                 user.expectation["transaction"] = []
-                await COMMANDS.get(data[1])(session, user, _, event)
+                await COMMANDS.get(data[1])(session, user, _, event)  # type: ignore
 
             elif command == "action":
                 user.expectation["expect"] = {"type": None, "data": None}

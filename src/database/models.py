@@ -1,20 +1,11 @@
 import uuid
 from enum import Enum as PyEnum
 
-from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    BigInteger,
-    Boolean,
-    ForeignKey,
-    Enum,
-    Text,
-    UniqueConstraint
-)
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy import (BigInteger, Boolean, Column, Enum, ForeignKey, Integer,
+                        String, Text, UniqueConstraint)
 from sqlalchemy.dialects.sqlite import BLOB, JSON
 from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
 

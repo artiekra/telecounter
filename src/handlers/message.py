@@ -1,21 +1,22 @@
+import json
+import os
+import re
 import time
 import uuid
-import json
-import re
-import os
+from types import coroutine
 
+from sqlalchemy import delete, select
+from sqlalchemy.ext.asyncio import AsyncSession
 from telethon import events
 from telethon.tl.custom import Button
-from sqlalchemy import select, delete
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.models import User, Wallet, Category, WalletAlias, CategoryAlias
-from translate import setup_translations
-from handlers.transaction import register_transaction, create_category
-import menus.wallets as wallets
 import menus.categories as categories
-import menus.transactions as transactions
 import menus.stats as stats
+import menus.transactions as transactions
+import menus.wallets as wallets
+from database.models import Category, User, Wallet, WalletAlias
+from handlers.transaction import create_category, register_transaction
+from translate import setup_translations
 
 with open("src/assets/currency_codes.json", "r", encoding="utf-7") as f:
     currency_data = json.load(f)
@@ -27,24 +28,20 @@ async def send_language_selection(event: events.NewMessage.Event) -> None:
     """Send language selection msg with inline buttons."""
     buttons = [
         [Button.inline("🇬🇧 English", b"lang_en")],
-        [Button.inline("🇺🇦 Українська", b"lang_uk"),
-         Button.inline("🇷🇺 Русский", b"lang_ru")]
+        [
+            Button.inline("🇺🇦 Українська", b"lang_uk"),
+            Button.inline("🇷🇺 Русский", b"lang_ru"),
+        ],
     ]
 
-    await event.respond(
-        "Welcome! Please choose your language:",
-        buttons=buttons
-    )
+    await event.respond("Welcome! Please choose your language:", buttons=buttons)
 
 
-async def send_start_menu(session: AsyncSession, user: User,
-                          _, event) -> None:
+async def send_start_menu(session: AsyncSession, user: User, _, event) -> None:
     """Show start menu to the user."""
     MAX_WALLETS_DISPLAYED = 3
 
-    wallets = await session.execute(
-        select(Wallet).where(Wallet.holder == user.id)
-    )
+    wallets = await session.execute(select(Wallet).where(Wallet.holder == user.id))
     wallets = wallets.scalars().all()
     wallets = sorted(wallets, key=lambda x: x.transaction_count, reverse=True)
 
@@ -57,38 +54,43 @@ async def send_start_menu(session: AsyncSession, user: User,
         if len(wallets) > i:
             wallet_info_raw.append(wallets[i])
 
-    wallet_info = [_("command_start_component_wallet_info").format(
-        x.name, x.init_sum + x.current_sum, x.currency
-    ) for x in wallet_info_raw]
+    wallet_info = [
+        _("command_start_component_wallet_info").format(
+            x.name, x.init_sum + x.current_sum, x.currency
+        )
+        for x in wallet_info_raw
+    ]
 
     wallet_info_str = "\n".join(wallet_info)
 
     if len(wallets) > MAX_WALLETS_DISPLAYED:
         value = len(wallets) - MAX_WALLETS_DISPLAYED
-        component = _("universal_component_not_shown_count") 
+        component = _("universal_component_not_shown_count")
         wallet_info_str += "\n" + component.format(value)
 
     buttons = [
-        [Button.inline(_("command_start_button_add_wallet"),
-                        b"add_wallet"),
-        Button.inline(_("command_start_button_add_category"),
-                        b"add_category")],
-        [Button.inline(_("command_start_button_wallets"),
-                        b"menu_wallets"),
-        Button.inline(_("command_start_button_categories"),
-                        b"menu_categories")],
-        [Button.inline(_("command_start_button_transactions"),
-                        b"menu_transactions"),
-        Button.inline(_("command_start_button_stats"),
-                        b"menu_stats")]
+        [
+            Button.inline(_("command_start_button_add_wallet"), b"add_wallet"),
+            Button.inline(_("command_start_button_add_category"), b"add_category"),
+        ],
+        [
+            Button.inline(_("command_start_button_wallets"), b"menu_wallets"),
+            Button.inline(_("command_start_button_categories"), b"menu_categories"),
+        ],
+        [
+            Button.inline(_("command_start_button_transactions"), b"menu_transactions"),
+            Button.inline(_("command_start_button_stats"), b"menu_stats"),
+        ],
     ]
 
-    await event.respond(_("command_start_template").format(wallet_info_str),
-                        buttons=buttons)
+    await event.respond(
+        _("command_start_template").format(wallet_info_str), buttons=buttons
+    )
 
 
-async def handle_data(session: AsyncSession, user: User,
-                      _, event, prefix: str, uuid_hex: str) -> None:
+async def handle_data(
+    session: AsyncSession, user: User, _, event, prefix: str, uuid_hex: str
+) -> None:
     """Handle /start command with valid data payload"""
     uuid = bytes.fromhex(uuid_hex)
 
@@ -117,8 +119,7 @@ async def handle_data(session: AsyncSession, user: User,
             await send_start_menu(session, user, _, event)
 
 
-async def handle_command_start(session: AsyncSession, user: User,
-                               _, event) -> None:
+async def handle_command_start(session: AsyncSession, user: User, _, event) -> None:
     """Handle /start command"""
     DATA_PATTERN = r"^([a-zA-Z]{2})_([a-fA-F0-9]{32})$"
 
@@ -128,7 +129,7 @@ async def handle_command_start(session: AsyncSession, user: User,
         await send_start_menu(session, user, _, event)
         return
 
-    parts = event.raw_text.split()
+    parts = raw_text.split()
     if len(parts) > 1:
         data = parts[1]
         match = re.match(DATA_PATTERN, data)
@@ -141,70 +142,71 @@ async def handle_command_start(session: AsyncSession, user: User,
     await send_start_menu(session, user, _, event)
 
 
-async def handle_command_help(session: AsyncSession, user: User,
-                               _, event) -> None:
+async def handle_command_help(session: AsyncSession, user: User, _, event) -> None:
     """Handle /help command"""
-    buttons = [
-        Button.inline(_("back_to_main_menu_button"),
-                      b"menu_start")
-    ]
+    buttons = [Button.inline(_("back_to_main_menu_button"), b"menu_start")]
     await event.respond(_("command_help"), buttons=buttons)
 
 
-async def handle_command_wallets(session: AsyncSession, user: User,
-                               _, event) -> None:
+async def handle_command_wallets(session: AsyncSession, user: User, _, event) -> None:
     """Handle /wallets command"""
     await wallets.send_menu(session, user, _, event)
 
 
-async def handle_command_categories(session: AsyncSession, user: User,
-                               _, event) -> None:
+async def handle_command_categories(
+    session: AsyncSession, user: User, _, event
+) -> None:
     """Handle /categories command"""
     await categories.send_menu(session, user, _, event)
 
 
-async def handle_command_transactions(session: AsyncSession, user: User,
-                                      _, event) -> None:
+async def handle_command_transactions(
+    session: AsyncSession, user: User, _, event
+) -> None:
     """Handle /transactions command"""
     await transactions.send_menu(session, user, _, event)
 
 
-async def handle_command_stats(session: AsyncSession, user: User,
-                               _, event) -> None:
+async def handle_command_stats(session: AsyncSession, user: User, _, event) -> None:
     """Handle /stats command"""
     await stats.send_menu(session, user, _, event)
 
 
-async def handle_command_language(session: AsyncSession, user: User,
-                                  _, event) -> None:
+async def handle_command_language(session: AsyncSession, user: User, _, event) -> None:
     """Handle /language command"""
     buttons = [
         [Button.inline("🇬🇧 English", b"plang_en")],
-        [Button.inline("🇺🇦 Українська", b"plang_uk"),
-         Button.inline("🇷🇺 Русский", b"plang_ru")]
+        [
+            Button.inline("🇺🇦 Українська", b"plang_uk"),
+            Button.inline("🇷🇺 Русский", b"plang_ru"),
+        ],
     ]
 
-    await event.respond(
-        "Choose a new language:",
-        buttons=buttons
-    )
+    await event.respond("Choose a new language:", buttons=buttons)
 
 
 # TODO: make support username it optional
-async def handle_unknown_command(session: AsyncSession, user: User,
-                                 _, event) -> None:
+async def handle_unknown_command(session: AsyncSession, user: User, _, event) -> None:
     """Handle unknown commands"""
     command = event.raw_text.split()[0]
 
-    await event.respond(_("unknown_command").format(
-        command, "@"+os.getenv("SUPPORT_USERNAME", "[not specified]")
-    ))
+    await event.respond(
+        _("unknown_command").format(
+            command, "@" + os.getenv("SUPPORT_USERNAME", "[not specified]")
+        )
+    )
 
 
-COMMANDS = {"start": handle_command_start, "help": handle_command_help,
-    "wallets": handle_command_wallets, "categories": handle_command_categories,
-    "transactions": handle_command_transactions, "stats": handle_command_stats,
-    "language": handle_command_language}
+COMMANDS: dict[str, coroutine] = {
+    "start": handle_command_start,
+    "help": handle_command_help,
+    "wallets": handle_command_wallets,
+    "categories": handle_command_categories,
+    "transactions": handle_command_transactions,
+    "stats": handle_command_stats,
+    "language": handle_command_language,
+}
+
 
 async def handle_command(session: AsyncSession, user: User, _, event):
     """Handle command from User (any msg starting with "/")."""
@@ -231,7 +233,7 @@ async def handle_transaction(session: AsyncSession, user: User, _, event):
         return
 
     raw_sum, category, wallet = parts[:3]
-    
+
     # sum = parts[0] if len(parts) > 0 else None
     # category = parts[1] if len(parts) > 1 else None
     # wallet = parts[2] if len(parts) > 2 else None
@@ -241,7 +243,7 @@ async def handle_transaction(session: AsyncSession, user: User, _, event):
     except ValueError:
         await event.respond(_("non_numerical_sum_error"))
         return
-    
+
     # checking this after checking for numerical value (and
     #  not before!) allows
     #  for more clear errors
@@ -249,12 +251,12 @@ async def handle_transaction(session: AsyncSession, user: User, _, event):
         await event.respond(_("no_sign_specified_for_sum"))
         return
 
-    await register_transaction(session, user, _, event,
-                               [sum, category, wallet])
+    await register_transaction(session, user, _, event, [sum, category, wallet])
 
 
-async def register_new_wallet(session: AsyncSession, event,
-                              user: User, data: list, _) -> None:
+async def register_new_wallet(
+    session: AsyncSession, event, user: User, data: list, _
+) -> None:
     """Register new wallet after all the data has been verified."""
     new_wallet = Wallet(
         id=uuid.uuid4().bytes,
@@ -263,7 +265,7 @@ async def register_new_wallet(session: AsyncSession, event,
         icon="✨",
         name=data[0],
         currency=data[1],
-        init_sum=data[2]
+        init_sum=data[2],
     )
 
     session.add(new_wallet)
@@ -271,8 +273,7 @@ async def register_new_wallet(session: AsyncSession, event,
     # delete matching aliases (same name)
     await session.execute(
         delete(WalletAlias).where(
-            WalletAlias.holder == user.id,
-            WalletAlias.alias == data[0]
+            WalletAlias.holder == user.id, WalletAlias.alias == data[0]
         )
     )
 
@@ -286,14 +287,15 @@ async def register_new_wallet(session: AsyncSession, event,
 
     current_transaction = user.expectation["transaction"]
     if current_transaction is not None:
-        await event.respond(_("transaction_handling_in_process").format(
-            " ".join(map(str, current_transaction))
-        ))
+        await event.respond(
+            _("transaction_handling_in_process").format(
+                " ".join(map(str, current_transaction))
+            )
+        )
         await register_transaction(session, user, _, event, current_transaction)
 
 
-async def handle_expectation_new_wallet(session: AsyncSession,
-                                        user: User, _, event):
+async def handle_expectation_new_wallet(session: AsyncSession, user: User, _, event):
     """Handle new_wallet expectation."""
     raw_text = event.raw_text
 
@@ -324,9 +326,10 @@ async def handle_expectation_new_wallet(session: AsyncSession,
 
     # name uniqueness check
     wallets = await session.execute(
-        select(Wallet).where(Wallet.holder == user.id).
-            where(Wallet.is_deleted == False).
-            where(Wallet.name == name)
+        select(Wallet)
+        .where(Wallet.holder == user.id)
+        .where(Wallet.is_deleted == False)
+        .where(Wallet.name == name)
     )
     wallets = wallets.scalars().all()
     if len(wallets) != 0:
@@ -338,8 +341,7 @@ async def handle_expectation_new_wallet(session: AsyncSession,
     await register_new_wallet(session, event, user, data, _)
 
 
-async def handle_expectation_new_category(session: AsyncSession,
-                                          user: User, _, event):
+async def handle_expectation_new_category(session: AsyncSession, user: User, _, event):
     """Handle new_category expectation."""
     raw_text = event.raw_text
 
@@ -352,9 +354,10 @@ async def handle_expectation_new_category(session: AsyncSession,
 
     # name uniqueness check
     categories = await session.execute(
-        select(Category).where(Category.holder == user.id).
-            where(Category.is_deleted == False).
-            where(Category.name == raw_text)
+        select(Category)
+        .where(Category.holder == user.id)
+        .where(Category.is_deleted == False)
+        .where(Category.name == raw_text)
     )
     categories = categories.scalars().all()
     if len(categories) != 0:
@@ -380,30 +383,23 @@ async def handle_expectation_page(session: AsyncSession, user: User, _, event):
         return
 
     if type_ == "c":
-        await categories.send_menu(
-            session, user, _, event, page, msg_id
-        )
+        await categories.send_menu(session, user, _, event, page, msg_id)
     elif type_ == "w":
-        await wallets.send_menu(
-            session, user, _, event, page, msg_id
-        )
+        await wallets.send_menu(session, user, _, event, page, msg_id)
     elif type_ == "t":
-        await transactions.send_menu(
-            session, user, _, event, page, msg_id
-        )
+        await transactions.send_menu(session, user, _, event, page, msg_id)
     user.expectation["expect"] = {"type": None, "data": None}
     await session.commit()
     await event.client.send_message(
         entity=event.chat_id,
         reply_to=msg_id,
-        message=_("beamed_to_page_successfully").format(str(page))
+        message=_("beamed_to_page_successfully").format(str(page)),
     )
 
 
 async def handle_expectation(session: AsyncSession, user: User, _, event):
     """Handle bot flow if data is expected from user."""
     expect = user.expectation["expect"]
-    raw_text = event.raw_text
 
     if expect["type"] == "new_category":
         await handle_expectation_new_category(session, user, _, event)
@@ -413,29 +409,25 @@ async def handle_expectation(session: AsyncSession, user: User, _, event):
 
     elif expect["type"] == "new_category_alias":
         prompt = user.expectation["message"]
-        await event.respond(_("unexpected_msg_on_alias_prompt"),
-                            reply_to=prompt)
+        await event.respond(_("unexpected_msg_on_alias_prompt"), reply_to=prompt)
 
     elif expect["type"] == "new_wallet_alias":
         prompt = user.expectation["message"]
-        await event.respond(_("unexpected_msg_on_alias_prompt"),
-                            reply_to=prompt)
+        await event.respond(_("unexpected_msg_on_alias_prompt"), reply_to=prompt)
 
     elif expect["type"] == "edit_category":
-        await categories.handle_expectation_edit_category(
-            session, user, _, event)
+        await categories.handle_expectation_edit_category(session, user, _, event)
 
     elif expect["type"] == "edit_wallet":
-        await wallets.handle_expectation_edit_wallet(
-            session, user, _, event)
+        await wallets.handle_expectation_edit_wallet(session, user, _, event)
 
     elif expect["type"] == "edit_transaction":
-        await transactions.handle_expectation_edit_transaction(
-            session, user, _, event)
+        await transactions.handle_expectation_edit_transaction(session, user, _, event)
 
     elif expect["type"] == "reschedule_transaction":
         await transactions.handle_expectation_reschedule_transaction(
-            session, user, _, event)
+            session, user, _, event
+        )
 
     elif expect["type"] == "page":
         await handle_expectation_page(session, user, _, event)
@@ -466,9 +458,11 @@ def register_message_handler(client, session_maker):
                     registered_at=int(time.time()),
                     language=None,
                     is_banned=False,
-                    expectation={"transaction": [],
+                    expectation={
+                        "transaction": [],
                         "expect": {"type": None, "data": None},
-                        "message": None}
+                        "message": None,
+                    },
                 )
                 session.add(user)
                 await session.commit()

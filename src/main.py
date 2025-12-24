@@ -1,11 +1,9 @@
-import os
-import time
-import uuid
 import asyncio
-from telethon import TelegramClient, Button, events
+import os
+
 from dotenv import load_dotenv
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncEngine
+from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
+from telethon import TelegramClient
 
 from database.connect import get_async_engine, get_session_maker
 from database.init import init_db
