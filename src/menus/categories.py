@@ -43,6 +43,11 @@ async def handle_expectation_edit_category(session: AsyncSession, user: User, _,
         )
     )
 
+    # delete all aliases belonging to this category
+    await session.execute(
+        delete(CategoryAlias).where(CategoryAlias.category == uuid)
+    )
+
     category = await session.execute(select(Category).where(Category.id == uuid))
     category = category.scalar_one_or_none()
     if category:

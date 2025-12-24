@@ -67,6 +67,11 @@ async def handle_expectation_edit_wallet(session: AsyncSession, user: User, _, e
         )
     )
 
+    # delete all aliases belonging to this wallet
+    await session.execute(
+        delete(WalletAlias).where(WalletAlias.wallet == uuid)
+    )
+
     wallet = await session.execute(select(Wallet).where(Wallet.id == uuid))
     wallet = wallet.scalar_one_or_none()
     if wallet:
