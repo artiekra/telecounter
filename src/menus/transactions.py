@@ -1,3 +1,4 @@
+import os
 import csv
 import math
 from io import StringIO, BytesIO
@@ -245,6 +246,7 @@ async def view_menu(session: AsyncSession, user: User, _, event,
         Button.inline(_("universal_back_button"), b"menu_transactions")
     ]
     await event.respond(_("transaction_action_view").format(
+        os.getenv("BOT_USERNAME"),
         emoji_indicator, transaction.sum, transaction.wallet.currency,
         formatted_datetime, transaction.wallet.name, transaction.category.name,
         transaction.wallet.id.hex(), transaction.category.id.hex()
@@ -313,7 +315,7 @@ async def delete_menu(session: AsyncSession, user: User, _, event,
 async def send_menu(session: AsyncSession, user: User, _,
                     event, page: int = 1, original_msg: int = None) -> None:
     """Send transactions menu to the user."""
-    TRANSACTIONS_PER_PAGE = 20
+    TRANSACTIONS_PER_PAGE = 14
 
     # TODO: include pagination into a query
     transactions = await session.execute(
@@ -355,6 +357,7 @@ async def send_menu(session: AsyncSession, user: User, _,
         else: emoji_indicator = "🟨"
 
         new = _("menu_transactions_component_transaction_info").format(
+            os.getenv("BOT_USERNAME"),
             emoji_indicator, transaction.sum, transaction.wallet.currency,
             transaction.category.name, transaction.wallet.name,
             transaction.id.hex(), transaction.category.id.hex(),

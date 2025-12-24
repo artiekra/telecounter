@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.8\n"
 
 #: src/handlers/callback.py:28
 msgid "language_set_popup"
@@ -52,8 +52,8 @@ msgstr "#️⃣ Enter **page number** to go to"
 #: src/handlers/callback.py:56
 msgid "category_creation_cancelled"
 msgstr ""
-"❌ Category **won't be created**; you can create category from start menu or "
-"by sending a transaction that uses it"
+"❌ Category **won't be created**; you can create category from /start menu "
+"or by sending a transaction that uses it"
 
 #: src/handlers/callback.py:82 src/handlers/callback.py:119
 msgid "category_created_successfully"
@@ -86,7 +86,7 @@ msgstr "__Thanks, I won't ask this again__"
 #: src/handlers/callback.py:300
 msgid "wallet_creation_cancelled"
 msgstr ""
-"❌ Wallet **won't be created**; you can create wallet from start menu or by "
+"❌ Wallet **won't be created**; you can create wallet from /start menu or by "
 "sending a transaction that uses it"
 
 #: src/handlers/message.py:52
@@ -485,8 +485,8 @@ msgstr ""
 #: src/menus/categories.py:336
 msgid "menu_categories_component_category_info"
 msgstr ""
-"- `{0}`; [👁](https://t.me/telecounterbot?start=cv_{1}) [✏️](https://t.me/"
-"telecounterbot?start=ce_{1}) [❌](https://t.me/telecounterbot?start=cd_{1})"
+"- `{1}`; [👁](https://t.me/{0}?start=cv_{2}) [✏️](https://t.me/{0}?"
+"start=ce_{2}) [❌](https://t.me/{0}?start=cd_{2})"
 
 #: src/menus/categories.py:342
 msgid "menu_categories_template"
@@ -559,11 +559,11 @@ msgstr ""
 #: src/menus/transactions.py:247
 msgid "transaction_action_view"
 msgstr ""
-"{0} Transaction, `{1} {2}`\n"
-"__Created on {3}__\n"
+"{1} Transaction, `{2} {3}`\n"
+"__Created on {4}__\n"
 "\n"
-"Wallet: [{4}](https://t.me/telecounterbot?start=wv_{6})\n"
-"Category: [{5}](https://t.me/telecounterbot?start=cv_{7})"
+"Wallet: [{5}](https://t.me/{0}?start=wv_{7})\n"
+"Category: [{6}](https://t.me/{0}?start=cv_{8})"
 
 #: src/menus/transactions.py:268
 msgid "transaction_action_edit_cancel"
@@ -627,11 +627,10 @@ msgstr ""
 #: src/menus/transactions.py:357
 msgid "menu_transactions_component_transaction_info"
 msgstr ""
-"{0} `{1} {2}` ([{3}](https://t.me/telecounterbot?start=cv_{6}), [{4}]"
-"(https://t.me/telecounterbot?start=wv_{7})) [👁](https://t.me/telecounterbot?"
-"start=tv_{5}) [❌](https://t.me/telecounterbot?start=td_{5}) [✏️](https://"
-"t.me/telecounterbot?start=te_{5}) [🕝](https://t.me/telecounterbot?"
-"start=ts_{5})"
+"{1} `{2} {3}` ([{4}](https://t.me/{0}?start=cv_{7}), [{5}](https://t.me/{0}?"
+"start=wv_{8})) [👁](https://t.me/{0}?start=tv_{6}) [❌](https://t.me/{0}?"
+"start=td_{6}) [✏️](https://t.me/{0}?start=te_{6}) [🕝](https://t.me/{0}?"
+"start=ts_{6})"
 
 #: src/menus/transactions.py:367
 msgid "menu_transactions_template"
@@ -673,8 +672,7 @@ msgstr ""
 "❌ Sorry, something went wrong\n"
 "\n"
 "It seems like you are **not the owner** of this wallet, maybe you tried "
-"editing someone else's wallet by pressing a button on a forwarded message?"
-"\r\n"
+"editing someone else's wallet by pressing a button on a forwarded message?\n"
 "\n"
 "You can see and edit all your wallets with /wallets"
 
@@ -770,9 +768,8 @@ msgstr ""
 #: src/menus/wallets.py:371
 msgid "menu_wallets_component_wallet_info"
 msgstr ""
-"- `{0}` [`{1} {2}`]; [👁](https://t.me/telecounterbot?start=wv_{3}) [✏️]"
-"(https://t.me/telecounterbot?start=we_{3}) [❌](https://t.me/telecounterbot?"
-"start=wd_{3})"
+"- `{1}` [`{2} {3}`]; [👁](https://t.me/{0}?start=wv_{4}) [✏️](https://t.me/{0}?"
+"start=we_{4}) [❌](https://t.me/{0}?start=wd_{4})"
 
 #: src/menus/wallets.py:377
 msgid "menu_wallets_template"

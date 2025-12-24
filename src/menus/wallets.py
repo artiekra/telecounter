@@ -1,3 +1,4 @@
+import os
 import csv
 import math
 import json
@@ -369,6 +370,7 @@ async def send_menu(session: AsyncSession, user: User, _,
     ]
 
     wallet_info = [_("menu_wallets_component_wallet_info").format(
+        os.getenv("BOT_USERNAME"),
         x.name, x.init_sum+x.current_sum, x.currency, x.id.hex()
     ) for x in wallets]
 

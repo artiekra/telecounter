@@ -1,3 +1,4 @@
+import os
 import csv
 import math
 from io import StringIO, BytesIO
@@ -334,7 +335,7 @@ async def send_menu(session: AsyncSession, user: User, _,
     ]
 
     category_info = [_("menu_categories_component_category_info").format(
-        x.name, x.id.hex()
+        os.getenv("BOT_USERNAME", "telecounterbot"), x.name, x.id.hex()
     ) for x in categories]
 
     category_info_str = "\n".join(category_info)

@@ -197,7 +197,7 @@ async def handle_unknown_command(session: AsyncSession, user: User,
     command = event.raw_text.split()[0]
 
     await event.respond(_("unknown_command").format(
-        command, os.getenv("SUPPORT_USERNAME", "[not specified]")
+        command, "@"+os.getenv("SUPPORT_USERNAME", "[not specified]")
     ))
 
 
