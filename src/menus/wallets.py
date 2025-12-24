@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from sqlalchemy import select, func, delete
+from sqlalchemy import select, func, delete, desc
 from telethon.tl.custom import Button
 
 from database.models import User, Wallet, WalletAlias, Transaction
@@ -235,10 +235,11 @@ async def view_menu(session: AsyncSession, user: User, _, event,
             selectinload(Transaction.category)
         )
         .where(Transaction.wallet_id == uuid)
+        .order_by(Transaction.datetime.desc())
     )
     full_transactions = full_transactions.scalars().all()
 
-    transactions = full_transactions[::-1]
+    transactions = full_transactions
     if len(transactions) > MAX_TRANSACTIONS_SHOWN:
         transactions = transactions[:MAX_TRANSACTIONS_SHOWN]
 

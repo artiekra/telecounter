@@ -219,7 +219,8 @@ async def register_transaction(
     _,
     event,
     data: list,
-    is_editing: bool = False
+    is_editing: bool = False,
+    custom_datetime = None
 ) -> bool:
     """Register transaction in the db, handle creating new category/wallet."""
     amount, category, wallet = data
@@ -255,7 +256,7 @@ async def register_transaction(
 
     new_transaction = Transaction(
         holder=user.id,
-        datetime=int(time.time()),
+        datetime=custom_datetime if custom_datetime else int(time.time()),
         type=TransactionType.INCOME,
         wallet_id=wallet_id[1],
         category_id=category_id[1],

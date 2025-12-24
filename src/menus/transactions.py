@@ -6,7 +6,7 @@ from dateutil import parser
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from sqlalchemy import select, func, delete, update
+from sqlalchemy import select, func, delete, update, desc
 from telethon.tl.custom import Button
 
 from database.models import User, Transaction, Wallet, Category
@@ -34,8 +34,28 @@ def parse_time(s: str) -> float|None:
     return dt.timestamp()
 
 
+async def delete_transaction(session, uuid):
+    """Deletes a transaction by UUID and adjusts Wallet data"""
+
+    stmt = (
+        select(Transaction)
+        .where(Transaction.id == uuid)
+        .options(selectinload(Transaction.wallet))
+    )
+    txn_result = await session.execute(stmt)
+    old_transaction = txn_result.scalar_one_or_none()
+
+    if old_transaction and old_transaction.wallet:
+        old_transaction.wallet.current_sum -= old_transaction.sum
+        old_transaction.wallet.transaction_count -= 1
+        
+        await session.delete(old_transaction)
+
+    await session.commit()
+
+
 async def handle_expectation_edit_transaction(session: AsyncSession,
-                                         user: User, _, event):
+                                              user: User, _, event):
     """Handle edit_transaction expectation."""
     uuid = bytes.fromhex(user.expectation["expect"]["data"])
     raw_text = event.raw_text
@@ -44,6 +64,17 @@ async def handle_expectation_edit_transaction(session: AsyncSession,
         await event.respond(_("got_empty_message_for_transaction"))
         return
 
+    old_txn_result = await session.execute(
+        select(Transaction).where(Transaction.id == uuid)
+    )
+    old_transaction = old_txn_result.scalar_one_or_none()
+
+    if not old_transaction:
+        await event.respond(_("transaction_action_view_not_found_error"))
+        return
+    
+    saved_datetime = old_transaction.datetime
+
     parts = event.raw_text.split()
     if len(parts) < 3:
         await event.respond(_("info_omitted_for_transaction_error"))
@@ -51,31 +82,25 @@ async def handle_expectation_edit_transaction(session: AsyncSession,
 
     raw_sum, category, wallet = parts[:3]
     
-    # sum = parts[0] if len(parts) > 0 else None
-    # category = parts[1] if len(parts) > 1 else None
-    # wallet = parts[2] if len(parts) > 2 else None
-
     try:
-        sum = float(raw_sum.replace(",", "."))
+        sum_val = float(raw_sum.replace(",", "."))
     except ValueError:
         await event.respond(_("non_numerical_sum_error"))
         return
     
-    # checking this after checking for numerical value (and
-    #  not before!) allows
-    #  for more clear errors
     if raw_sum[0] not in "+-":
         await event.respond(_("no_sign_specified_for_sum"))
         return
 
-    result = await register_transaction(session, user, _, event,
-                                        [sum, category, wallet], True)
-    if result:
-        await session.execute(
-            delete(Transaction).where(Transaction.id == uuid)
-        )
+    result = await register_transaction(
+        session, user, _, event,
+        [sum_val, category, wallet], 
+        True,
+        custom_datetime=saved_datetime 
+    )
 
-        await session.commit()
+    if result:
+        await delete_transaction(session, uuid)
 
 
 async def handle_expectation_reschedule_transaction(session: AsyncSession,
@@ -158,11 +183,7 @@ async def handle_action(session: AsyncSession, event,
     if data[1][1] == "d":
         uuid = bytes.fromhex(data[2])
 
-        await session.execute(
-            delete(Transaction).where(Transaction.id == uuid)
-        )
-
-        await session.commit()
+        await delete_transaction(session, uuid)
 
         await event.edit(_("transaction_deleted_succesfully"))
         await send_menu(session, user, _, event)
@@ -301,8 +322,9 @@ async def send_menu(session: AsyncSession, user: User, _,
             selectinload(Transaction.wallet),
             selectinload(Transaction.category)
         )
+        .order_by(Transaction.datetime.desc())
     )
-    transactions = transactions.scalars().all()[::-1]
+    transactions = transactions.scalars().all()
 
     transactions_count = len(transactions)
 
