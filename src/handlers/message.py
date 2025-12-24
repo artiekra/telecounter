@@ -369,7 +369,11 @@ async def handle_expectation_new_category(session: AsyncSession, user: User, _, 
 
 async def handle_expectation_page(session: AsyncSession, user: User, _, event):
     """Handle page expectation."""
-    type_, msg_id = user.expectation["expect"]["data"]
+    # data is now a list: [type, msg_id, year(opt), month(opt)]
+    data_list = user.expectation["expect"]["data"]
+    type_ = data_list[0]
+    msg_id = data_list[1]
+
     raw_text = event.raw_text
 
     if raw_text == "":
@@ -387,7 +391,16 @@ async def handle_expectation_page(session: AsyncSession, user: User, _, event):
     elif type_ == "w":
         await wallets.send_menu(session, user, _, event, page, msg_id)
     elif type_ == "t":
-        await transactions.send_menu(session, user, _, event, page, msg_id)
+        # extract year and month if available to preserve context
+        year = None
+        month = None
+        if len(data_list) >= 4:
+            year = data_list[2]
+            month = data_list[3]
+        await transactions.send_menu(
+            session, user, _, event, page, msg_id, year=year, month=month
+        )
+
     user.expectation["expect"] = {"type": None, "data": None}
     await session.commit()
     await event.client.send_message(

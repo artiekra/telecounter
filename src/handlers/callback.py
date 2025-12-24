@@ -33,10 +33,21 @@ async def update_user_language(
 
 
 async def universal_custom_page_input_workflow(
-    session: AsyncSession, event, user: User, _, type_: str, msg_id: int
+    session: AsyncSession,
+    event,
+    user: User,
+    _,
+    type_: str,
+    msg_id: int,
+    extra_data: list | None = None,
 ) -> None:
     """Ask user for a page to go to."""
-    user.expectation["expect"] = {"type": "page", "data": [type_, msg_id]}
+    # Store type, msg_id, and any extra context (like year/month)
+    data_to_store = [type_, msg_id]
+    if extra_data:
+        data_to_store.extend(extra_data)
+
+    user.expectation["expect"] = {"type": "page", "data": data_to_store}
     await session.commit()
 
     await event.respond(_("universal_prompt_page_number"))
@@ -67,7 +78,8 @@ async def handle_command_category(
     # delete matching aliases (same name)
     await session.execute(
         delete(CategoryAlias).where(
-             CategoryAlias.holder == user.id, CategoryAlias.alias == category_name.lower()
+            CategoryAlias.holder == user.id,
+            CategoryAlias.alias == category_name.lower(),
         )
     )
 
@@ -118,7 +130,7 @@ async def handle_command_categoryalias(
         current_transaction = user.expectation["transaction"]
         if len(current_transaction) > 0:
             # await event.respond(_("transaction_handling_in_process").format(
-            #     " ".join(map(str, current_transaction))
+            #      " ".join(map(str, current_transaction))
             # ))
             await register_transaction(session, user, _, event, current_transaction)
 
@@ -144,7 +156,7 @@ async def handle_command_categoryalias(
         current_transaction = user.expectation.get("transaction")
         if len(current_transaction) > 0:
             # await event.respond(_("transaction_handling_in_process").format(
-            #     " ".join(map(str, current_transaction))
+            #      " ".join(map(str, current_transaction))
             # ))
             await register_transaction(session, user, _, event, current_transaction)
 
@@ -185,7 +197,7 @@ async def handle_command_walletalias(
         current_transaction = user.expectation.get("transaction")
         if len(current_transaction) > 0:
             # await event.respond(_("transaction_handling_in_process").format(
-            #     " ".join(map(str, current_transaction))
+            #      " ".join(map(str, current_transaction))
             # ))
             await register_transaction(session, user, _, event, current_transaction)
 
@@ -214,18 +226,52 @@ async def handle_command_page(
     """Handle user pressing a pagination button."""
 
     msg_id = int(bytes.fromhex(data[2]).decode("utf-8"))
+
+    # special handling for transactions which have year/month context
+    if data[1] == "t":
+        # format: page_t_MSGID_PAGE_YEAR_MONTH
+        page = None
+        try:
+            page = int(data[3])
+        except (IndexError, ValueError):
+            page = None
+
+        year = None
+        month = None
+        # attempt to extract year/month if present in data
+        if len(data) >= 6:
+            try:
+                year = int(data[4])
+                month = int(data[5])
+            except (IndexError, ValueError):
+                pass
+
+        if page:
+            await transactions.send_menu(
+                session, user, _, event, page, msg_id, year=year, month=month
+            )
+            return
+        else:
+            # Beam to page workflow (input), passing year/month context
+            extra = [year, month] if year and month else None
+            await universal_custom_page_input_workflow(
+                session, event, user, _, data[1], msg_id, extra_data=extra
+            )
+            return
+
+    # standard handling for Categories and Wallets
     try:
         page = int(data[3])
     except IndexError:
         page = None
+
     if page:
         if data[1] == "c":
             await categories.send_menu(session, user, _, event, page, msg_id)
         elif data[1] == "w":
             await wallets.send_menu(session, user, _, event, page, msg_id)
-        elif data[1] == "t":
-            await transactions.send_menu(session, user, _, event, page, msg_id)
         return
+
     await universal_custom_page_input_workflow(session, event, user, _, data[1], msg_id)
 
 
@@ -297,6 +343,19 @@ def register_callback_handler(client, session_maker):
                     await create_category(session, user, _, event)
 
             elif command == "menu":
+                # handle transaction specific menu data which includes year/month
+                if len(data) > 2 and data[1] == "transactions":
+                    # data format: menu_transactions_year_month OR menu_transactions_year
+                    try:
+                        year = int(data[2])
+                        month = int(data[3]) if len(data) > 3 else None
+                        await transactions.send_menu(
+                            session, user, _, event, year=year, month=month
+                        )
+                        return
+                    except ValueError:
+                        pass  # Fallback to standard command handling
+
                 user.expectation["expect"] = {"type": None, "data": None}
                 user.expectation["transaction"] = []
                 await COMMANDS.get(data[1])(session, user, _, event)  # type: ignore
