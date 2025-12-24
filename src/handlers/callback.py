@@ -67,7 +67,7 @@ async def handle_command_category(
     # delete matching aliases (same name)
     await session.execute(
         delete(CategoryAlias).where(
-            CategoryAlias.holder == user.id, CategoryAlias.alias == category_name
+             CategoryAlias.holder == user.id, CategoryAlias.alias == category_name.lower()
         )
     )
 

@@ -2,10 +2,25 @@ import uuid
 from enum import Enum as PyEnum
 
 from sqlalchemy import (BigInteger, Boolean, Column, Enum, ForeignKey, Integer,
-                        String, Text, UniqueConstraint)
+                        String, Text, TypeDecorator, UniqueConstraint)
 from sqlalchemy.dialects.sqlite import BLOB, JSON
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import declarative_base, relationship
+
+
+class LowercaseString(TypeDecorator):
+    """Ensures that all strings stored in this column are lowercase."""
+
+    impl = String
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            return value.lower()
+        return value
+
+    def process_result_value(self, value, dialect):
+        return value
+
 
 Base = declarative_base()
 
@@ -43,7 +58,7 @@ class Wallet(Base):
     holder = Column(BLOB, ForeignKey("users.id"), nullable=False)
     created_at = Column(BigInteger, nullable=False)  # unix timestamp
     icon = Column(String(1), nullable=False)
-    name = Column(String, nullable=False)
+    name = Column(LowercaseString, nullable=False)
     currency = Column(String(8), nullable=False)  # like "USD" or "UAH"
     init_sum = Column(BigInteger, nullable=False, default=0)
     current_sum = Column(BigInteger, nullable=False, default=0)
@@ -62,7 +77,7 @@ class Category(Base):
     holder = Column(BLOB, ForeignKey("users.id"), nullable=False)
     created_at = Column(BigInteger, nullable=False)  # unix timestamp
     icon = Column(String(1), nullable=False)
-    name = Column(String, nullable=False)
+    name = Column(LowercaseString, nullable=False)
     transaction_count = Column(BigInteger, nullable=False, default=0)
     is_deleted = Column(Boolean, default=False)
     comment = Column(Text, nullable=True)
@@ -94,7 +109,7 @@ class WalletAlias(Base):
     id = Column(BLOB, primary_key=True, default=gen_uuid)
     holder = Column(BLOB, ForeignKey("users.id"), nullable=False)
     wallet = Column(BLOB, ForeignKey("wallets.id"), nullable=False)
-    alias = Column(String, nullable=False)
+    alias = Column(LowercaseString, nullable=False)
 
     holder_user = relationship("User", backref="wallet_aliases")
     wallet_ref = relationship("Wallet", backref="aliases")
@@ -110,7 +125,7 @@ class CategoryAlias(Base):
     id = Column(BLOB, primary_key=True, default=gen_uuid)
     holder = Column(BLOB, ForeignKey("users.id"), nullable=False)
     category = Column(BLOB, ForeignKey("categories.id"), nullable=False)
-    alias = Column(String, nullable=False)
+    alias = Column(LowercaseString, nullable=False)
 
     holder_user = relationship("User", backref="category_aliases")
     category_ref = relationship("Category", backref="aliases")

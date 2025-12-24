@@ -3,7 +3,7 @@ import os
 import re
 import time
 import uuid
-from types import coroutine
+from typing import Callable
 
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -197,7 +197,7 @@ async def handle_unknown_command(session: AsyncSession, user: User, _, event) ->
     )
 
 
-COMMANDS: dict[str, coroutine] = {
+COMMANDS: dict[str, Callable] = {
     "start": handle_command_start,
     "help": handle_command_help,
     "wallets": handle_command_wallets,
@@ -273,7 +273,7 @@ async def register_new_wallet(
     # delete matching aliases (same name)
     await session.execute(
         delete(WalletAlias).where(
-            WalletAlias.holder == user.id, WalletAlias.alias == data[0]
+            WalletAlias.holder == user.id, WalletAlias.alias == data[0].lower()
         )
     )
 
@@ -328,7 +328,7 @@ async def handle_expectation_new_wallet(session: AsyncSession, user: User, _, ev
     wallets = await session.execute(
         select(Wallet)
         .where(Wallet.holder == user.id)
-        .where(Wallet.is_deleted == False)
+        .where(Wallet.is_deleted.is_(False))
         .where(Wallet.name == name)
     )
     wallets = wallets.scalars().all()
@@ -356,7 +356,7 @@ async def handle_expectation_new_category(session: AsyncSession, user: User, _, 
     categories = await session.execute(
         select(Category)
         .where(Category.holder == user.id)
-        .where(Category.is_deleted == False)
+        .where(Category.is_deleted.is_(False))
         .where(Category.name == raw_text)
     )
     categories = categories.scalars().all()

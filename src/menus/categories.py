@@ -29,7 +29,7 @@ async def handle_expectation_edit_category(session: AsyncSession, user: User, _,
         select(Category)
         .where(Category.holder == user.id)
         .where(Category.is_deleted == False)
-        .where(Category.name == raw_text)
+        .where(Category.name == raw_text.lower())
     )
     categories = categories.scalars().all()
     if len(categories) != 0:
@@ -39,7 +39,7 @@ async def handle_expectation_edit_category(session: AsyncSession, user: User, _,
     # delete matching aliases (same name)
     await session.execute(
         delete(CategoryAlias).where(
-            CategoryAlias.holder == user.id, CategoryAlias.alias == raw_text
+            CategoryAlias.holder == user.id, CategoryAlias.alias == raw_text.lower()
         )
     )
 

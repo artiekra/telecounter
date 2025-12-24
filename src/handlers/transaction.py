@@ -22,7 +22,7 @@ async def find_category_by_name(
     result = await session.execute(
         select(CategoryAlias)
         .where(CategoryAlias.holder == user.id)
-        .where(CategoryAlias.alias.ilike(input_name))
+        .where(CategoryAlias.alias == input_name.lower())
     )
     alias = result.scalar_one_or_none()
     if alias:
@@ -32,7 +32,7 @@ async def find_category_by_name(
     result = await session.execute(
         select(Category)
         .where(Category.holder == user.id)
-        .where(Category.is_deleted == False)
+        .where(Category.is_deleted.is_(False))
     )
     categories = result.scalars().all()
 
@@ -41,7 +41,7 @@ async def find_category_by_name(
 
     # fuzzy match category names
     choices = {category.name: category.id for category in categories}
-    match = process.extractOne(input_name, choices.keys())
+    match = process.extractOne(input_name.lower(), choices.keys())
 
     if match and match[1] >= threshold:
         if match[1] == 100:
@@ -60,7 +60,7 @@ async def find_wallet_by_name(
     result = await session.execute(
         select(WalletAlias)
         .where(WalletAlias.holder == user.id)
-        .where(WalletAlias.alias.ilike(input_name))
+        .where(WalletAlias.alias == input_name.lower())
     )
     alias = result.scalar_one_or_none()
     if alias:
@@ -68,7 +68,9 @@ async def find_wallet_by_name(
 
     # get all wallets
     result = await session.execute(
-        select(Wallet).where(Wallet.holder == user.id).where(Wallet.is_deleted == False)
+        select(Wallet)
+        .where(Wallet.holder == user.id)
+        .where(Wallet.is_deleted.is_(False))
     )
     wallets = result.scalars().all()
 
@@ -77,7 +79,7 @@ async def find_wallet_by_name(
 
     # fuzzy match wallet names
     choices = {wallet.name: wallet.id for wallet in wallets}
-    match = process.extractOne(input_name, choices.keys())
+    match = process.extractOne(input_name.lower(), choices.keys())
 
     if match and match[1] >= threshold:
         if match[1] == 100:

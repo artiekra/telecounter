@@ -52,7 +52,7 @@ async def handle_expectation_edit_wallet(session: AsyncSession, user: User, _, e
         select(Wallet)
         .where(Wallet.holder == user.id)
         .where(Wallet.is_deleted is False)
-        .where(Wallet.name == name)
+        .where(Wallet.name == name.lower())
         .where(Wallet.id != uuid)
     )
     wallets = wallets.scalars().all()
@@ -63,7 +63,7 @@ async def handle_expectation_edit_wallet(session: AsyncSession, user: User, _, e
     # delete matching aliases (same name)
     await session.execute(
         delete(WalletAlias).where(
-            WalletAlias.holder == user.id, WalletAlias.alias == name
+            WalletAlias.holder == user.id, WalletAlias.alias == name.lower()
         )
     )
 
