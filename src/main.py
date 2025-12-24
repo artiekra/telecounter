@@ -2,6 +2,7 @@ import asyncio
 import os
 
 from dotenv import load_dotenv
+from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
 from telethon import TelegramClient
 
@@ -11,6 +12,8 @@ from handlers.callback import register_callback_handler
 from handlers.message import register_message_handler
 
 load_dotenv()
+
+logger.opt(colors=True)
 
 API_ID = int(os.getenv("API_ID", "0"))
 API_HASH = os.getenv("API_HASH", "")
@@ -28,14 +31,25 @@ client = TelegramClient("connection", API_ID, API_HASH)
 
 async def main():
     """Initialize the database, start listening for events."""
+    logger.info("Initializing database...")
     await init_db(engine)
+    logger.success("Database initialized.")
+
+    logger.info("Starting Telegram client...")
     await client.start(bot_token=BOT_TOKEN)
+    logger.success("Telegram client started.")
 
     register_callback_handler(client, session_maker)
     register_message_handler(client, session_maker)
 
     await client.run_until_disconnected()
+    logger.info("Telegram client disconnected.")
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Bot stopped by user.")
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {e}")
