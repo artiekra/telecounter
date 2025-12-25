@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-12-25 01:13+0200\n"
+"POT-Creation-Date: 2025-12-25 10:39+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -55,7 +55,7 @@ msgstr ""
 "❌ Category **won't be created**; you can create category from /start menu or "
 "by sending a transaction that uses it"
 
-#: src/handlers/callback.py:89 src/handlers/callback.py:125
+#: src/handlers/callback.py:89 src/handlers/callback.py:129
 msgid "category_created_successfully"
 msgstr "🏷 New category \"`{0}`\" **created succesfully**"
 
@@ -69,21 +69,21 @@ msgstr ""
 "❌ **Cancelled**. Send the transaction again and change the category if "
 "neccesarry"
 
-#: src/handlers/callback.py:151
+#: src/handlers/callback.py:155
 msgid "category_alias_created_successfully"
 msgstr "__Thanks, I won't ask this again__"
 
-#: src/handlers/callback.py:171
+#: src/handlers/callback.py:175
 msgid "wallet_alias_creation_cancelled"
 msgstr ""
 "❌ **Cancelled**. Send the transaction again and change the wallet if "
 "neccesarry"
 
-#: src/handlers/callback.py:192
+#: src/handlers/callback.py:196
 msgid "wallet_alias_created_successfully"
 msgstr "__Thanks, I won't ask this again__"
 
-#: src/handlers/callback.py:329
+#: src/handlers/callback.py:333
 msgid "wallet_creation_cancelled"
 msgstr ""
 "❌ Wallet **won't be created**; you can create wallet from /start menu or by "
@@ -504,9 +504,20 @@ msgstr "__, as well as {0} deleted categories__"
 msgid "export_button"
 msgstr " 📥 Export"
 
-#: src/menus/stats.py:8
-msgid "feature_under_development"
-msgstr "😅 Sorry, this feature is still under development, please wait a bit :>"
+#: src/menus/stats.py:16
+msgid "stats_waiting"
+msgstr "🕐 __Generating stats...__"
+
+#: src/menus/stats.py:27
+msgid "stats_caption"
+msgstr "📊 Stats for the **last year** period"
+
+#: src/menus/stats.py:36
+msgid "stats_generation_error"
+msgstr ""
+"❌ Sorry, couldn't generate your stats\n"
+"\n"
+"You can report this issue to {0}"
 
 #: src/menus/transactions.py:42
 msgid "month_1"
@@ -841,6 +852,10 @@ msgstr ""
 #: src/menus/wallets.py:392
 msgid "menu_wallets_component_deleted_amount"
 msgstr "__, as well as {0} deleted wallets__"
+
+#~ msgid "feature_under_development"
+#~ msgstr ""
+#~ "😅 Sorry, this feature is still under development, please wait a bit :>"
 
 #~ msgid "transaction_action_ownership_check_got_deleted"
 #~ msgstr ""

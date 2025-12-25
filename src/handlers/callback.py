@@ -115,7 +115,11 @@ async def handle_command_categoryalias(
         category_name = user.expectation["expect"]["data"][0]
 
         new_category = Category(
-            id=uuid.uuid4().bytes, holder=user.id, icon="✨", name=category_name
+            id=uuid.uuid4().bytes,
+            holder=user.id,
+            created_at=int(time.time()),
+            icon="✨",
+            name=category_name,
         )
 
         session.add(new_category)
