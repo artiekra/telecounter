@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: mail@artiekra.org\n"
-"POT-Creation-Date: 2025-12-25 10:39+0200\n"
+"POT-Creation-Date: 2025-12-25 11:33+0200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Artemii Kravchuk <mail@artiekra.org>\n"
 "Language-Team: \n"
@@ -362,6 +362,26 @@ msgstr ""
 "Category: {1}\n"
 "Using wallet: {2}```\n"
 "After this you have `{3}{4}` in your wallet (`{2}`)"
+
+#: src/helpers/stats.py:141
+msgid "stats_chart_total_net_worth"
+msgstr "Total net worth"
+
+#: src/helpers/stats.py:189
+msgid "stats_chart_category_distribution"
+msgstr "Category distribution"
+
+#: src/helpers/stats.py:197
+msgid "stats_chart_no_data"
+msgstr "no data"
+
+#: src/helpers/stats.py:274
+msgid "stats_chart_income"
+msgstr "Income"
+
+#: src/helpers/stats.py:275
+msgid "stats_chart_expense"
+msgstr "Expense"
 
 #: src/menus/categories.py:57
 msgid "category_edited_successfully"

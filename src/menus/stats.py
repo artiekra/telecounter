@@ -18,8 +18,8 @@ async def send_menu(
     reply_id = getattr(event, "message_id", None) or event.id
 
     try:
-        balance_chart = await get_balance_history(session, user.id)
-        pie_chart = await get_category_pie_charts(session, user.id)
+        balance_chart = await get_balance_history(_, session, user.id)
+        pie_chart = await get_category_pie_charts(_, session, user.id)
 
         await event.client.send_file(
             event.chat_id,

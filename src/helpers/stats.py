@@ -87,7 +87,7 @@ def get_text_color(hex_color):
         return "#FFFFFF"
 
 
-async def get_balance_history(session: AsyncSession, user_id: bytes) -> io.BytesIO:
+async def get_balance_history(_, session: AsyncSession, user_id: bytes) -> io.BytesIO:
     """Calculates weekly total balance history for the last year."""
     now = datetime.datetime.now()
     one_year_ago = now - datetime.timedelta(days=365)
@@ -138,7 +138,7 @@ async def get_balance_history(session: AsyncSession, user_id: bytes) -> io.Bytes
     )
 
     ax.fill_between(dates, values, color=accent_color, alpha=0.15)
-    ax.set_title("Total Net Worth (Last 365 Days)", pad=25)
+    ax.set_title(_("stats_chart_total_net_worth"), pad=25)
     ax.grid(True, axis="y", alpha=0.3)
     ax.grid(False, axis="x")
 
@@ -158,7 +158,9 @@ async def get_balance_history(session: AsyncSession, user_id: bytes) -> io.Bytes
     return buf
 
 
-async def get_category_pie_charts(session: AsyncSession, user_id: bytes) -> io.BytesIO:
+async def get_category_pie_charts(
+    _, session: AsyncSession, user_id: bytes
+) -> io.BytesIO:
     """Generates two donut charts for income and expenses by category."""
     one_year_ago = (datetime.datetime.now() - datetime.timedelta(days=365)).timestamp()
 
@@ -184,7 +186,7 @@ async def get_category_pie_charts(session: AsyncSession, user_id: bytes) -> io.B
     # --- Plotting ---
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 8))
     fig.suptitle(
-        "Category Distribution (Last Year)", y=0.90, fontsize=18, fontweight="bold"
+        _("stats_chart_category_distribution"), y=0.90, fontsize=18, fontweight="bold"
     )
 
     def plot_donut(ax, data, title):
@@ -192,7 +194,7 @@ async def get_category_pie_charts(session: AsyncSession, user_id: bytes) -> io.B
             ax.text(
                 0.5,
                 0.5,
-                "No Data",
+                _("stats_chart_no_data"),
                 ha="center",
                 va="center",
                 color="#777777",
@@ -269,8 +271,8 @@ async def get_category_pie_charts(session: AsyncSession, user_id: bytes) -> io.B
             prop={"weight": "bold"},
         )
 
-    plot_donut(ax1, income_data, "Income")
-    plot_donut(ax2, expense_data, "Expenses")
+    plot_donut(ax1, income_data, _("stats_chart_income"))
+    plot_donut(ax2, expense_data, _("stats_chart_expense"))
 
     plt.subplots_adjust(left=0.08, right=0.92, top=0.9, bottom=0.2)
 
