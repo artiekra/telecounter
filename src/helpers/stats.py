@@ -9,6 +9,7 @@ import matplotlib.dates as mdates
 import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
 from loguru import logger
+from matplotlib.ticker import FuncFormatter
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
@@ -193,7 +194,14 @@ async def get_balance_history(_, session: AsyncSession, user_id: bytes) -> io.By
     ax.grid(True, axis="y", alpha=0.3)
     ax.grid(False, axis="x")
 
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %y"))
+    def localize_date(x, pos):
+        """Converts matplotlib date number to localized 'Mon YY' string."""
+        dt = mdates.num2date(x)
+        month_name = _(f"month_{dt.month}")
+        return f"{month_name} {dt.strftime('%y')}"
+
+    ax.xaxis.set_major_formatter(FuncFormatter(localize_date))
+
     plt.setp(ax.get_xticklabels(), fontweight="bold")
     plt.setp(ax.get_yticklabels(), fontweight="bold")
 
