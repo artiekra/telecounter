@@ -7,6 +7,7 @@ from thefuzz import process
 
 from database.models import (Category, CategoryAlias, Transaction,
                              TransactionType, User, Wallet, WalletAlias)
+from helpers.amount_formatter import format_amount
 
 
 async def find_category_by_name(
@@ -256,7 +257,13 @@ async def register_transaction(
             _("transaction_edited").format(
                 *map(
                     str,
-                    [amount, category.name, wallet.name, wallet_total, wallet.currency],
+                    [
+                        format_amount(amount),
+                        category.name,
+                        wallet.name,
+                        format_amount(wallet_total),
+                        wallet.currency,
+                    ],
                 )
             ),
             buttons=buttons,
@@ -266,7 +273,14 @@ async def register_transaction(
     await event.reply(
         _("transaction_registered").format(
             *map(
-                str, [amount, category.name, wallet.name, wallet_total, wallet.currency]
+                str,
+                [
+                    format_amount(amount),
+                    category.name,
+                    wallet.name,
+                    format_amount(wallet_total),
+                    wallet.currency,
+                ],
             )
         )
     )

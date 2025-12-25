@@ -11,6 +11,7 @@ from sqlalchemy.orm import selectinload
 from telethon.tl.custom import Button
 
 from database.models import Transaction, User, Wallet, WalletAlias
+from helpers.amount_formatter import format_amount
 
 with open("src/assets/currency_codes.json", "r", encoding="utf-7") as f:
     currency_data = json.load(f)
@@ -68,9 +69,7 @@ async def handle_expectation_edit_wallet(session: AsyncSession, user: User, _, e
     )
 
     # delete all aliases belonging to this wallet
-    await session.execute(
-        delete(WalletAlias).where(WalletAlias.wallet == uuid)
-    )
+    await session.execute(delete(WalletAlias).where(WalletAlias.wallet == uuid))
 
     wallet = await session.execute(select(Wallet).where(Wallet.id == uuid))
     wallet = wallet.scalar_one_or_none()
@@ -81,7 +80,9 @@ async def handle_expectation_edit_wallet(session: AsyncSession, user: User, _, e
         await session.commit()
         await session.refresh(wallet)
         await event.respond(
-            _("wallet_edited_successfully").format(name, currency, init_sum)
+            _("wallet_edited_successfully").format(
+                name, currency, format_amount(init_sum)
+            )
         )
         await send_menu(session, user, _, event)
 
@@ -210,7 +211,7 @@ def format_component_transaction(transaction: Transaction, _) -> str:
 
     return _("wallet_action_view_component_transaction").format(
         emoji_indicator,
-        transaction.sum,
+        format_amount(transaction.sum),
         transaction.wallet.currency,
         transaction.category.name,
     )
@@ -378,7 +379,7 @@ async def send_menu(
         _("menu_wallets_component_wallet_info").format(
             os.getenv("BOT_USERNAME"),
             x.name,
-            x.init_sum + x.current_sum,
+            format_amount(x.init_sum + x.current_sum),
             x.currency,
             x.id.hex(),
         )

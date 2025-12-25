@@ -16,6 +16,7 @@ import menus.transactions as transactions
 import menus.wallets as wallets
 from database.models import Category, User, Wallet, WalletAlias
 from handlers.transaction import create_category, register_transaction
+from helpers.amount_formatter import format_amount
 from translate import setup_translations
 
 with open("src/assets/currency_codes.json", "r", encoding="utf-7") as f:
@@ -41,7 +42,9 @@ async def send_start_menu(session: AsyncSession, user: User, _, event) -> None:
     """Show start menu to the user."""
     MAX_WALLETS_DISPLAYED = 3
 
-    wallets = await session.execute(select(Wallet).where(Wallet.holder == user.id))
+    wallets = await session.execute(
+        select(Wallet).where(Wallet.holder == user.id).where(Wallet.is_deleted == False)
+    )
     wallets = wallets.scalars().all()
     wallets = sorted(wallets, key=lambda x: x.transaction_count, reverse=True)
 
@@ -56,7 +59,7 @@ async def send_start_menu(session: AsyncSession, user: User, _, event) -> None:
 
     wallet_info = [
         _("command_start_component_wallet_info").format(
-            x.name, x.init_sum + x.current_sum, x.currency
+            x.name, format_amount(x.init_sum + x.current_sum), x.currency
         )
         for x in wallet_info_raw
     ]

@@ -10,6 +10,7 @@ from sqlalchemy.orm import selectinload
 from telethon.tl.custom import Button
 
 from database.models import Category, CategoryAlias, Transaction, User
+from helpers.amount_formatter import format_amount
 
 
 async def handle_expectation_edit_category(session: AsyncSession, user: User, _, event):
@@ -44,9 +45,7 @@ async def handle_expectation_edit_category(session: AsyncSession, user: User, _,
     )
 
     # delete all aliases belonging to this category
-    await session.execute(
-        delete(CategoryAlias).where(CategoryAlias.category == uuid)
-    )
+    await session.execute(delete(CategoryAlias).where(CategoryAlias.category == uuid))
 
     category = await session.execute(select(Category).where(Category.id == uuid))
     category = category.scalar_one_or_none()
@@ -166,7 +165,7 @@ def format_component_transaction(transaction: Transaction, _) -> str:
 
     return _("category_action_view_component_transaction").format(
         emoji_indicator,
-        transaction.sum,
+        format_amount(transaction.sum),
         transaction.wallet.currency,
         transaction.wallet.name,
     )

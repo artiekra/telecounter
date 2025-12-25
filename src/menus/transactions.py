@@ -14,6 +14,7 @@ from telethon.tl.custom import Button
 
 from database.models import Transaction, User
 from handlers.transaction import register_transaction
+from helpers.amount_formatter import format_amount
 
 
 def parse_time(s: str) -> float | None:
@@ -272,7 +273,7 @@ async def view_menu(session: AsyncSession, user: User, _, event, uuid: bytes) ->
         _("transaction_action_view").format(
             os.getenv("BOT_USERNAME"),
             emoji_indicator,
-            transaction.sum,
+            format_amount(transaction.sum),
             transaction.wallet.currency,
             formatted_datetime,
             transaction.wallet.name,
@@ -482,7 +483,7 @@ async def send_menu(
         new = _("menu_transactions_component_transaction_info").format(
             os.getenv("BOT_USERNAME"),
             emoji_indicator,
-            transaction.sum,
+            format_amount(transaction.sum),
             transaction.wallet.currency,
             transaction.category.name,
             transaction.wallet.name,
