@@ -9,6 +9,7 @@ from dateutil import parser
 from sqlalchemy import and_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+from telethon.errors.rpcerrorlist import MessageIdInvalidError
 from telethon.tl.custom import Button
 
 from database.models import Transaction, User
@@ -337,7 +338,10 @@ async def _render_year_selection(event, years, _):
         buttons.append(row)
 
     buttons.append([Button.inline(_("back_to_main_menu_button"), b"menu_start")])
-    await event.edit(_("menu_transactions_select_year"), buttons=buttons)
+    try:
+        await event.edit(_("menu_transactions_select_year"), buttons=buttons)
+    except MessageIdInvalidError:
+        await event.respond(_("menu_transactions_select_year"), buttons=buttons)
 
 
 async def _render_month_selection(event, year, months, _, has_multiple_years=False):
@@ -404,7 +408,9 @@ async def send_menu(
             if hasattr(event, "edit"):
                 await _render_year_selection(event, sorted_years, _)
             else:
-                msg = await event.respond("...")
+                msg = await event.respond(
+                    "..."
+                )  # [TODO: localize? does this ever happen?]
                 await _render_year_selection(msg, sorted_years, _)
             return
         else:

@@ -2,18 +2,19 @@ import datetime
 import glob
 import io
 import os
-from collections import defaultdict
+from collections import Counter, defaultdict
 
 import matplotlib.colors as mcolors
 import matplotlib.dates as mdates
 import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
 from loguru import logger
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from database.models import Transaction, Wallet
+from helpers.currency_converter import get_exchange_rate
 
 
 def setup_plotting_style():
@@ -87,18 +88,56 @@ def get_text_color(hex_color):
         return "#FFFFFF"
 
 
+def safe_get_rate(base: str, target: str) -> float:
+    """Wrapper to safely get rate or default to 1.0 on error."""
+    try:
+        if base == target:
+            return 1.0
+        return get_exchange_rate(base, target)
+    except Exception as e:
+        logger.error(f"Failed to convert {base} to {target}: {e}")
+        return 1.0
+
+
+# [TODO: consider this using transactions to determine the most used currency]
+async def get_user_main_currency(session: AsyncSession, user_id: bytes) -> str:
+    """Finds the most frequently used currency among the user's wallets."""
+    stmt = select(Wallet.currency).where(
+        Wallet.holder == user_id, Wallet.is_deleted == False
+    )
+    result = await session.execute(stmt)
+    currencies = result.scalars().all()
+
+    if not currencies:
+        return "USD"  # default fallback
+
+    return Counter(currencies).most_common(1)[0][0]
+
+
 async def get_balance_history(_, session: AsyncSession, user_id: bytes) -> io.BytesIO:
-    """Calculates weekly total balance history for the last year."""
+    """Calculates weekly total balance history for the last year (normalized to main currency)."""
     now = datetime.datetime.now()
     one_year_ago = now - datetime.timedelta(days=365)
 
-    stmt_wallets = select(func.sum(Wallet.current_sum)).where(
+    # 1. Determine Target Currency
+    target_currency = await get_user_main_currency(session, user_id)
+
+    # 2. Get current total sum across all wallets, converting each to target_currency
+    stmt_wallets = select(Wallet).where(
         Wallet.holder == user_id, Wallet.is_deleted == False
     )
-    current_total = (await session.execute(stmt_wallets)).scalar() or 0
+    result_wallets = await session.execute(stmt_wallets)
+    wallets = result_wallets.scalars().all()
 
+    current_total = 0.0
+    for w in wallets:
+        rate = safe_get_rate(w.currency, target_currency)
+        current_total += (w.init_sum + w.current_sum) * rate
+
+    # 3. Get transactions (joined with Wallet to know source currency)
     stmt_tx = (
         select(Transaction)
+        .options(joinedload(Transaction.wallet))
         .where(
             Transaction.holder == user_id,
             Transaction.datetime >= one_year_ago.timestamp(),
@@ -111,13 +150,22 @@ async def get_balance_history(_, session: AsyncSession, user_id: bytes) -> io.By
     history = []
     tx_idx = 0
 
+    # 4. Back-calculate history
+    # Iterate backwards week by week
     for i in range(53):
         week_date = now - datetime.timedelta(weeks=i)
         timestamp = week_date.timestamp()
+
         while tx_idx < len(transactions) and transactions[tx_idx].datetime > timestamp:
-            current_total -= transactions[tx_idx].sum
+            tx = transactions[tx_idx]
+
+            if tx.wallet:
+                rate = safe_get_rate(tx.wallet.currency, target_currency)
+                current_total -= tx.sum * rate
+
             tx_idx += 1
-        history.append((week_date, current_total / 100))
+
+        history.append((week_date, current_total))
 
     history.reverse()
     dates, values = zip(*history)
@@ -130,15 +178,18 @@ async def get_balance_history(_, session: AsyncSession, user_id: bytes) -> io.By
     ax.plot(
         dates,
         values,
-        # marker="o",
-        # markersize=5,
         linestyle="-",
         linewidth=3,
         color=accent_color,
     )
 
     ax.fill_between(dates, values, color=accent_color, alpha=0.15)
-    ax.set_title(_("stats_chart_total_net_worth"), pad=25)
+
+    # dynamically update title with currency
+    # [TODO: add this to i18n]
+    title_text = _("stats_chart_total_net_worth") + f" ({target_currency})"
+    ax.set_title(title_text, pad=25)
+
     ax.grid(True, axis="y", alpha=0.3)
     ax.grid(False, axis="x")
 
@@ -161,12 +212,18 @@ async def get_balance_history(_, session: AsyncSession, user_id: bytes) -> io.By
 async def get_category_pie_charts(
     _, session: AsyncSession, user_id: bytes
 ) -> io.BytesIO:
-    """Generates two donut charts for income and expenses by category."""
+    """Generates two donut charts for income and expenses by category (normalized)."""
     one_year_ago = (datetime.datetime.now() - datetime.timedelta(days=365)).timestamp()
+
+    # 1. Determine Target Currency
+    target_currency = await get_user_main_currency(session, user_id)
 
     stmt = (
         select(Transaction)
-        .options(joinedload(Transaction.category))
+        .options(
+            joinedload(Transaction.category),
+            joinedload(Transaction.wallet),
+        )
         .where(Transaction.holder == user_id, Transaction.datetime >= one_year_ago)
     )
     result = await session.execute(stmt)
@@ -176,17 +233,25 @@ async def get_category_pie_charts(
     expense_data = defaultdict(int)
 
     for tx in transactions:
-        if tx.category:
+        if tx.category and tx.wallet:
+            rate = safe_get_rate(tx.wallet.currency, target_currency)
+            normalized_sum = tx.sum * rate
+
             cat_name = tx.category.name.title()
-            if tx.sum > 0:
-                income_data[cat_name] += tx.sum
-            elif tx.sum < 0:
-                expense_data[cat_name] += abs(tx.sum)
+
+            if normalized_sum > 0:
+                income_data[cat_name] += normalized_sum
+            elif normalized_sum < 0:
+                expense_data[cat_name] += abs(normalized_sum)
 
     # --- Plotting ---
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 8))
     fig.suptitle(
-        _("stats_chart_category_distribution"), y=0.90, fontsize=18, fontweight="bold"
+        _("stats_chart_category_distribution")
+        + f" ({target_currency})",  # [TODO: localize]
+        y=0.90,
+        fontsize=18,
+        fontweight="bold",
     )
 
     def plot_donut(ax, data, title):
