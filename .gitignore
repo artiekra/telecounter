@@ -237,3 +237,7 @@ tags
 ### Telethon ###
 *.session
 *.session-journal
+
+### Other custom ###
+
+cache.json

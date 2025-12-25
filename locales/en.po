@@ -143,7 +143,8 @@ msgstr ""
 "👛 **Wallet overview:**\n"
 "```{0}```\n"
 "\n"
-"**Need help?** Type /help for tips and commands 🧠"
+"**Need help?** Type /help for tips and commands 🧠\n"
+"__Currency Rates By [Exchange Rate API](https://www.exchangerate-api.com)__"
 
 #: src/handlers/message.py:147 src/menus/categories.py:309
 #: src/menus/categories.py:360 src/menus/categories.py:387

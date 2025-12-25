@@ -84,7 +84,9 @@ async def send_start_menu(session: AsyncSession, user: User, _, event) -> None:
     ]
 
     await event.respond(
-        _("command_start_template").format(wallet_info_str), buttons=buttons
+        _("command_start_template").format(wallet_info_str),
+        buttons=buttons,
+        link_preview=False,
     )
 
 
